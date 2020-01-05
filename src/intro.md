@@ -21,9 +21,9 @@ We're assuming you've used LCC products, and therefore already understand
 concepts like the producer-consumer model. We also assume you've written
 code for micro controllers and have worked with I/O pins.
 
-# About Names
+## About Names
 
-Let's start with what to some might be confusing--the name LCC vs OpenLCB.
+Let's start with what to some might be confusing—the name LCC vs OpenLCB.
 LCC is a brand name owned by the NMRA. It covers a set of standards that have
 been adopted by the NMRA for Layout Command Control (hence the LCC).
 

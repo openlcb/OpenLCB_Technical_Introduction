@@ -94,12 +94,19 @@ This is documented in section 3.3.1 (with the CAD ID defined in 7.3.3.1):
 
 At this point there is another node that starts the Node Alias negotiation. You should be able to spot and read those messages now. We'll ignore them here.
 
-The `async_blink` node supports two different events--one for 0 and the other for 1. After initialization, it sends out messages to let others know what events it can produce. Here are the two relevant messages:
+Part of the required initialization process for a node is for it to publish the list of events that it produces and consumes. Doing so helps with gateways so that bridges can choose which events to send to other segments.
+
+The next set of messages are this published information. The `async_blink` node supports two different events--one for 0 and the other for 1. It both produces and consumes these events, so it sends out four messages:
 
 ```
-195454415 05 02 01 02 02 00 00 00
-195444415 05 02 01 02 02 00 00 01
+19545415 05 02 01 02 02 00 00 00    Producer Identified Invalid
+19544415 05 02 01 02 02 00 00 01    Producer Identified Valid
+
+194C5415 05 02 01 02 02 00 00 00    Consumer Identified Invalid
+194C4415 05 02 01 02 02 00 00 01    Consumer Identified Valid
 ```
+
+The two event IDs are `05.02.01.02.02.00.00.00` and `05.02.01.02.02.00.00.01`.
 
 We won't go into the details here. You can find more in the specifications and techinal notes:
 
