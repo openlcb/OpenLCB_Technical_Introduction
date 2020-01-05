@@ -1,15 +1,5 @@
 # Introduction
 
-Let's start with what to some might be confusing--the name LCC vs OpenLCB.
-LCC is a brand name owned by the NMRA. It covers a set of standards that have
-been adopted by the NMRA for Layout Command Control (hence the LCC).
-
-OpenLCB is the name of the working group that created the standards approved by
-the NMRA and continues to create new standards. This is a group of dedicated
-volunteers who are working to fulfill the dream.
-
-In this book, as in the standards, we'll use the term OpenLCB rather than LCC.
-
 ## Purpose
 
 The purpose of this book is to help you get up to speed on OpenLCB so you can
@@ -30,3 +20,16 @@ this book.
 We're assuming you've used LCC products, and therefore already understand
 concepts like the producer-consumer model. We also assume you've written
 code for micro controllers and have worked with I/O pins.
+
+# About Names
+
+Let's start with what to some might be confusing--the name LCC vs OpenLCB.
+LCC is a brand name owned by the NMRA. It covers a set of standards that have
+been adopted by the NMRA for Layout Command Control (hence the LCC).
+
+OpenLCB is the name of the working group that created the standards approved by
+the NMRA and continues to create new standards. This is a group of dedicated
+volunteers who are working to fulfill the dream.
+
+In this book, as in the standards, we'll use the term OpenLCB rather than LCC.
+
