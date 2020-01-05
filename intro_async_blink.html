@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Example Messages - OpenLCB Technical Introduction</title>
+        <title>Async Blink Initialization - OpenLCB Technical Introduction</title>
         
 
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
@@ -81,7 +81,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div id="sidebar-scrollbox" class="sidebar-scrollbox">
-                <ol class="chapter"><li class="expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="expanded "><a href="intro_node.html"><strong aria-hidden="true">1.1.</strong> Node</a></li><li class="expanded "><a href="intro_can.html"><strong aria-hidden="true">1.2.</strong> CAN</a></li><li class="expanded "><a href="intro_async_blink.html" class="active"><strong aria-hidden="true">1.3.</strong> Example Messages</a></li></ol></li></ol>
+                <ol class="chapter"><li class="expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="expanded "><a href="intro_node.html"><strong aria-hidden="true">1.1.</strong> Node</a></li><li class="expanded "><a href="intro_can.html"><strong aria-hidden="true">1.2.</strong> CAN</a></li><li class="expanded "><a href="intro_async_blink.html" class="active"><strong aria-hidden="true">1.3.</strong> Async Blink Initialization</a></li><li class="expanded "><a href="intro_ab_events.html"><strong aria-hidden="true">1.4.</strong> Async Blink Events</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -204,10 +204,15 @@
 </ul>
 <h2><a class="header" href="#producerconsumer-events" id="producerconsumer-events">Producer/Consumer Events</a></h2>
 <p>At this point there is another node that starts the Node Alias negotiation. You should be able to spot and read those messages now. We'll ignore them here.</p>
-<p>The <code>async_blink</code> node supports two different events--one for 0 and the other for 1. After initialization, it sends out messages to let others know what events it can produce. Here are the two relevant messages:</p>
-<pre><code>195454415 05 02 01 02 02 00 00 00
-195444415 05 02 01 02 02 00 00 01
+<p>Part of the required initialization process for a node is for it to publish the list of events that it produces and consumes. Doing so helps with gateways so that bridges can choose which events to send to other segments.</p>
+<p>The next set of messages are this published information. The <code>async_blink</code> node supports two different events--one for 0 and the other for 1. It both produces and consumes these events, so it sends out four messages:</p>
+<pre><code>19545415 05 02 01 02 02 00 00 00    Producer Identified Invalid
+19544415 05 02 01 02 02 00 00 01    Producer Identified Valid
+
+194C5415 05 02 01 02 02 00 00 00    Consumer Identified Invalid
+194C4415 05 02 01 02 02 00 00 01    Consumer Identified Valid
 </code></pre>
+<p>The two event IDs are <code>05.02.01.02.02.00.00.00</code> and <code>05.02.01.02.02.00.00.01</code>.</p>
 <p>We won't go into the details here. You can find more in the specifications and techinal notes:</p>
 <ul>
 <li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/s-9.7.3.1-eventtransport-2016-02-06.pdf">S-9.7.3.1 Event Transport</a> section 4.6</li>
@@ -225,6 +230,10 @@
                         
 
                         
+                            <a rel="next" href="intro_ab_events.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
 
                         <div style="clear: both"></div>
                     </nav>
@@ -238,6 +247,10 @@
                     </a>
                 
 
+                
+                    <a href="intro_ab_events.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
                 
             </nav>
 

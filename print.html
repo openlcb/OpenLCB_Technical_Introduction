@@ -83,7 +83,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div id="sidebar-scrollbox" class="sidebar-scrollbox">
-                <ol class="chapter"><li class="expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="expanded "><a href="intro_node.html"><strong aria-hidden="true">1.1.</strong> Node</a></li><li class="expanded "><a href="intro_can.html"><strong aria-hidden="true">1.2.</strong> CAN</a></li><li class="expanded "><a href="intro_async_blink.html"><strong aria-hidden="true">1.3.</strong> Example Messages</a></li></ol></li></ol>
+                <ol class="chapter"><li class="expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="expanded "><a href="intro_node.html"><strong aria-hidden="true">1.1.</strong> Node</a></li><li class="expanded "><a href="intro_can.html"><strong aria-hidden="true">1.2.</strong> CAN</a></li><li class="expanded "><a href="intro_async_blink.html"><strong aria-hidden="true">1.3.</strong> Async Blink Initialization</a></li><li class="expanded "><a href="intro_ab_events.html"><strong aria-hidden="true">1.4.</strong> Async Blink Events</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -166,8 +166,8 @@ this book.</p>
 <p>We're assuming you've used LCC products, and therefore already understand
 concepts like the producer-consumer model. We also assume you've written
 code for micro controllers and have worked with I/O pins.</p>
-<h1><a class="header" href="#about-names" id="about-names">About Names</a></h1>
-<p>Let's start with what to some might be confusing--the name LCC vs OpenLCB.
+<h2><a class="header" href="#about-names" id="about-names">About Names</a></h2>
+<p>Let's start with what to some might be confusing—the name LCC vs OpenLCB.
 LCC is a brand name owned by the NMRA. It covers a set of standards that have
 been adopted by the NMRA for Layout Command Control (hence the LCC).</p>
 <p>OpenLCB is the name of the working group that created the standards approved by
@@ -255,15 +255,29 @@ products (or DIY boards).</p>
 </ul>
 <h2><a class="header" href="#producerconsumer-events" id="producerconsumer-events">Producer/Consumer Events</a></h2>
 <p>At this point there is another node that starts the Node Alias negotiation. You should be able to spot and read those messages now. We'll ignore them here.</p>
-<p>The <code>async_blink</code> node supports two different events--one for 0 and the other for 1. After initialization, it sends out messages to let others know what events it can produce. Here are the two relevant messages:</p>
-<pre><code>195454415 05 02 01 02 02 00 00 00
-195444415 05 02 01 02 02 00 00 01
+<p>Part of the required initialization process for a node is for it to publish the list of events that it produces and consumes. Doing so helps with gateways so that bridges can choose which events to send to other segments.</p>
+<p>The next set of messages are this published information. The <code>async_blink</code> node supports two different events--one for 0 and the other for 1. It both produces and consumes these events, so it sends out four messages:</p>
+<pre><code>19545415 05 02 01 02 02 00 00 00    Producer Identified Invalid
+19544415 05 02 01 02 02 00 00 01    Producer Identified Valid
+
+194C5415 05 02 01 02 02 00 00 00    Consumer Identified Invalid
+194C4415 05 02 01 02 02 00 00 01    Consumer Identified Valid
 </code></pre>
+<p>The two event IDs are <code>05.02.01.02.02.00.00.00</code> and <code>05.02.01.02.02.00.00.01</code>.</p>
 <p>We won't go into the details here. You can find more in the specifications and techinal notes:</p>
 <ul>
 <li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/s-9.7.3.1-eventtransport-2016-02-06.pdf">S-9.7.3.1 Event Transport</a> section 4.6</li>
 <li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/tn-9.7.3.1-eventtransport-2016-02-06.pdf">TN-9.7.3.1 Event Transport</a></li>
 </ul>
+<h1><a class="header" href="#async-blink-events" id="async-blink-events">Async Blink Events</a></h1>
+<h2><a class="header" href="#blink-events" id="blink-events">Blink Events</a></h2>
+<p>Let's take a look at the LCC trace again from JMRI:</p>
+<p><img src="images/alias_allocation_example.png" alt="LCC Trace" /></p>
+<p>The last two messages are what we've buildig toward. These are the events that were sent by the <code>async_blink</code> node. It sends one of these events every second, alternating between the &quot;0&quot; and &quot;1&quot; events.</p>
+<p>Let's take a closer look at the message itself, starting with the header:</p>
+<pre><code>195b4415
+</code></pre>
+<p>The right three characters, <code>415</code>, are the Node ID alias that we talked about already. The middle two characters, <code>5b4</code>, you'll find listed in section 4.1 of <a href="https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/s-9.7.3.1-eventtransport-2016-02-06.pdf">S-9.7.3.1</a> as the Producer/Consumer Event Report (PCER). The data for this message is the Event ID.</p>
 
                     </main>
 
