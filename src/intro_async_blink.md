@@ -93,3 +93,15 @@ This is documented in section 3.3.1 (with the CAD ID defined in 7.3.3.1):
 ## Producer/Consumer Events
 
 At this point there is another node that starts the Node Alias negotiation. You should be able to spot and read those messages now. We'll ignore them here.
+
+The `async_blink` node supports two different events--one for 0 and the other for 1. After initialization, it sends out messages to let others know what events it can produce. Here are the two relevant messages:
+
+```
+195454415 05 02 01 02 02 00 00 00
+195444415 05 02 01 02 02 00 00 01
+```
+
+We won't go into the details here. You can find more in the specifications and techinal notes:
+
+* [S-9.7.3.1 Event Transport](https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/s-9.7.3.1-eventtransport-2016-02-06.pdf) section 4.6
+* [TN-9.7.3.1 Event Transport](https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/tn-9.7.3.1-eventtransport-2016-02-06.pdf)
