@@ -43,7 +43,6 @@ These aliases are negotiated between the nodes. The CID messages are part of thi
 * [S-9.7.2.1 CAN Frame Transfer](https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/s-9.7.2.1-canframetransfer-2015-02-17.pdf)
 * [TN-9.7.2.1 CAN Frame Transfer](https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/tn-9.7.2.1-canframetransfer-2016-02-06.pdf)
 
-
 ### Check ID (CID)
 
 There is one interesting detail here. The first four messages actually include the full node ID. The async_blink application has the following Node ID defined:
