@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>CAN - OpenLCB Technical Introduction</title>
+        <title>CAN - Technical Introduction to OpenLCB</title>
         
 
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
@@ -113,7 +113,7 @@
                             
                         </div>
 
-                        <h1 class="menu-title">OpenLCB Technical Introduction</h1>
+                        <h1 class="menu-title">Technical Introduction to OpenLCB</h1>
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
@@ -153,7 +153,7 @@
 <p>As a result, there are a number of relatively inexpensive ICs available that fully implement the CAN specifications out of the box. By using CAN controllers and drivers, you do not have to write highly time-sensitive code. Instead, you can focus on implementing support for the messages in the application layers, which is a &quot;relatively&quot; simple task compared with implementing a transport layer.</p>
 <h2><a class="header" href="#can-messages" id="can-messages">CAN Messages</a></h2>
 <p>CAN transmits messages, called <em>frames</em> on the bus. Every other device (node) on the bus can (and must) listen to all of the traffic on the bus. One of the interesting and useful aspects of CAN is how it handle collisions, which is through arbitration.</p>
-<p>CAN frames, in the form used by LCC, consist of a 29-bit header followed by zero or more bytes of data. This is using the <em>extended frame format</em>, also know as CAN 2.0 B.</p>
+<p>CAN frames, in the form used by OpenLCB, consist of a 29-bit header followed by zero or more bytes of data. This is using the <em>extended frame format</em>, also know as CAN 2.0 B.</p>
 <p><img src="images/can_bits.jpg" alt="CAN Format" /></p>
 <h3><a class="header" href="#arbitration" id="arbitration">Arbitration</a></h3>
 <p>Arbitration is the process used to ensure that only one node will be transmitting data at one time, thus eliminating collisions and providing extremely reliable communications. It also allows nearly 100% utilization of the bandwidth for the bus.</p>
@@ -165,7 +165,7 @@
 <tr><td>1</td><td>1</td><td>0</td></tr>
 </tbody></table>
 <p>Arbitration uses the 29-bit header value as a priority value to gain access to the bus, where lower values have higher priority. This mechanism provides very high utilization of the bus’ bandwidth because one node will always win a collision and keep transmitting. In contrast, Ethernet uses a more complex scheme where nodes have to back off, wait a random period, then attempt to transmit again, thus wasting bandwidth.</p>
-<p>For arbitration to work sucessfully, each message sent by a node needs to use a unique 29-bit ID. The details for this are handled by the LCC specifications, and are different for different types of messages.</p>
+<p>For arbitration to work sucessfully, each message sent by a node needs to use a unique 29-bit ID. The details for this are handled by the OpenLCB specifications, and are different for different types of messages.</p>
 
                     </main>
 

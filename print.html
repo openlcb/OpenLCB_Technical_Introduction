@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>OpenLCB Technical Introduction</title>
+        <title>Technical Introduction to OpenLCB</title>
         
         <meta name="robots" content="noindex" />
         
@@ -115,7 +115,7 @@
                             
                         </div>
 
-                        <h1 class="menu-title">OpenLCB Technical Introduction</h1>
+                        <h1 class="menu-title">Technical Introduction to OpenLCB</h1>
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
@@ -175,18 +175,14 @@ the NMRA and continues to create new standards. This is a group of dedicated
 volunteers who are working to fulfill the dream.</p>
 <p>In this book, as in the standards, we'll use the term OpenLCB rather than LCC.</p>
 <h1><a class="header" href="#node" id="node">Node</a></h1>
-<p>A <em>Node</em> is the basic building block of an LCC network. It's a device that can send and
-receive OpenLCB messages. We'll describe these messages in more detail in a later
-chapter.</p>
-<p>Each node has a unique 6-byte ID that must be assigned by the manufactorer. We'll
-describe in a later chapter how you can get your own set of IDs to use in your
-products (or DIY boards).</p>
+<p>A <em>Node</em> is the basic building block of an OpenLCB network. It's a device that can send and receive OpenLCB messages. We'll describe these messages in more detail in a later chapter.</p>
+<p>Each node has a unique 6-byte ID that must be assigned by the manufactorer. We'll describe in a later chapter how you can get your own set of IDs to use in your products (or DIY boards).</p>
 <h1><a class="header" href="#introduction-to-can" id="introduction-to-can">Introduction to CAN</a></h1>
 <p>Controller Area Network (CAN) is a standard that was initially created in 1981 by Bosch, and has since been used for factory automation and communication networks in cars, to name just a few uses. Today there are hundreds of millions of nodes in daily use. </p>
 <p>As a result, there are a number of relatively inexpensive ICs available that fully implement the CAN specifications out of the box. By using CAN controllers and drivers, you do not have to write highly time-sensitive code. Instead, you can focus on implementing support for the messages in the application layers, which is a &quot;relatively&quot; simple task compared with implementing a transport layer.</p>
 <h2><a class="header" href="#can-messages" id="can-messages">CAN Messages</a></h2>
 <p>CAN transmits messages, called <em>frames</em> on the bus. Every other device (node) on the bus can (and must) listen to all of the traffic on the bus. One of the interesting and useful aspects of CAN is how it handle collisions, which is through arbitration.</p>
-<p>CAN frames, in the form used by LCC, consist of a 29-bit header followed by zero or more bytes of data. This is using the <em>extended frame format</em>, also know as CAN 2.0 B.</p>
+<p>CAN frames, in the form used by OpenLCB, consist of a 29-bit header followed by zero or more bytes of data. This is using the <em>extended frame format</em>, also know as CAN 2.0 B.</p>
 <p><img src="images/can_bits.jpg" alt="CAN Format" /></p>
 <h3><a class="header" href="#arbitration" id="arbitration">Arbitration</a></h3>
 <p>Arbitration is the process used to ensure that only one node will be transmitting data at one time, thus eliminating collisions and providing extremely reliable communications. It also allows nearly 100% utilization of the bandwidth for the bus.</p>
@@ -198,27 +194,27 @@ products (or DIY boards).</p>
 <tr><td>1</td><td>1</td><td>0</td></tr>
 </tbody></table>
 <p>Arbitration uses the 29-bit header value as a priority value to gain access to the bus, where lower values have higher priority. This mechanism provides very high utilization of the bus’ bandwidth because one node will always win a collision and keep transmitting. In contrast, Ethernet uses a more complex scheme where nodes have to back off, wait a random period, then attempt to transmit again, thus wasting bandwidth.</p>
-<p>For arbitration to work sucessfully, each message sent by a node needs to use a unique 29-bit ID. The details for this are handled by the LCC specifications, and are different for different types of messages.</p>
+<p>For arbitration to work sucessfully, each message sent by a node needs to use a unique 29-bit ID. The details for this are handled by the OpenLCB specifications, and are different for different types of messages.</p>
 <h1><a class="header" href="#example-messages" id="example-messages">Example Messages</a></h1>
-<p><a href="https://github.com/bakerstu/openmrn">OpenMRN</a> is a C++ library that implements the entire LCC stack with some OpenLCB extensions. The GIT repository hosting OpenMRN also contains some sample applications that can be run as desktop applications to join an LCC network.</p>
+<p><a href="https://github.com/bakerstu/openmrn">OpenMRN</a> is a C++ library that implements the entire OpenLCB stack with some OpenLCB extensions. The GIT repository hosting OpenMRN also contains some sample applications that can be run as desktop applications to join an OpenLCB network.</p>
 <h2><a class="header" href="#async-blink" id="async-blink">Async Blink</a></h2>
 <p>We won't go into details on how to build or run this application, as that is covered in the OpenMRN documentation. Instead, we'll use it to give you an idea of what actual messages look like.</p>
-<p>The async_blink application can be run without a layout or a CAN LCC network. You can run it entirely on a single computer.</p>
+<p>The async_blink application can be run without a layout or a CAN OpenLCB network. You can run it entirely on a single computer.</p>
 <p>The async_blink application sends an event every second, alternating between 0 and 1.</p>
 <p>Here is the output from running the application under Linux:</p>
 <p><img src="images/async_blink_output.png" alt="async_blink output" /></p>
-<p>This probably looks a little overwhelming. Let's start with the message format. Each line is a seperate message sent or received on the LCC network. In this case of OpemMRN and the async_blink application, we're using TCP/IP rather than CAN as the transport mechanism. The current code uses a text rather than binary for the messages, using a format based the GridConnect protocol:</p>
+<p>This probably looks a little overwhelming. Let's start with the message format. Each line is a seperate message sent or received on the OpenLCB network. In this case of OpemMRN and the async_blink application, we're using TCP/IP rather than CAN as the transport mechanism. The current code uses a text rather than binary for the messages, using a format based the GridConnect protocol:</p>
 <pre><code>:X &lt;identifier&gt; &lt;N&gt; &lt;Data-0&gt;&lt;Data-1&gt;...&lt;Data-7&gt;;
 </code></pre>
 <p>As an example, the first message <code>:X17050415N;</code> has the ID <code>17050415</code> and no data. The ID and all other data are in HEX. </p>
-<p>There are some log messages in the output that will help us get an idea of what's going on. However, these messages may not make a lot of sense without both understanding the application and a little more about the LCC standards.</p>
-<p>How do you map these messages back into the LCC standards to understand what you're seeing?</p>
+<p>There are some log messages in the output that will help us get an idea of what's going on. However, these messages may not make a lot of sense without both understanding the application and a little more about the OpenLCB standards.</p>
+<p>How do you map these messages back into the OpenLCB standards to understand what you're seeing?</p>
 <h2><a class="header" href="#decoded-messages" id="decoded-messages">Decoded Messages</a></h2>
-<p>JMRI displays decoded messages. So for this example we connected JMRI to the same TCP/IP LCC bus (all running on the same computer). We'll cover how to use JMRI later. For now we're just going to focus on the messages being sent.</p>
+<p>JMRI displays decoded messages. So for this example we connected JMRI to the same TCP/IP OpenLCB bus (all running on the same computer). We'll cover how to use JMRI later. For now we're just going to focus on the messages being sent.</p>
 <p><img src="images/alias_allocation_example.png" alt="Allocate Alias" /></p>
 <p>You'll notice the first set of messages all say &quot;CID.&quot; This is a <em>Check ID</em> frame that is used as part of allocating an <em>alias</em> for the Node ID.</p>
 <h2><a class="header" href="#node-aliases" id="node-aliases">Node Aliases</a></h2>
-<p>The 29-bit headers for CAN messages need to be different for messages sent from different nodes to avoid collisions. The 6-byte Node ID is too long to fit into the header and leave room for more information. So instead, LCC defines a 12-bit alias for Node IDs that are used in the header. By including the alias of the sender in most messages, we avoid collisions.</p>
+<p>The 29-bit headers for CAN messages need to be different for messages sent from different nodes to avoid collisions. The 6-byte Node ID is too long to fit into the header and leave room for more information. So instead, OpenLCB defines a 12-bit alias for Node IDs that are used in the header. By including the alias of the sender in most messages, we avoid collisions.</p>
 <p>These aliases are negotiated between the nodes. The CID messages are part of this process. If you're interested in the details, you can find them in section 6 of the specifications (with more information in the technical note):</p>
 <ul>
 <li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/s-9.7.2.1-canframetransfer-2015-02-17.pdf">S-9.7.2.1 CAN Frame Transfer</a></li>
@@ -271,8 +267,8 @@ products (or DIY boards).</p>
 </ul>
 <h1><a class="header" href="#async-blink-events" id="async-blink-events">Async Blink Events</a></h1>
 <h2><a class="header" href="#blink-events" id="blink-events">Blink Events</a></h2>
-<p>Let's take a look at the LCC trace again from JMRI:</p>
-<p><img src="images/alias_allocation_example.png" alt="LCC Trace" /></p>
+<p>Let's take a look at the OpenLCB trace again from JMRI:</p>
+<p><img src="images/alias_allocation_example.png" alt="OpenLCB Trace" /></p>
 <p>The last two messages are what we've buildig toward. These are the events that were sent by the <code>async_blink</code> node. It sends one of these events every second, alternating between the &quot;0&quot; and &quot;1&quot; events.</p>
 <p>Let's take a closer look at the message itself, starting with the header:</p>
 <pre><code>195b4415
