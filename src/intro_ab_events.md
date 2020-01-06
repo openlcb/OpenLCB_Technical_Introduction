@@ -2,9 +2,9 @@
 
 ## Blink Events
 
-Let's take a look at the LCC trace again from JMRI:
+Let's take a look at the OpenLCB trace again from JMRI:
 
-![LCC Trace](images/alias_allocation_example.png)
+![OpenLCB Trace](images/alias_allocation_example.png)
 
 The last two messages are what we've buildig toward. These are the events that were sent by the `async_blink` node. It sends one of these events every second, alternating between the "0" and "1" events.
 

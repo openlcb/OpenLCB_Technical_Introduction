@@ -8,7 +8,7 @@ As a result, there are a number of relatively inexpensive ICs available that ful
 
 CAN transmits messages, called _frames_ on the bus. Every other device (node) on the bus can (and must) listen to all of the traffic on the bus. One of the interesting and useful aspects of CAN is how it handle collisions, which is through arbitration.
 
-CAN frames, in the form used by LCC, consist of a 29-bit header followed by zero or more bytes of data. This is using the _extended frame format_, also know as CAN 2.0 B.
+CAN frames, in the form used by OpenLCB, consist of a 29-bit header followed by zero or more bytes of data. This is using the _extended frame format_, also know as CAN 2.0 B.
 
 ![CAN Format](images/can_bits.jpg)
 
@@ -27,4 +27,4 @@ The arbitration phase relies on drivers only driving the bus low, and never driv
 
 Arbitration uses the 29-bit header value as a priority value to gain access to the bus, where lower values have higher priority. This mechanism provides very high utilization of the bus’ bandwidth because one node will always win a collision and keep transmitting. In contrast, Ethernet uses a more complex scheme where nodes have to back off, wait a random period, then attempt to transmit again, thus wasting bandwidth.
 
-For arbitration to work sucessfully, each message sent by a node needs to use a unique 29-bit ID. The details for this are handled by the LCC specifications, and are different for different types of messages.
+For arbitration to work sucessfully, each message sent by a node needs to use a unique 29-bit ID. The details for this are handled by the OpenLCB specifications, and are different for different types of messages.
