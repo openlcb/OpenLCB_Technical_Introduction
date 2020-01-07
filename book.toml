@@ -3,4 +3,4 @@ authors = ["John Socha-Leialoha"]
 language = "en"
 multilingual = false
 src = "src"
-title = "Technical Introduction to OpenLCB"
+title = "OpenLCB Technical Introduction"
