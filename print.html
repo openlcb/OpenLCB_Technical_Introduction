@@ -193,11 +193,7 @@ been adopted by the NMRA for Layout Command Control (hence the LCC).</p>
 </tbody></table>
 <blockquote>
 <p>Dominant and recessive are the normal terms used because a '1' bit (recessive) does NOT drive the bus. It allows the terminators to 'drive' the bus by pulling the two bus lines to a common voltage. (2.5V) On the other hand a '0' bit (dominant) drives the bus to both high and low. (CANH goes to 5V and CANL goes to 0V) The bus drivers can always over power the terminators, and that is how the zero bit always dominates over the one bit. It also explains why at least some termination is required. The termination values are also chosen to suppress cable reflections, but that is actually only an issue on long lines. Also note that this explains the complexity of our RR-CirKits terminators. You can attach a logic analyzer to one of our terminators because it creates a logic level image of the bus (to drive the activity LED). You cannot connect a logic analyzer directly to the CAN bus, because it does not contain a logic level signal on either line.</p>
-</blockquote>
-<blockquote>
 <p>Normally two nodes will happily send identical data until one node or the other transmits a zero bit during the other node's one bit. At that point the recessive node notices that it transmitted a one bit,but received a zero bit back from the bus. This tells the recessive node that it is in conflict and must immediately stop transmitting. No other nodes can observe that this happened. This requirement for an immediate (within a fraction of the bit time) response is what limits the CAN bus segment lengths.</p>
-</blockquote>
-<blockquote>
 <p>-- Dick Bronson, RR Cirkits</p>
 </blockquote>
 <p>Arbitration uses the 29-bit header value as a priority value to gain access to the bus, where lower values have higher priority. This mechanism provides very high utilization of the bus’ bandwidth because one node will always win a collision and keep transmitting. In contrast, Ethernet uses a more complex scheme where nodes have to back off, wait a random period, then attempt to transmit again, thus wasting bandwidth.</p>
