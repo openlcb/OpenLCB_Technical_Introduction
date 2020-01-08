@@ -6,7 +6,7 @@ We'll cover prototype solutions here as this is a good way to get started.
 
 ## Dev Kit
 
-One of the OpenLCB members, Balazs Racz, has put together a _daughter_ board for the Nucleo familiy of development boards. Here is a photo of the Rev. B version of this developer kit:
+One of the OpenLCB members, Balazs Racz, has put together a _daughter_ board for the Nucleo family of development boards. Here is a photo of the Rev. B version of this developer kit:
 
 ![Dev Kit](images/devkit.jpg)
 
@@ -22,6 +22,7 @@ The DevKit has the following features:
 * 16 outputs
 * 4 Tortoises or 8 series LEDs on 12V
 * 8 servos
+* Expansion ports for daughter boards with additional features like I/O
 
 ### Supported Nucleo Boards
 
@@ -34,7 +35,7 @@ Here is a discussion form Balazs about how they picked the boards:
 
 > It took us several months just to select which Nucleos we should be targeting. The nucleo ecosystem is immensely huge. There are three form factors (mini, 64-pin and 144-pin), four different price tags ($10.99, $13, $15, $22), and at least four dozen different combinations.
 > There were some easy choices to reduce the selection. For example I immediately excluded all boards that did not have CAN controller. Then I looked at what kind of compatibility exists between the different boards. The mini has a very different form factor, but the 64-pin and 144-pin Nucleos seemed to have a set of compatible headers. So I focused on those. Then I wanted to select a variety of boards that span a range or performance and cost:
-> * I definitely wanted to include the board that has the cheapest CAN microcontroller that is big enought that I believe is useful for LCC—the F091RC. This is also in the cheapest cost bucket.
+> * I definitely wanted to include the board that has the cheapest CAN microcontroller that is big enough that I believe is useful for LCC—the F091RC. This is also in the cheapest cost bucket.
 > * Then I picked one that is the largest performance/memory but is still in the cheapest bucket—the F303RE.
 >
 > Then I wanted to go up in features:
@@ -45,4 +46,4 @@ Here is a discussion form Balazs about how they picked the boards:
 
 ### Source of Boards
 
-Balaz has a blog post on his [Nucleo IO Board](https://sites.google.com/site/balazsracz/nucleo-io-board) (later renamed DevKit) that contains more information about the board, how to order the board, and how to order parts for the board. He doesn't sell these, but rather has provided links to where you can have boards made (PCBWay), and purchase the parts (DigiKey).
+Balazs has a blog post on his [Nucleo IO Board](https://sites.google.com/site/balazsracz/nucleo-io-board) (later renamed DevKit) that contains more information about the board, how to order the board, and how to order parts for the board. He doesn't sell these, but rather has provided links to where you can have boards made (PCBWay), and purchase the parts (DigiKey).
