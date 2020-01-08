@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Introduction - OpenLCB Technical Introduction</title>
+        <title>Getting Started - OpenLCB Technical Introduction</title>
         
 
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
@@ -81,7 +81,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div id="sidebar-scrollbox" class="sidebar-scrollbox">
-                <ol class="chapter"><li class="expanded "><a href="intro.html" class="active"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="expanded "><a href="intro_node.html"><strong aria-hidden="true">1.1.</strong> Node</a></li><li class="expanded "><a href="intro_can.html"><strong aria-hidden="true">1.2.</strong> CAN</a></li><li class="expanded "><a href="intro_async_blink.html"><strong aria-hidden="true">1.3.</strong> Async Blink Initialization</a></li><li class="expanded "><a href="intro_ab_events.html"><strong aria-hidden="true">1.4.</strong> Async Blink Events</a></li></ol></li><li class="expanded "><a href="start.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li></ol>
+                <ol class="chapter"><li class="expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="expanded "><a href="intro_node.html"><strong aria-hidden="true">1.1.</strong> Node</a></li><li class="expanded "><a href="intro_can.html"><strong aria-hidden="true">1.2.</strong> CAN</a></li><li class="expanded "><a href="intro_async_blink.html"><strong aria-hidden="true">1.3.</strong> Async Blink Initialization</a></li><li class="expanded "><a href="intro_ab_events.html"><strong aria-hidden="true">1.4.</strong> Async Blink Events</a></li></ol></li><li class="expanded "><a href="start.html" class="active"><strong aria-hidden="true">2.</strong> Getting Started</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -148,39 +148,57 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#introduction" id="introduction">Introduction</a></h1>
-<h2><a class="header" href="#purpose" id="purpose">Purpose</a></h2>
-<p>The purpose of this book is to help you get up to speed on OpenLCB so you can
-start creating LCC products. There are a lot of concepts and we'll go into
-just enough depth to get you going, without bogging you down with all the
-details and possibilites. The standards and the technical notes have a lot
-more details.</p>
-<h2><a class="header" href="#focus-of-this-book" id="focus-of-this-book">Focus of this book</a></h2>
-<p>We're going to focus on how to create board that can be added to an
-LCC bus. Therefore, we're going to focus on solutions that use the CAN
-bus. There are other options, such as WiFi, but we won't cover them in
-this book.</p>
-<h2><a class="header" href="#assumptions" id="assumptions">Assumptions</a></h2>
-<p>We're assuming you've used LCC products, and therefore already understand
-concepts like the producer-consumer model. We also assume you've written
-code for microcontrollers and have worked with I/O pins.</p>
-<h2><a class="header" href="#about-names" id="about-names">About Names</a></h2>
-<p>Let's start with what to some might be confusing—the names LCC vs OpenLCB.
-LCC is a brand name owned by the NMRA. It covers a set of standards that have
-been adopted by the NMRA for Layout Command Control (hence the LCC).</p>
-<p>OpenLCB is the name of the working group that created the standards approved by the NMRA and continues to create new standards. This is a group of dedicated volunteers who are working to fulfill the dream.</p>
-<p>You'll notice that the standards use the name OpenLCB everywhere except for the header at the top of the document. In this book, as in the standards, we'll use the term OpenLCB everywhere except this page.</p>
+                        <h1><a class="header" href="#getting-started" id="getting-started">Getting Started</a></h1>
+<p>What we've covered so far is a very small part of OpenLCB—there is a lot more. So how do you get started?</p>
+<p>We'll cover prototype solutions here as this is a good way to get started.</p>
+<h2><a class="header" href="#dev-kit" id="dev-kit">Dev Kit</a></h2>
+<p>One of the OpenLCB members, Balazs Racz, has put together a <em>daughter</em> board for the Nucleo family of development boards. Here is a photo of the Rev. B version of this developer kit:</p>
+<p><img src="images/devkit.jpg" alt="Dev Kit" /></p>
+<p>It uses all through-hole components for two reasons. First, because it doesn't require experience soldering surface-mounted parts. And second, parhaps more importantly, the components can be replaced easily if you happen to destroy them as part of testing.</p>
+<p>The next photo shows a Nucleo F091RC board, which has an ARM Coretex-M0 processor.</p>
+<p><img src="images/devkit_nucleo.jpg" alt="Dev Kit and Nucleo" /></p>
+<p>The DevKit has the following features:</p>
+<ul>
+<li>16 inputs</li>
+<li>16 outputs</li>
+<li>4 Tortoises or 8 series LEDs on 12V</li>
+<li>8 servos</li>
+<li>Expansion ports for daughter boards with additional features like I/O</li>
+</ul>
+<h3><a class="header" href="#supported-nucleo-boards" id="supported-nucleo-boards">Supported Nucleo Boards</a></h3>
+<p>This board currently supports the following Nucleo borads (in order of increasing price and features):</p>
+<ul>
+<li>Nucleo-F091RC</li>
+<li>Nucleo-F303RE</li>
+</ul>
+<p>Here is a discussion form Balazs about how they picked the boards:</p>
+<blockquote>
+<p>It took us several months just to select which Nucleos we should be targeting. The nucleo ecosystem is immensely huge. There are three form factors (mini, 64-pin and 144-pin), four different price tags ($10.99, $13, $15, $22), and at least four dozen different combinations.
+There were some easy choices to reduce the selection. For example I immediately excluded all boards that did not have CAN controller. Then I looked at what kind of compatibility exists between the different boards. The mini has a very different form factor, but the 64-pin and 144-pin Nucleos seemed to have a set of compatible headers. So I focused on those. Then I wanted to select a variety of boards that span a range or performance and cost:</p>
+<ul>
+<li>I definitely wanted to include the board that has the cheapest CAN microcontroller that is big enough that I believe is useful for LCC—the F091RC. This is also in the cheapest cost bucket.</li>
+<li>Then I picked one that is the largest performance/memory but is still in the cheapest bucket—the F303RE.</li>
+</ul>
+<p>Then I wanted to go up in features:</p>
+<ul>
+<li>Picked the cheapest that has two CAN bus ports, intending to build a DevKit that can be a CAN-to-CAN gateway. That's the F446. Unfortunately this is not in the cheapest bucket, so does not deprecate the F303RE.</li>
+<li>Then picked one board that has three CAN ports AND ethernet, with a lot of RAM and flash; aiming to eventually build a super-gateway, or a simple USB-CAN. This was in the form factor of a 144 pin nucleo, the F767ZI.</li>
+</ul>
+<p>I was looking at a couple of other options for the 144-pin, but failed to identify a meaningful difference that would make it worth the effort. Unfortunately there is a huge cost in supporting the variety, because each series (F0, F1, F2, F3, F4, F7) needs a different middleware package, and each chip has a different number of peripherals and a different pinout of the logical peripherals. When designing the DevKit I needed to find usage of pins that has the matching peripherals on each of the supported Nucleo boards. This proved to be an impossible task. It does not help that PB13 is on the same mechanical pin on each board that can be plugged in, if the F091 anf F767 has a hardware PWM on PB13 but the F303 does not have a hardware PWM there, I cannot use that as a servo output pin. Finding matching SPI and I2C ports were similarly hard.</p>
+</blockquote>
+<h3><a class="header" href="#source-of-boards" id="source-of-boards">Source of Boards</a></h3>
+<p>Balazs has a blog post on his <a href="https://sites.google.com/site/balazsracz/nucleo-io-board">Nucleo IO Board</a> (later renamed DevKit) that contains more information about the board, how to order the board, and how to order parts for the board. He doesn't sell these, but rather has provided links to where you can have boards made (PCBWay), and purchase the parts (DigiKey).</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
-
-                        
-                            <a rel="next" href="intro_node.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <i class="fa fa-angle-right"></i>
+                            <a rel="prev" href="intro_ab_events.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
                             </a>
+                        
+
                         
 
                         <div style="clear: both"></div>
@@ -190,11 +208,11 @@ been adopted by the NMRA for Layout Command Control (hence the LCC).</p>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
-
-                
-                    <a href="intro_node.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <i class="fa fa-angle-right"></i>
+                    <a href="intro_ab_events.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
                     </a>
+                
+
                 
             </nav>
 
