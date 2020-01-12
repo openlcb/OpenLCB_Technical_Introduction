@@ -233,7 +233,7 @@ been adopted by the NMRA for Layout Command Control (hence the LCC).</p>
 15011415
 14410415
 </code></pre>
-<p>Look the &quot;middle&quot; hex values: 17<code>050</code>415, 16<code>101</code>415, 15<code>011</code>415, and 144<code>104</code>15. In other words, the full Node ID is present in these four messages. That's the case because each of these messages by itself might not be unique when sent from each node in a segment, but the four messages together will be. Why is this important?</p>
+<p>Look the &quot;middle&quot; hex values: 17<code>050</code>415, 16<code>101</code>415, 15<code>011</code>415, and 14<code>410</code>15. In other words, the full Node ID is present in these four messages. That's the case because each of these messages by itself might not be unique when sent from each node in a segment, but the four messages together will be. Why is this important?</p>
 <p>These messages are basically saying that this node wants to use <code>415</code> as it's alias and is asking if anyone else is currently using that alias. In this example, there were no replies, which means this node is free to use this alias.</p>
 <blockquote>
 <p><strong>Note:</strong> The recommended algorithm for generating aliases in case there are collisions is based on a specific pseudo-random number generator that is dependent on the full Node ID.</p>
