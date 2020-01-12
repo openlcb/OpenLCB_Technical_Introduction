@@ -60,7 +60,7 @@ If you divide this ID into four parts, you'll get `050`, `101`, `011`, and `410`
 14410415
 ```
 
-Look the "middle" hex values: 17`050`415, 16`101`415, 15`011`415, and 144`104`15. In other words, the full Node ID is present in these four messages. That's the case because each of these messages by itself might not be unique when sent from each node in a segment, but the four messages together will be. Why is this important?
+Look the "middle" hex values: 17`050`415, 16`101`415, 15`011`415, and 14`410`15. In other words, the full Node ID is present in these four messages. That's the case because each of these messages by itself might not be unique when sent from each node in a segment, but the four messages together will be. Why is this important?
 
 These messages are basically saying that this node wants to use `415` as it's alias and is asking if anyone else is currently using that alias. In this example, there were no replies, which means this node is free to use this alias.
 
