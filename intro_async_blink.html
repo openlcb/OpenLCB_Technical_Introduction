@@ -4,6 +4,9 @@
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
         <title>Async Blink Initialization - OpenLCB Technical Introduction</title>
+                
+
+        <!-- Custom HTML head -->
         
 
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
@@ -11,17 +14,17 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <link rel="shortcut icon" href="favicon.png">
-        <link rel="stylesheet" href="css/variables.css">
+                <link rel="icon" href="favicon.svg">
+                        <link rel="shortcut icon" href="favicon.png">
+                <link rel="stylesheet" href="css/variables.css">
         <link rel="stylesheet" href="css/general.css">
         <link rel="stylesheet" href="css/chrome.css">
-        <link rel="stylesheet" href="css/print.css" media="print">
-
+                <link rel="stylesheet" href="css/print.css" media="print">
+        
         <!-- Fonts -->
         <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
-        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
-
+                <link rel="stylesheet" href="fonts/fonts.css">
+        
         <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
@@ -29,14 +32,12 @@
 
         <!-- Custom theme stylesheets -->
         
-
-        
-    </head>
+            </head>
     <body>
         <!-- Provide site root to javascript -->
         <script type="text/javascript">
             var path_to_root = "";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "light" : "light";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
 
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
@@ -80,9 +81,8 @@
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <div id="sidebar-scrollbox" class="sidebar-scrollbox">
-                <ol class="chapter"><li class="expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="expanded "><a href="intro_node.html"><strong aria-hidden="true">1.1.</strong> Node</a></li><li class="expanded "><a href="intro_can.html"><strong aria-hidden="true">1.2.</strong> CAN</a></li><li class="expanded "><a href="intro_async_blink.html" class="active"><strong aria-hidden="true">1.3.</strong> Async Blink Initialization</a></li><li class="expanded "><a href="intro_ab_events.html"><strong aria-hidden="true">1.4.</strong> Async Blink Events</a></li></ol></li><li class="expanded "><a href="start.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li></ol>
-            </div>
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="intro_node.html"><strong aria-hidden="true">1.1.</strong> Node</a></li><li class="chapter-item expanded "><a href="intro_can.html"><strong aria-hidden="true">1.2.</strong> CAN</a></li><li class="chapter-item expanded "><a href="intro_async_blink.html" class="active"><strong aria-hidden="true">1.3.</strong> Async Blink Initialization</a></li><li class="chapter-item expanded "><a href="intro_ab_events.html"><strong aria-hidden="true">1.4.</strong> Async Blink Events</a></li></ol></li><li class="chapter-item expanded "><a href="start.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li></ol>            </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
@@ -90,44 +90,40 @@
 
             <div class="page">
                 
-                <div id="menu-bar" class="menu-bar">
-                    <div id="menu-bar-sticky-container">
-                        <div class="left-buttons">
-                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
-                                <i class="fa fa-bars"></i>
-                            </button>
-                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
-                                <i class="fa fa-paint-brush"></i>
-                            </button>
-                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
-                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
-                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
-                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
-                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
-                            </ul>
-                            
-                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
-                                <i class="fa fa-search"></i>
-                            </button>
-                            
-                        </div>
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                                                <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                                            </div>
 
-                        <h1 class="menu-title">OpenLCB Technical Introduction</h1>
+                    <h1 class="menu-title">OpenLCB Technical Introduction</h1>
 
-                        <div class="right-buttons">
-                            <a href="print.html" title="Print this book" aria-label="Print this book">
-                                <i id="print-button" class="fa fa-print"></i>
-                            </a>
-                            
-                        </div>
+                    <div class="right-buttons">
+                                                <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                                                                        
                     </div>
                 </div>
 
-                
-                <div id="search-wrapper" class="hidden">
+                                <div id="search-wrapper" class="hidden">
                     <form id="searchbar-outer" class="searchbar-outer">
-                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
                     </form>
                     <div id="searchresults-outer" class="searchresults-outer hidden">
                         <div id="searchresults-header" class="searchresults-header"></div>
@@ -136,7 +132,6 @@
                     </div>
                 </div>
                 
-
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
                 <script type="text/javascript">
                     document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
@@ -148,9 +143,9 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#example-messages" id="example-messages">Example Messages</a></h1>
+                        <h1 id="example-messages"><a class="header" href="#example-messages">Example Messages</a></h1>
 <p><a href="https://github.com/bakerstu/openmrn">OpenMRN</a> is a C++ library that implements the entire OpenLCB stack with some OpenLCB extensions. The GIT repository hosting OpenMRN also contains some sample applications that can be run as desktop applications to join an OpenLCB network.</p>
-<h2><a class="header" href="#async-blink" id="async-blink">Async Blink</a></h2>
+<h2 id="async-blink"><a class="header" href="#async-blink">Async Blink</a></h2>
 <p>We won't go into details on how to build or run this application, as that is covered in the OpenMRN documentation. Instead, we'll use it to give you an idea of what actual messages look like.</p>
 <p>The async_blink application can be run without a layout or a CAN OpenLCB network. You can run it entirely on a single computer.</p>
 <p>The async_blink application sends an event every second, alternating between 0 and 1.</p>
@@ -162,18 +157,18 @@
 <p>As an example, the first message <code>:X17050415N;</code> has the ID <code>17050415</code> and no data. The ID and all other data are in HEX. </p>
 <p>There are some log messages in the output that will help us get an idea of what's going on. However, these messages may not make a lot of sense without both understanding the application and a little more about the OpenLCB standards.</p>
 <p>How do you map these messages back into the OpenLCB standards to understand what you're seeing?</p>
-<h2><a class="header" href="#decoded-messages" id="decoded-messages">Decoded Messages</a></h2>
+<h2 id="decoded-messages"><a class="header" href="#decoded-messages">Decoded Messages</a></h2>
 <p>JMRI displays decoded messages. So for this example we connected JMRI to the same TCP/IP OpenLCB bus (all running on the same computer). We'll cover how to use JMRI later. For now we're just going to focus on the messages being sent.</p>
 <p><img src="images/alias_allocation_example.png" alt="Allocate Alias" /></p>
 <p>You'll notice the first set of messages all say &quot;CID.&quot; This is a <em>Check ID</em> frame that is used as part of allocating an <em>alias</em> for the Node ID.</p>
-<h2><a class="header" href="#node-aliases" id="node-aliases">Node Aliases</a></h2>
+<h2 id="node-aliases"><a class="header" href="#node-aliases">Node Aliases</a></h2>
 <p>The 29-bit headers for CAN messages need to be different for messages sent from different nodes to avoid collisions. The 6-byte Node ID is too long to fit into the header and leave room for more information. So instead, OpenLCB defines a 12-bit alias for Node IDs that are used in the header. By including the alias of the sender in most messages, we avoid collisions.</p>
 <p>These aliases are negotiated between the nodes. The CID messages are part of this process. If you're interested in the details, you can find them in section 6 of the specifications (with more information in the technical note):</p>
 <ul>
 <li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/s-9.7.2.1-canframetransfer-2015-02-17.pdf">S-9.7.2.1 CAN Frame Transfer</a></li>
 <li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/tn-9.7.2.1-canframetransfer-2016-02-06.pdf">TN-9.7.2.1 CAN Frame Transfer</a></li>
 </ul>
-<h3><a class="header" href="#check-id-cid" id="check-id-cid">Check ID (CID)</a></h3>
+<h3 id="check-id-cid"><a class="header" href="#check-id-cid">Check ID (CID)</a></h3>
 <p>There is one interesting detail here. The first four messages actually include the full node ID. The async_blink application has the following Node ID defined:</p>
 <pre><code class="language-cpp">const openlcb::NodeID NODE_ID = 0x050101011410ULL;
 </code></pre>
@@ -188,13 +183,13 @@
 <blockquote>
 <p><strong>Note:</strong> The recommended algorithm for generating aliases in case there are collisions is based on a specific pseudo-random number generator that is dependent on the full Node ID.</p>
 </blockquote>
-<h3><a class="header" href="#reserve-id-rid" id="reserve-id-rid">Reserve ID (RID)</a></h3>
+<h3 id="reserve-id-rid"><a class="header" href="#reserve-id-rid">Reserve ID (RID)</a></h3>
 <p>The fifth message, <code>10700415</code>, is the Reserve ID (RID) frame. Since the node didn't get any arguments from other nodes, it's now declaring that it's reserved the alias <code>415</code>.</p>
-<h3><a class="header" href="#alias-map-definition-amd" id="alias-map-definition-amd">Alias Map Definition (AMD)</a></h3>
+<h3 id="alias-map-definition-amd"><a class="header" href="#alias-map-definition-amd">Alias Map Definition (AMD)</a></h3>
 <p>The sixth message reports the full Node ID associated with the alias that was just reserved:</p>
 <pre><code>10701415 05 01 01 01 14 10
 </code></pre>
-<h3><a class="header" href="#initialize-complete" id="initialize-complete">Initialize Complete</a></h3>
+<h3 id="initialize-complete"><a class="header" href="#initialize-complete">Initialize Complete</a></h3>
 <p>The messages above are part of the node's initialization phase. During this time it's not _&quot;<em>reachable</em> on the network. In other words, it won't respond events or messages addressed to it. Once it's negotiated a Node Alias, it sends out an Initialize Complete message telling anyone who cares that it's not online:</p>
 <pre><code>19100415 05 01 01 01 14 10
 </code></pre>
@@ -202,7 +197,7 @@
 <ul>
 <li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/s-9.7.3-messagenetwork-2016-02-06.pdf">S-9.7.3 Message Network</a></li>
 </ul>
-<h2><a class="header" href="#producerconsumer-events" id="producerconsumer-events">Producer/Consumer Events</a></h2>
+<h2 id="producerconsumer-events"><a class="header" href="#producerconsumer-events">Producer/Consumer Events</a></h2>
 <p>At this point there is another node that starts the Node Alias negotiation. You should be able to spot and read those messages now. We'll ignore them here.</p>
 <p>Part of the required initialization process for a node is for it to publish the list of events that it produces and consumes. Doing so helps with gateways so that bridges can choose which events to send to other segments.</p>
 <p>The next set of messages are this published information. The <code>async_blink</code> node supports two different events--one for 0 and the other for 1. It both produces and consumes these events, so it sends out four messages:</p>
@@ -223,67 +218,49 @@
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                        
-                            <a rel="prev" href="intro_can.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                                    <a rel="prev" href="intro_can.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
                         
-
-                        
-                            <a rel="next" href="intro_ab_events.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                                    <a rel="next" href="intro_ab_events.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         
-
                         <div style="clear: both"></div>
                     </nav>
                 </div>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                
-                    <a href="intro_can.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                    <a rel="prev" href="intro_can.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
                 
-
-                
-                    <a href="intro_ab_events.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                    <a rel="next" href="intro_ab_events.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
-                
-            </nav>
+                            </nav>
 
         </div>
 
         
-
-        
-
         
         
-        
-        <script type="text/javascript">
-            window.playpen_copyable = true;
+                <script type="text/javascript">
+            window.playground_copyable = true;
         </script>
         
-
         
-
-        
-        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+                <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
         
-
         <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
         <script src="book.js" type="text/javascript" charset="utf-8"></script>
 
         <!-- Custom JS scripts -->
         
-
         
-
     </body>
 </html>

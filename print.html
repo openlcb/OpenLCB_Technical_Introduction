@@ -4,8 +4,10 @@
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
         <title>OpenLCB Technical Introduction</title>
-        
-        <meta name="robots" content="noindex" />
+                <meta name="robots" content="noindex" />
+                
+
+        <!-- Custom HTML head -->
         
 
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
@@ -13,17 +15,17 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <link rel="shortcut icon" href="favicon.png">
-        <link rel="stylesheet" href="css/variables.css">
+                <link rel="icon" href="favicon.svg">
+                        <link rel="shortcut icon" href="favicon.png">
+                <link rel="stylesheet" href="css/variables.css">
         <link rel="stylesheet" href="css/general.css">
         <link rel="stylesheet" href="css/chrome.css">
-        <link rel="stylesheet" href="css/print.css" media="print">
-
+                <link rel="stylesheet" href="css/print.css" media="print">
+        
         <!-- Fonts -->
         <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
-        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
-
+                <link rel="stylesheet" href="fonts/fonts.css">
+        
         <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
@@ -31,14 +33,12 @@
 
         <!-- Custom theme stylesheets -->
         
-
-        
-    </head>
+            </head>
     <body>
         <!-- Provide site root to javascript -->
         <script type="text/javascript">
             var path_to_root = "";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "light" : "light";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
 
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
@@ -82,9 +82,8 @@
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <div id="sidebar-scrollbox" class="sidebar-scrollbox">
-                <ol class="chapter"><li class="expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="expanded "><a href="intro_node.html"><strong aria-hidden="true">1.1.</strong> Node</a></li><li class="expanded "><a href="intro_can.html"><strong aria-hidden="true">1.2.</strong> CAN</a></li><li class="expanded "><a href="intro_async_blink.html"><strong aria-hidden="true">1.3.</strong> Async Blink Initialization</a></li><li class="expanded "><a href="intro_ab_events.html"><strong aria-hidden="true">1.4.</strong> Async Blink Events</a></li></ol></li><li class="expanded "><a href="start.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li></ol>
-            </div>
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="intro_node.html"><strong aria-hidden="true">1.1.</strong> Node</a></li><li class="chapter-item expanded "><a href="intro_can.html"><strong aria-hidden="true">1.2.</strong> CAN</a></li><li class="chapter-item expanded "><a href="intro_async_blink.html"><strong aria-hidden="true">1.3.</strong> Async Blink Initialization</a></li><li class="chapter-item expanded "><a href="intro_ab_events.html"><strong aria-hidden="true">1.4.</strong> Async Blink Events</a></li></ol></li><li class="chapter-item expanded "><a href="start.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li></ol>            </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
@@ -92,44 +91,40 @@
 
             <div class="page">
                 
-                <div id="menu-bar" class="menu-bar">
-                    <div id="menu-bar-sticky-container">
-                        <div class="left-buttons">
-                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
-                                <i class="fa fa-bars"></i>
-                            </button>
-                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
-                                <i class="fa fa-paint-brush"></i>
-                            </button>
-                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
-                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
-                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
-                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
-                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
-                            </ul>
-                            
-                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
-                                <i class="fa fa-search"></i>
-                            </button>
-                            
-                        </div>
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                                                <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                                            </div>
 
-                        <h1 class="menu-title">OpenLCB Technical Introduction</h1>
+                    <h1 class="menu-title">OpenLCB Technical Introduction</h1>
 
-                        <div class="right-buttons">
-                            <a href="print.html" title="Print this book" aria-label="Print this book">
-                                <i id="print-button" class="fa fa-print"></i>
-                            </a>
-                            
-                        </div>
+                    <div class="right-buttons">
+                                                <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                                                                        
                     </div>
                 </div>
 
-                
-                <div id="search-wrapper" class="hidden">
+                                <div id="search-wrapper" class="hidden">
                     <form id="searchbar-outer" class="searchbar-outer">
-                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
                     </form>
                     <div id="searchresults-outer" class="searchresults-outer hidden">
                         <div id="searchresults-header" class="searchresults-header"></div>
@@ -138,7 +133,6 @@
                     </div>
                 </div>
                 
-
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
                 <script type="text/javascript">
                     document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
@@ -150,39 +144,39 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#introduction" id="introduction">Introduction</a></h1>
-<h2><a class="header" href="#purpose" id="purpose">Purpose</a></h2>
+                        <h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
+<h2 id="purpose"><a class="header" href="#purpose">Purpose</a></h2>
 <p>The purpose of this book is to help you get up to speed on OpenLCB so you can
 start creating LCC products. There are a lot of concepts and we'll go into
 just enough depth to get you going, without bogging you down with all the
 details and possibilites. The standards and the technical notes have a lot
 more details.</p>
-<h2><a class="header" href="#focus-of-this-book" id="focus-of-this-book">Focus of this book</a></h2>
+<h2 id="focus-of-this-book"><a class="header" href="#focus-of-this-book">Focus of this book</a></h2>
 <p>We're going to focus on how to create board that can be added to an
 LCC bus. Therefore, we're going to focus on solutions that use the CAN
 bus. There are other options, such as WiFi, but we won't cover them in
 this book.</p>
-<h2><a class="header" href="#assumptions" id="assumptions">Assumptions</a></h2>
+<h2 id="assumptions"><a class="header" href="#assumptions">Assumptions</a></h2>
 <p>We're assuming you've used LCC products, and therefore already understand
 concepts like the producer-consumer model. We also assume you've written
 code for microcontrollers and have worked with I/O pins.</p>
-<h2><a class="header" href="#about-names" id="about-names">About Names</a></h2>
+<h2 id="about-names"><a class="header" href="#about-names">About Names</a></h2>
 <p>Let's start with what to some might be confusing—the names LCC vs OpenLCB.
 LCC is a brand name owned by the NMRA. It covers a set of standards that have
 been adopted by the NMRA for Layout Command Control (hence the LCC).</p>
 <p>OpenLCB is the name of the working group that created the standards approved by the NMRA and continues to create new standards. This is a group of dedicated volunteers who are working to fulfill the dream.</p>
 <p>You'll notice that the standards use the name OpenLCB everywhere except for the header at the top of the document. In this book, as in the standards, we'll use the term OpenLCB everywhere except this page.</p>
-<h1><a class="header" href="#node" id="node">Node</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="node"><a class="header" href="#node">Node</a></h1>
 <p>A <em>Node</em> is the basic building block of an OpenLCB network. It's a device that can send and receive OpenLCB messages. We'll describe these messages in more detail in a later chapter.</p>
 <p>Each node has a unique 6-byte ID that must be assigned by the manufacturer. We'll describe in a later chapter how you can get your own set of IDs to use in your products (or DIY boards).</p>
-<h1><a class="header" href="#introduction-to-can" id="introduction-to-can">Introduction to CAN</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="introduction-to-can"><a class="header" href="#introduction-to-can">Introduction to CAN</a></h1>
 <p>Controller Area Network (CAN) is a standard that was initially created in 1981 by Bosch, and has since been used for factory automation and communication networks in cars, to name just a few uses. Today there are hundreds of billions of devices using CAN bus in daily use. </p>
 <p>As a result, there are a number of relatively inexpensive ICs available that fully implement the CAN specifications out of the box. By using CAN controllers and drivers, you do not have to write highly time-sensitive code. Instead, you can focus on implementing support for the messages in the application layers, which is a &quot;relatively&quot; simple task compared with implementing a transport layer.</p>
-<h2><a class="header" href="#can-messages" id="can-messages">CAN Messages</a></h2>
+<h2 id="can-messages"><a class="header" href="#can-messages">CAN Messages</a></h2>
 <p>CAN transmits messages, called <em>frames</em> on the bus. Every other device (node) on the bus can (and must) listen to all of the traffic on the bus. One of the interesting and useful aspects of CAN is how it handles collisions, which is through arbitration.</p>
 <p>CAN frames, in the form used by OpenLCB, consist of a 29-bit header followed by zero or more bytes of data. This is using the <em>extended frame format</em>, also know as CAN 2.0 B.</p>
 <p><img src="images/can_bits.jpg" alt="CAN Format" /></p>
-<h3><a class="header" href="#arbitration" id="arbitration">Arbitration</a></h3>
+<h3 id="arbitration"><a class="header" href="#arbitration">Arbitration</a></h3>
 <p>Arbitration is the process used to ensure that only one message is being transmitted at one time. If two nodes are trying to transmit different messages at the same time, one of those two will pass through the bus unharmed, while the other node will realize it lost the arbitration and attempt to re-transmit right after the first message is completed. This allows nearly 100% utilization of the bandwidth, because the node(s) that lost the arbitration will immediately stop, thereby not corrupting the frame that is being transmitted by the winner of the arbitration. This guarantees forward progress. In contrast, old style Ethernet (and LocoNet, btw.) uses a more complex scheme, where a collision destroys the frame, then nodes have to back off, wait a random period, then attempt to transmit again, thus wasting bandwidth.</p>
 <p>The arbitration phase relies on drivers only pulling the bus low. If two nodes attempt to put different bit values on the bus at the same time, the 0 will always win. Here is a chart that shows how this works:</p>
 <table><thead><tr><th>Node 1</th><th>Node 2</th><th>Bus Value</th></tr></thead><tbody>
@@ -198,9 +192,9 @@ been adopted by the NMRA for Layout Command Control (hence the LCC).</p>
 </blockquote>
 <p>Arbitration uses the 29-bit header value as a priority value to gain access to the bus, where lower values have higher priority. This mechanism provides very high utilization of the bus’ bandwidth because one node will always win a collision and keep transmitting. In contrast, Ethernet uses a more complex scheme where nodes have to back off, wait a random period, then attempt to transmit again, thus wasting bandwidth.</p>
 <p>For arbitration to work sucessfully, each message sent by a node needs to use a unique 29-bit ID. The details for this are handled by the OpenLCB specifications, and are different for different types of messages.</p>
-<h1><a class="header" href="#example-messages" id="example-messages">Example Messages</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="example-messages"><a class="header" href="#example-messages">Example Messages</a></h1>
 <p><a href="https://github.com/bakerstu/openmrn">OpenMRN</a> is a C++ library that implements the entire OpenLCB stack with some OpenLCB extensions. The GIT repository hosting OpenMRN also contains some sample applications that can be run as desktop applications to join an OpenLCB network.</p>
-<h2><a class="header" href="#async-blink" id="async-blink">Async Blink</a></h2>
+<h2 id="async-blink"><a class="header" href="#async-blink">Async Blink</a></h2>
 <p>We won't go into details on how to build or run this application, as that is covered in the OpenMRN documentation. Instead, we'll use it to give you an idea of what actual messages look like.</p>
 <p>The async_blink application can be run without a layout or a CAN OpenLCB network. You can run it entirely on a single computer.</p>
 <p>The async_blink application sends an event every second, alternating between 0 and 1.</p>
@@ -212,18 +206,18 @@ been adopted by the NMRA for Layout Command Control (hence the LCC).</p>
 <p>As an example, the first message <code>:X17050415N;</code> has the ID <code>17050415</code> and no data. The ID and all other data are in HEX. </p>
 <p>There are some log messages in the output that will help us get an idea of what's going on. However, these messages may not make a lot of sense without both understanding the application and a little more about the OpenLCB standards.</p>
 <p>How do you map these messages back into the OpenLCB standards to understand what you're seeing?</p>
-<h2><a class="header" href="#decoded-messages" id="decoded-messages">Decoded Messages</a></h2>
+<h2 id="decoded-messages"><a class="header" href="#decoded-messages">Decoded Messages</a></h2>
 <p>JMRI displays decoded messages. So for this example we connected JMRI to the same TCP/IP OpenLCB bus (all running on the same computer). We'll cover how to use JMRI later. For now we're just going to focus on the messages being sent.</p>
 <p><img src="images/alias_allocation_example.png" alt="Allocate Alias" /></p>
 <p>You'll notice the first set of messages all say &quot;CID.&quot; This is a <em>Check ID</em> frame that is used as part of allocating an <em>alias</em> for the Node ID.</p>
-<h2><a class="header" href="#node-aliases" id="node-aliases">Node Aliases</a></h2>
+<h2 id="node-aliases"><a class="header" href="#node-aliases">Node Aliases</a></h2>
 <p>The 29-bit headers for CAN messages need to be different for messages sent from different nodes to avoid collisions. The 6-byte Node ID is too long to fit into the header and leave room for more information. So instead, OpenLCB defines a 12-bit alias for Node IDs that are used in the header. By including the alias of the sender in most messages, we avoid collisions.</p>
 <p>These aliases are negotiated between the nodes. The CID messages are part of this process. If you're interested in the details, you can find them in section 6 of the specifications (with more information in the technical note):</p>
 <ul>
 <li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/s-9.7.2.1-canframetransfer-2015-02-17.pdf">S-9.7.2.1 CAN Frame Transfer</a></li>
 <li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/tn-9.7.2.1-canframetransfer-2016-02-06.pdf">TN-9.7.2.1 CAN Frame Transfer</a></li>
 </ul>
-<h3><a class="header" href="#check-id-cid" id="check-id-cid">Check ID (CID)</a></h3>
+<h3 id="check-id-cid"><a class="header" href="#check-id-cid">Check ID (CID)</a></h3>
 <p>There is one interesting detail here. The first four messages actually include the full node ID. The async_blink application has the following Node ID defined:</p>
 <pre><code class="language-cpp">const openlcb::NodeID NODE_ID = 0x050101011410ULL;
 </code></pre>
@@ -238,13 +232,13 @@ been adopted by the NMRA for Layout Command Control (hence the LCC).</p>
 <blockquote>
 <p><strong>Note:</strong> The recommended algorithm for generating aliases in case there are collisions is based on a specific pseudo-random number generator that is dependent on the full Node ID.</p>
 </blockquote>
-<h3><a class="header" href="#reserve-id-rid" id="reserve-id-rid">Reserve ID (RID)</a></h3>
+<h3 id="reserve-id-rid"><a class="header" href="#reserve-id-rid">Reserve ID (RID)</a></h3>
 <p>The fifth message, <code>10700415</code>, is the Reserve ID (RID) frame. Since the node didn't get any arguments from other nodes, it's now declaring that it's reserved the alias <code>415</code>.</p>
-<h3><a class="header" href="#alias-map-definition-amd" id="alias-map-definition-amd">Alias Map Definition (AMD)</a></h3>
+<h3 id="alias-map-definition-amd"><a class="header" href="#alias-map-definition-amd">Alias Map Definition (AMD)</a></h3>
 <p>The sixth message reports the full Node ID associated with the alias that was just reserved:</p>
 <pre><code>10701415 05 01 01 01 14 10
 </code></pre>
-<h3><a class="header" href="#initialize-complete" id="initialize-complete">Initialize Complete</a></h3>
+<h3 id="initialize-complete"><a class="header" href="#initialize-complete">Initialize Complete</a></h3>
 <p>The messages above are part of the node's initialization phase. During this time it's not _&quot;<em>reachable</em> on the network. In other words, it won't respond events or messages addressed to it. Once it's negotiated a Node Alias, it sends out an Initialize Complete message telling anyone who cares that it's not online:</p>
 <pre><code>19100415 05 01 01 01 14 10
 </code></pre>
@@ -252,7 +246,7 @@ been adopted by the NMRA for Layout Command Control (hence the LCC).</p>
 <ul>
 <li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/s-9.7.3-messagenetwork-2016-02-06.pdf">S-9.7.3 Message Network</a></li>
 </ul>
-<h2><a class="header" href="#producerconsumer-events" id="producerconsumer-events">Producer/Consumer Events</a></h2>
+<h2 id="producerconsumer-events"><a class="header" href="#producerconsumer-events">Producer/Consumer Events</a></h2>
 <p>At this point there is another node that starts the Node Alias negotiation. You should be able to spot and read those messages now. We'll ignore them here.</p>
 <p>Part of the required initialization process for a node is for it to publish the list of events that it produces and consumes. Doing so helps with gateways so that bridges can choose which events to send to other segments.</p>
 <p>The next set of messages are this published information. The <code>async_blink</code> node supports two different events--one for 0 and the other for 1. It both produces and consumes these events, so it sends out four messages:</p>
@@ -268,8 +262,8 @@ been adopted by the NMRA for Layout Command Control (hence the LCC).</p>
 <li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/s-9.7.3.1-eventtransport-2016-02-06.pdf">S-9.7.3.1 Event Transport</a> section 4.6</li>
 <li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/tn-9.7.3.1-eventtransport-2016-02-06.pdf">TN-9.7.3.1 Event Transport</a></li>
 </ul>
-<h1><a class="header" href="#async-blink-events" id="async-blink-events">Async Blink Events</a></h1>
-<h2><a class="header" href="#blink-events" id="blink-events">Blink Events</a></h2>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="async-blink-events"><a class="header" href="#async-blink-events">Async Blink Events</a></h1>
+<h2 id="blink-events"><a class="header" href="#blink-events">Blink Events</a></h2>
 <p>Let's take a look at the OpenLCB trace again from JMRI:</p>
 <p><img src="images/alias_allocation_example.png" alt="OpenLCB Trace" /></p>
 <p>The last two messages are what we've buildig toward. These are the events that were sent by the <code>async_blink</code> node. It sends one of these events every second, alternating between the &quot;0&quot; and &quot;1&quot; events.</p>
@@ -277,10 +271,10 @@ been adopted by the NMRA for Layout Command Control (hence the LCC).</p>
 <pre><code>195b4415
 </code></pre>
 <p>The right three characters, <code>415</code>, are the Node ID alias that we talked about already. The middle two characters, <code>5b4</code>, you'll find listed in section 4.1 of <a href="https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/s-9.7.3.1-eventtransport-2016-02-06.pdf">S-9.7.3.1</a> as the Producer/Consumer Event Report (PCER). The data for this message is the Event ID.</p>
-<h1><a class="header" href="#getting-started" id="getting-started">Getting Started</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="getting-started"><a class="header" href="#getting-started">Getting Started</a></h1>
 <p>What we've covered so far is a very small part of OpenLCB—there is a lot more. So how do you get started?</p>
 <p>We'll cover prototype solutions here as this is a good way to get started.</p>
-<h2><a class="header" href="#dev-kit" id="dev-kit">Dev Kit</a></h2>
+<h2 id="dev-kit"><a class="header" href="#dev-kit">Dev Kit</a></h2>
 <p>One of the OpenLCB members, Balazs Racz, has put together a <em>daughter</em> board for the Nucleo family of development boards. Here is a photo of the Rev. B version of this developer kit:</p>
 <p><img src="images/devkit.jpg" alt="Dev Kit" /></p>
 <p>It uses all through-hole components for two reasons. First, because it doesn't require experience soldering surface-mounted parts. And second, parhaps more importantly, the components can be replaced easily if you happen to destroy them as part of testing.</p>
@@ -294,7 +288,7 @@ been adopted by the NMRA for Layout Command Control (hence the LCC).</p>
 <li>8 servos</li>
 <li>Expansion ports for daughter boards with additional features like I/O</li>
 </ul>
-<h3><a class="header" href="#supported-nucleo-boards" id="supported-nucleo-boards">Supported Nucleo Boards</a></h3>
+<h3 id="supported-nucleo-boards"><a class="header" href="#supported-nucleo-boards">Supported Nucleo Boards</a></h3>
 <p>This board currently supports the following Nucleo borads (in order of increasing price and features):</p>
 <ul>
 <li>Nucleo-F091RC</li>
@@ -315,7 +309,7 @@ There were some easy choices to reduce the selection. For example I immediately 
 </ul>
 <p>I was looking at a couple of other options for the 144-pin, but failed to identify a meaningful difference that would make it worth the effort. Unfortunately there is a huge cost in supporting the variety, because each series (F0, F1, F2, F3, F4, F7) needs a different middleware package, and each chip has a different number of peripherals and a different pinout of the logical peripherals. When designing the DevKit I needed to find usage of pins that has the matching peripherals on each of the supported Nucleo boards. This proved to be an impossible task. It does not help that PB13 is on the same mechanical pin on each board that can be plugged in, if the F091 anf F767 has a hardware PWM on PB13 but the F303 does not have a hardware PWM there, I cannot use that as a servo output pin. Finding matching SPI and I2C ports were similarly hard.</p>
 </blockquote>
-<h3><a class="header" href="#source-of-boards" id="source-of-boards">Source of Boards</a></h3>
+<h3 id="source-of-boards"><a class="header" href="#source-of-boards">Source of Boards</a></h3>
 <p>Balazs has a blog post on his <a href="https://sites.google.com/site/balazsracz/nucleo-io-board">Nucleo IO Board</a> (later renamed DevKit) that contains more information about the board, how to order the board, and how to order parts for the board. He doesn't sell these, but rather has provided links to where you can have boards made (PCBWay), and purchase the parts (DigiKey).</p>
 
                     </main>
@@ -323,9 +317,7 @@ There were some easy choices to reduce the selection. For example I immediately 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
-
                         
-
                         <div style="clear: both"></div>
                     </nav>
                 </div>
@@ -333,48 +325,33 @@ There were some easy choices to reduce the selection. For example I immediately 
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
-
-                
-            </nav>
+                            </nav>
 
         </div>
 
         
-
-        
-
         
         
-        
-        <script type="text/javascript">
-            window.playpen_copyable = true;
+                <script type="text/javascript">
+            window.playground_copyable = true;
         </script>
         
-
         
-
-        
-        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+                <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
         
-
         <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
         <script src="book.js" type="text/javascript" charset="utf-8"></script>
 
         <!-- Custom JS scripts -->
         
-
-        
-        
-        <script type="text/javascript">
+                        <script type="text/javascript">
         window.addEventListener('load', function() {
             window.setTimeout(window.print, 100);
         });
         </script>
-        
-        
-
+                
     </body>
 </html>
