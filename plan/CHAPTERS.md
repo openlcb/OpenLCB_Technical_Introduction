@@ -1,16 +1,23 @@
 # Book Chapters & Content Status
 
-## Current Table of Contents (from book.toml)
+**Last Updated**: 2025-12-19  
+**Current Status**: Phase 0 & 1 Complete, Phase 2 Ready
+
+## Current Table of Contents (from SUMMARY.md)
 
 ```
-- Chapter 1: "Introduction" (intro.md)
+- Chapter 1: "Introduction" (intro.md) ✅ RESTRUCTURED
   - Node
   - CAN
-  - Async Blink Initialization
-  - Async Blink Events
-- Chapter 2: "Getting Started" (start.md)
-- Chapter 3: "Getting Started with OpenMRN" (openmrn.md) ← ARCHIVE THIS
+  - Node Startup Sequence (with Mermaid diagram)
+  - Events and Run Mode (with Mermaid diagram)
+- Chapter 2: "Getting Started" (start.md) ✅ REWRITTEN
+- Chapter 3: "ESP32 with Arduino & PlatformIO" (esp32-arduino.md) 🔄 SKELETON
 ```
+
+## Archived Content
+- archive/openmrn-stm32.md (Nucleo/STM32 OpenMRN setup)
+- archive/start-nucleo.md (DevKit hardware information)
 
 ---
 
@@ -47,40 +54,47 @@
 
 ## Content Status by Chapter
 
-### Chapter 1: Introduction (intro.md) — RESTRUCTURE NEEDED
+### Chapter 1: Introduction (intro.md) — ✅ RESTRUCTURED
 
-**v0.1 Approach: HIGH-LEVEL OVERVIEW FIRST**
+**v0.1 Approach: HIGH-LEVEL OVERVIEW** (COMPLETED 2025-12-19)
 
-The current intro.md jumps into implementation details (alias negotiation). v0.1 should provide conceptual overview with forward references to future chapters for deep dives.
+The introduction has been restructured from implementation-focused to concept-focused with forward references to future chapters.
 
-**Restructured Flow**:
+**Completed Updates**:
 
-| Section | Current Status | v0.1 Target | Notes |
-|---------|---|---|---|
-| Purpose & Scope | ✅ Complete | ✅ Keep | Why this book, focus on creating LCC products |
-| Node Concept | ✅ Complete | ✅ Keep | Nodes as building blocks, 6-byte unique IDs |
-| **Transport Layers** (NEW) | ⏳ Missing | 🚨 ADD | High-level: CAN vs WiFi/TCP; why both exist; WiFi first in v0.1, CAN later |
-| **Startup Sequence Overview** (RESTRUCTURED) | 🔄 Partial | 🚨 REFACTOR | What happens (CID → RID → AMD → Init Complete) without collision detection details; reference future chapter for how |
-| **Run Mode Overview** (NEW) | ⏳ Missing | 🚨 ADD | Nodes online, producing/consuming events, responding to other nodes |
-| **Multi-Node Participation** (NEW) | ⏳ Missing | 🚨 ADD | What other nodes do when one node starts (listening, responding with info) |
-| **Event Basics** | ✅ Complete | 🔄 Expand | Keep existing; add Mermaid state machine diagram |
-| **Standards References** | ✅ Complete | ✅ Keep | Link to S-9.7.x.x documents for detailed specs |
-| **Forward References** (NEW) | ⏳ Missing | 🚨 ADD | "See Chapter X: Understanding Startup Sequence" for alias negotiation details, etc. |
+| Section | Status | Notes |
+|---------|--------|-------|
+| Purpose & Scope | ✅ Complete | Why this book, focus on creating LCC products |
+| Focus of this book | ✅ Updated | WiFi/TCP first, CAN later approach |
+| Node Concept | ✅ Complete | Nodes as building blocks, 6-byte unique IDs |
+| **Transport Layers** | ✅ Added | CAN vs WiFi/TCP rationale; WiFi first in v0.1 |
+| **Node Startup Sequence** | ✅ Restructured | WHAT happens (CID → RID → AMD → Init Complete) with Mermaid diagram |
+| **Multi-Node Participation** | ✅ Added | Other nodes listen/respond during startup |
+| **Events and Run Mode** | ✅ Restructured | Producer/consumer model with Mermaid event flow diagram |
+| **Standards References** | ✅ Complete | Links to S-9.7.x.x documents |
+| **Forward References** | ✅ Tracked | See plan/FORWARD_REFERENCES.md |
 
-**Key Principle**: Explain WHAT, then point to future chapters for HOW
+**Key Principle Achieved**: Explains WHAT conceptually, points to future chapters for HOW
 
-### Chapter 2: Getting Started (start.md)
+### Chapter 2: Getting Started (start.md) — ✅ REWRITTEN
 
-| Section | Current Status | v0.1 Target | Notes |
-|---------|---|---|---|
-| Overview | ✅ Complete | ✅ Keep | High-level intro to what we're building |
-| Nucleo Hardware | ✅ Complete | 📦 Archive | Move to archive folder; keep reference link |
-| CAN Configuration | ⚠️ Partial | 📦 Archive | Specific to Nucleo/STM32; defer CAN to later chapter |
-| JMRI Monitoring | ✅ Complete (for Nucleo) | 🔄 Update | Generalize to TCP/ESP32 setup; create separate "Monitoring with JMRI (TCP)" section |
-| Custom Applications | ✅ Complete | 📦 Archive | Directory structure is general, but keep with Nucleo docs |
-| **MISSING** | | 🚨 ADD | Updated prerequisites for ESP32 + PlatformIO |
+### Chapter 2: Getting Started (start.md) — ✅ REWRITTEN
 
-### Chapter 3: ESP32 with Arduino & PlatformIO (esp32-arduino.md)
+**Completed Updates** (2025-12-19):
+
+| Section | Status | Notes |
+|---------|--------|-------|
+| What We're Building | ✅ Complete | Overview of button → LED example with WiFi |
+| Why WiFi/TCP First? | ✅ Added | Transport rationale, reinforces Chapter 1 |
+| Platform Choice: ESP32 | ✅ Added | Why ESP32, CAN capability, other platforms mentioned |
+| Prerequisites & Assumptions | ✅ Added | Hardware BOM, knowledge requirements |
+| Development Environment Overview | ✅ Added | PlatformIO, Arduino framework, OpenMRNLite |
+| Monitoring with JMRI (TCP) | ✅ Added | High-level overview, GridConnect protocol |
+| What's Next | ✅ Added | Preview of Chapter 3 |
+| **Nucleo Hardware** | ✅ Archived | Moved to archive/start-nucleo.md |
+| **CAN Configuration** | ✅ Archived | Moved to archive/start-nucleo.md |
+
+### Chapter 3: ESP32 with Arduino & PlatformIO (esp32-arduino.md) — 🔄 SKELETON READY
 
 | Section | Current Status | v0.1 Target | Notes |
 |---|---|---|---|

@@ -2,55 +2,81 @@
 
 ## Current Phase
 
-**Phase**: Planning & Setup  
-**Milestone**: Create planning infrastructure and research summary  
-**Status**: 🔄 In Progress  
+**Phase**: Phase 1 → Phase 2 Transition  
+**Milestone**: Content restructuring complete, ready for example code creation  
+**Status**: ✅ Phase 0 & Phase 1 Complete | 🔄 Phase 2 Ready  
+**Last Updated**: 2025-12-19
 
 ## Completed Items ✅
 
+### Phase 0: Conceptual Restructuring
+- [x] **T0.1**: Restructured intro.md for high-level overview
+  - Updated "Focus of this book" to WiFi/TCP first approach
+  - Added "Transport Layers" section (CAN vs WiFi/TCP rationale)
+  - Rewrote intro_async_blink.md → "Node Startup Sequence" (concept-focused)
+  - Added Mermaid sequence diagram for CID → RID → AMD → Init Complete flow
+  - Rewrote intro_ab_events.md → "Events and Run Mode" 
+  - Added Mermaid event flow diagram (button → LED interaction)
+  - Added "Multi-Node Network Behavior" section
+  - Updated SUMMARY.md chapter titles for clarity
+  - Installed and configured mdbook-mermaid preprocessor
+  - Updated FORWARD_REFERENCES.md tracking
+
+### Phase 1: Content Restructuring & Preparation
+- [x] **T1.1**: Archived Nucleo/STM32 content
+  - Created src/archive/ directory
+  - Moved openmrn.md → archive/openmrn-stm32.md
+  - Removed from SUMMARY.md
+
+- [x] **T1.2**: Created ESP32 chapter skeleton
+  - New file: src/esp32-arduino.md with 8 section outlines
+  - Added to SUMMARY.md as Chapter 3
+
+- [x] **T1.3**: Updated book structure
+  - SUMMARY.md reflects new chapter organization
+  - Book builds successfully with mdbook
+  - Mermaid diagrams render correctly
+
+- [x] **T1.4**: Rewrote Getting Started chapter (NEW)
+  - Archived old start.md → archive/start-nucleo.md
+  - Complete rewrite focused on ESP32/WiFi approach
+  - Added "Why WiFi/TCP First?" section (reinforces transport choice)
+  - Added platform rationale, prerequisites, dev environment overview
+  - Added high-level JMRI monitoring overview
+  - Bridges conceptual Introduction with hands-on ESP32 chapter
+
+### Infrastructure
 - [x] Project vision and architecture decisions documented
-- [x] Planning folder structure created
-- [x] Research completed on:
-  - async_blink location and build system
-  - Arduino/ESP32 OpenMRNLite library capabilities
-  - Documentation gaps in openmrn.md
-  - Diagram opportunities
+- [x] Planning folder structure created (10 planning files)
+- [x] Research completed on async_blink, OpenMRNLite, ESP32, standards
+- [x] Task breakdown (24+ tasks across 5 phases)
+- [x] Diagram requirements mapped (5 diagrams planned)
 
 ## In-Progress Items 🔄
 
-- [ ] Plan folder documentation (README, TASKS, CHAPTERS, RESEARCH, DIAGRAMS, SUB_AGENT_GUIDE)
+None - Phase 1 complete, ready for Phase 2.
 
 ## Upcoming Priority Tasks
 
-### Phase 0: Conceptual Restructuring (NEW - HIGHEST PRIORITY)
-- **T0.1**: Restructure intro.md for high-level overview (instead of jumping into implementation details)
-  - Transport layers (CAN vs WiFi)
-  - Startup sequence overview with multi-node participation
-  - Forward references to future chapters
-  - Add diagrams to clarify concepts
-
-### Phase 1: Content Restructuring (After Phase 0)
-- Archive Nucleo/STM32 content (move openmrn.md to archive/)
-- Create chapter skeleton for "ESP32 with Arduino & PlatformIO"
-- Expand restructured intro.md with Mermaid diagrams
-- Add JMRI + TCP integration guide to start.md
-
-### Phase 2: Example & Documentation
-- Create async_blink_esp32 Arduino sketch with breadboard I/O
-- Create platformio.ini template for ESP32 + OpenMRNLite
-- Document breadboard circuit (button + LED wiring)
-- Add GPIO pin assignment guide
+### Phase 2: Example Code & Hardware Documentation (NEXT)
+- **T2.1**: Create async_blink_esp32 Arduino sketch (button input, LED output, WiFi, events)
+- **T2.2**: Create platformio.ini template for ESP32 + OpenMRNLite
+- **T2.3**: Document breadboard circuit (button + LED wiring, GPIO pins, BOM)
+- **T2.4**: Create detailed JMRI TCP setup guide in esp32-arduino.md
 
 ### Phase 3: Diagrams & Visualization
-- Create Mermaid Node Startup Sequence diagram
-- Create Mermaid Event State Machine diagram
-- (Optional) Create breadboard schematic diagram
+- Mermaid diagrams already complete in Phase 0! ✅
+  - Node Startup Sequence diagram (in intro_async_blink.md)
+  - Event Flow diagram (in intro_ab_events.md)
+- **T3.3**: (Optional) Create breadboard schematic diagram
 
 ### Phase 4: Integration & Testing
-- Verify async_blink_esp32 builds and runs on ESP32
-- Test JMRI connection via TCP
-- Document verification steps and expected output
-- Create troubleshooting guide for common issues
+- **T4.1**: End-to-end testing & verification guide
+- **T4.2**: Create "What's Next" preview section
+
+### Phase 5: Book Build & Release
+- **T5.1**: Final book build & verification
+- **T5.2**: Create release notes / session summary
 
 ## Known Blockers 🚧
 

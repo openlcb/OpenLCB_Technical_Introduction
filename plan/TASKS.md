@@ -75,6 +75,25 @@
 - **Depends On**: T1.1, T1.2
 - **Blocks**: None
 
+### T1.4 - Rewrite Getting Started Chapter for ESP32 Focus
+- **Status**: ✅ Completed
+- **Priority**: HIGH
+- **Effort**: 1.5 hours
+- **Description**:
+  - Archive old `start.md` to `archive/start-nucleo.md` ✅
+  - Complete rewrite of `start.md` with new structure: ✅
+    - What We're Building (button → LED example overview)
+    - Why WiFi/TCP First? (transport rationale, reinforces Chapter 1)
+    - Platform Choice: ESP32 (why ESP32, CAN capability, other platforms)
+    - Prerequisites & Assumptions (hardware BOM, knowledge requirements)
+    - Development Environment Overview (PlatformIO, Arduino, OpenMRNLite)
+    - Monitoring with JMRI (TCP) (high-level overview, GridConnect protocol)
+    - What's Next (preview of Chapter 3)
+  - Bridges conceptual Introduction with hands-on ESP32 chapter ✅
+- **Owner**: Completed 2025-12-19
+- **Depends On**: T1.3
+- **Blocks**: T2.4
+
 ---
 
 ## Phase 2: Example Code & Hardware Documentation
@@ -134,15 +153,16 @@
 - **Depends On**: T1.2
 - **Blocks**: T2.1, T4.1
 
-### T2.4 - Create JMRI TCP Integration Guide
+### T2.4 - Create Detailed JMRI TCP Setup Guide
 - **Status**: ⏳ Not Started
 - **Priority**: HIGH
 - **Effort**: 1.5 hours
 - **Description**:
-  - Add section to `start.md`: "Monitoring with JMRI (TCP)"
-  - Step-by-step JMRI configuration:
+  - Add section to `esp32-arduino.md`: "Verification with JMRI"
+  - Step-by-step JMRI configuration (detailed):
+    - Download/install JMRI
     - New Connection → LCC Interface → GridConnect
-    - TCP settings (localhost:5550 or network IP)
+    - TCP settings (localhost:12021 or ESP32 IP address)
     - Connection verify steps
   - Show expected output: startup messages (CID/RID/AMD/Init Complete)
   - Show event production/consumption in JMRI console

@@ -1,20 +1,22 @@
 # Quick Start: Next Session Workflow
 
+**Last Updated**: 2025-12-19  
+**Current Phase**: Ready for Phase 2 (Example Code & Documentation)
+
 ## For Next Session: Start Here
 
 ### 1. Read These Files (5 minutes)
 In order:
-1. **plan/README.md** - Project vision and architecture
-2. **plan/PROJECT_STATUS.md** - Current phase and blockers
-3. **plan/TASKS.md** - Prioritized work items (pick one)
+1. **plan/PROJECT_STATUS.md** - Current phase and what's been completed
+2. **plan/TASKS.md** - Prioritized work items (T2.x tasks ready)
+3. **plan/00_OVERVIEW.md** - Quick summary of progress
 
 ### 2. Pick Your First Task (1 minute)
-From TASKS.md, choose based on priority and effort:
-- **HIGHEST PRIORITY**: T0.1 (Restructure intro.md for high-level overview) - 2 hours
-- **Easy wins** (30 min): T1.3 (update book.toml)
-- **Foundation** (1-2 hr): T1.1, T1.2 (archive Nucleo, create ESP32 chapter)
-- **Implementation** (2-3 hr): T2.1 (write async_blink_esp32 sketch)
-- **Infrastructure** (45 min): T3.1 (create startup sequence diagram)
+From TASKS.md Phase 2, choose based on priority and effort:
+- **HIGHEST PRIORITY**: T2.1 (Create async_blink_esp32 sketch) - 2-3 hours
+- **Foundation** (1 hr): T2.2 (Create platformio.ini template)
+- **Hardware** (1.5 hr): T2.3 (Document breadboard circuit)
+- **Verification** (1.5 hr): T2.4 (Create JMRI setup guide)
 
 ### 3. Reference Material (As Needed)
 - **plan/FORWARD_REFERENCES.md** - ✨ **NEW**: Tracks forward references to future chapters that need link updates later

@@ -1,45 +1,70 @@
-# Planning Infrastructure Complete ✅
+# Project Progress: Phase 0 & Phase 1 Complete ✅
 
-**Date**: 2025-12-18  
-**Session**: Initial Planning & Setup  
-**Status**: Ready for Next Session
+**Date**: 2025-12-19 (Updated)  
+**Sessions**: Initial Planning (2025-12-18) + Implementation (2025-12-19)  
+**Status**: Ready for Phase 2 (Example Code & Documentation)
 
 ---
 
-## What Was Created
+## What Has Been Completed
 
-### Plan Folder Structure
-```
-plan/
-├── 00_OVERVIEW.md             # This file - executive summary
-├── README.md                  # Project vision, decisions, file guide
-├── QUICK_START.md             # Next session workflow & templates
-├── PROJECT_STATUS.md          # Current phase, blockers, accomplishments
-├── TASKS.md                   # Prioritized work items (24+ tasks)
-├── CHAPTERS.md                # Book outline + content status (RESTRUCTURED)
-├── RESEARCH.md                # Key findings: async_blink, ESP32, OpenMRN, standards
-├── DIAGRAMS.md                # Diagram inventory (5 planned, prioritized)
-├── SUB_AGENT_GUIDE.md         # When/how to use sub-agents (5 tasks defined)
-├── STYLE_GUIDE.md             # Writing style & tone for consistency
-└── FORWARD_REFERENCES.md      # ✨ Track forward references to future chapters
-```
+### Session 1: Planning Infrastructure (2025-12-18)
+- Created comprehensive planning documentation (10 files, ~2,300 lines)
+- Defined project vision, architecture decisions, and v0.1 scope
+- Researched async_blink, OpenMRNLite, ESP32 capabilities
+- Created detailed task breakdown (25 tasks across 5 phases)
+- Mapped diagram requirements and forward references
 
-### Documentation Coverage
+### Session 2: Content Restructuring (2025-12-19)
 
-| File | Purpose | Ready? |
-|------|---------|--------|
-| README.md | Project overview & architecture decisions | ✅ |
-| QUICK_START.md | Next session workflow, templates, troubleshooting | ✅ |
-| PROJECT_STATUS.md | Phase tracking, risks, unknowns (NEW: Phase 0) | ✅ |
-| TASKS.md | 24+ work items across 5 phases (NEW: Phase 0 + T0.1) | ✅ |
-| CHAPTERS.md | Book structure + content status (RESTRUCTURED intro.md approach) | ✅ |
-| RESEARCH.md | Comprehensive findings + handoff notes | ✅ |
-| DIAGRAMS.md | 5 planned diagrams with requirements & templates | ✅ |
-| SUB_AGENT_GUIDE.md | 5 sub-agent research tasks with prompt templates | ✅ |
-| STYLE_GUIDE.md | Writing style, tone, terminology consistency | ✅ |
-| FORWARD_REFERENCES.md | ✨ **NEW**: Track "See Chapter X" links for updates | ✅ |
+**Phase 0: Conceptual Restructuring (T0.1) ✅**
+- Restructured Introduction chapters from implementation-focused to concept-focused
+- Updated intro.md with "Transport Layers" section (CAN vs WiFi/TCP rationale)
+- Completely rewrote intro_async_blink.md → "Node Startup Sequence" with Mermaid diagram
+- Completely rewrote intro_ab_events.md → "Events and Run Mode" with Mermaid diagram
+- Added "Multi-Node Network Behavior" explanations
+- Installed and configured mdbook-mermaid preprocessor
+- Updated SUMMARY.md chapter titles for clarity
+- Updated FORWARD_REFERENCES.md tracking
 
-**Total Planning Documentation**: ~2,300 lines across 10 files
+**Phase 1: Content Restructuring (T1.1-T1.4) ✅**
+- **T1.1**: Archived Nucleo/STM32 content (openmrn.md → archive/openmrn-stm32.md)
+- **T1.2**: Created ESP32 chapter skeleton (esp32-arduino.md with 8 sections)
+- **T1.3**: Updated SUMMARY.md, verified book builds, configured Mermaid
+- **T1.4**: Completely rewrote Getting Started chapter (start.md)
+  - Archived old Nucleo content → archive/start-nucleo.md
+  - New structure: What We're Building, Why WiFi/TCP, Platform Choice, Prerequisites, Dev Environment, JMRI Overview, What's Next
+
+**Infrastructure Improvements:**
+- mdbook-mermaid installed and working
+- 2 Mermaid diagrams rendering successfully (startup sequence, event flow)
+- Book builds cleanly with new structure
+- Forward reference tracking in place
+
+---
+
+## Current Book Structure
+
+### Completed Chapters
+- **Chapter 1: Introduction** ✅ Concept-focused with Mermaid diagrams
+  - Node
+  - CAN
+  - Node Startup Sequence (with sequence diagram)
+  - Events and Run Mode (with event flow diagram)
+- **Chapter 2: Getting Started** ✅ ESP32/WiFi-focused
+  - What We're Building
+  - Why WiFi/TCP First?
+  - Platform Choice: ESP32
+  - Prerequisites & Assumptions
+  - Development Environment Overview
+  - Monitoring with JMRI (TCP)
+  - What's Next
+- **Chapter 3: ESP32 with Arduino & PlatformIO** 🔄 Skeleton created, content pending
+  - 8 section outlines ready for Phase 2 implementation
+
+### Archived Content
+- archive/openmrn-stm32.md (Nucleo/STM32 setup)
+- archive/start-nucleo.md (DevKit hardware information)
 
 ---
 
@@ -58,29 +83,71 @@ plan/
 
 ## Next Session: Recommended Starting Point
 
-### Option 1: Content Restructuring (Fast)
-**Tasks**: T1.1, T1.2, T1.3 (2-3 hours)
-- Archive Nucleo/STM32 content
-- Create ESP32 chapter skeleton
-- Update book.toml TOC
-- **Result**: Clean slate ready for implementation
+**Phase 2 is ready to begin!** All conceptual restructuring and chapter skeletons are complete.
 
-### Option 2: Diagram Creation (Medium)
-**Tasks**: T3.1, T3.2 (1.5 hours)
-- Create Node Startup Sequence (Mermaid)
-- Create Event State Machine (Mermaid)
-- **Result**: Visual foundation for explaining concepts
+### Recommended Approach: Fill in ESP32 Chapter Content
 
-### Option 3: Research + Implementation (Long)
-**Tasks**: T2.1 + Sub-Agent Research (3-4 hours)
-- Launch SA3 (OpenMRNLite API research)
-- Write async_blink_esp32.ino sketch
-- **Result**: Working example code
+**Tasks**: T2.1, T2.2, T2.3, T2.4 (~6-8 hours total, can be done across multiple sessions)
 
-### Recommended Sequence
-1. **Start with Option 1** (restructuring) - unblocks everything else
-2. **Then Option 2** (diagrams) - improves content quality
-3. **Then Option 3** (examples) - brings it to life
+**T2.1 - Create async_blink_esp32 Arduino Sketch** (2-3 hours)
+- Write complete .ino sketch with WiFi, button input, LED output
+- Use OpenMRNLite/examples/ESP32/ as reference (locally available)
+- Include inline comments explaining startup and event handling
+- Test on actual ESP32 hardware (if available)
+- **Result**: Working example code ready to document
+
+**T2.2 - Create PlatformIO Configuration** (1 hour)
+- Write platformio.ini template for ESP32
+- Document library installation options
+- Add to esp32-arduino.md with installation steps
+- **Result**: Readers can build the example immediately
+
+**T2.3 - Document Hardware Setup** (1.5 hours)
+- GPIO pin assignments, breadboard wiring diagram
+- BOM (bill of materials)
+- Create Mermaid or ASCII schematic
+- Add to esp32-arduino.md
+- **Result**: Complete hardware assembly guide
+
+**T2.4 - Create JMRI Setup Guide** (1.5 hours)
+- Detailed JMRI installation and configuration steps
+- Phase 0 & Phase 1 complete (conceptual restructuring)  
+✅ Introduction chapter restructured with Mermaid diagrams  
+✅ Getting Started chapter rewritten for ESP32/WiFi  
+✅ ESP32 chapter skeleton created and ready for content  
+✅ Book builds successfully with mdbook-mermaid support  
+✅ Forward references tracked for future updates  
+✅ All planning documentation current and accurate  
+✅ Task tracking updated (TASKS.md, PROJECT_STATUS.md)  
+
+---
+
+## Files Completed This Session
+
+| File | Status | Description |
+|------|--------|-------------|
+| src/intro.md | ✅ Updated | Added "Transport Layers" section |
+| src/intro_async_blink.md | ✅ Rewritten | "Node Startup Sequence" with Mermaid diagram |
+| src/intro_ab_events.md | ✅ Rewritten | "Events and Run Mode" with Mermaid diagram |
+| src/start.md | ✅ Rewritten | Complete ESP32/WiFi-focused rewrite |
+| src/esp32-arduino.md | ✅ Created | Skeleton with 8 section outlines |
+| src/archive/openmrn-stm32.md | ✅ Archived | Old OpenMRN/Nucleo content |
+| src/archive/start-nucleo.md | ✅ Archived | Old DevKit hardware content |
+| src/SUMMARY.md | ✅ Updated | New chapter titles and structure |
+| book.toml | ✅ Updated | mdbook-mermaid configuration |
+| plan/TASKS.md | ✅ Updated | Added T1.4, updated T2.4 scope |
+| plan/PROJECT_STATUS.md | ✅ Updated | Phase 0 & 1 completion documented |
+| plan/FORWARD_REFERENCES.md | ✅ Updated | Current forward references tracked |
+
+---
+
+## Files Pending (Next Session)
+
+| File | Task | Purpose |
+|------|------|---------|
+| async_blink_esp32.ino | T2.1 | Working example sketch |
+| platformio.ini | T2.2 | Build configuration template |
+| src/esp32-arduino.md | T2.2, T2.3, T2.4 | Fill in all 8 sections with content2 (Phases 3-5)
 
 ---
 
@@ -131,32 +198,31 @@ These will be created/edited in future sessions:
 - plan/PROJECT_STATUS.md - End of session summary
 - plan/RESEARCH.md - Add new discoveries
 - plan/DIAGRAMS.md - Update diagram status
+Session 1 | Session 2 | Total |
+|----------|-----------|-----------|-------|
+| Planning & research | ~38,000 tokens<br/>65 min | — | ~38,000<br/>65 min |
+| Content restructuring | — | ~37,000 tokens<br/>90 min | ~37,000<br/>90 min |
+| **Session Totals** | **~38,000**<br/>**65 min** | **~37,000**<br/>**90 min** | **~75,000**<br/>**155 min** |
+
+**For Next Session**: Expect 2-3 hours per major task (T2.1-T2.4), can be split across multiple sessions
 
 ---
 
-## Success Indicators for v0.1
+## Thank You & Next Steps
 
-By end of project, you'll have:
+✅ Phase 0 & Phase 1 complete - book foundation is solid  
+✅ All conceptual content restructured and improved  
+✅ 2 Mermaid diagrams created and rendering  
+✅ ESP32 chapter ready for implementation content  
+✅ Task tracking and planning docs current  
 
-📖 **Book**
-- 3 core chapters (Introduction, Getting Started, ESP32 + Arduino)
-- 2+ Mermaid diagrams explaining concepts
-- 1 working example (async_blink_esp32)
-- Clear path to future advanced topics
-
-💻 **Code**
-- async_blink_esp32.ino (button + LED, WiFi, JMRI)
-- platformio.ini template (ready to use)
-- Clear comments explaining node startup and event flow
-
-📚 **Documentation**
-- Hardware setup guide (breadboard wiring)
-- Build & deploy instructions
-- JMRI verification steps
-- Troubleshooting section
-- "What's Next" preview
+**Next Session**: Start with Phase 2 (T2.1-T2.4) to create example code and fill in ESP32 chapter content!
 
 ---
+
+**Last Updated**: 2025-12-19  
+**Ready For**: Phase 2 Implementation  
+**Reference**: See plan/PROJECT_STATUS.md for current phase details
 
 ## Known Limitations of v0.1
 

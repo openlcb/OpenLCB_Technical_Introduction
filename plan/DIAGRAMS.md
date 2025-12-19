@@ -4,11 +4,11 @@
 
 ### D1: Node Startup Sequence (Mermaid Sequence Diagram) ⭐ HIGH PRIORITY
 
-**Status**: ⏳ Not Started  
-**Location**: Insert into `intro.md` after "Async Blink Initialization" section  
-**Also reference from**: `esp32-arduino.md` "Verification & Troubleshooting" section  
+**Status**: ✅ Completed (2025-12-19)  
+**Location**: `intro_async_blink.md` "Node Startup Sequence" section  
+**Also referenced from**: `intro_ab_events.md` conceptually  
 
-**Content**: Show the 4-step startup sequence
+**Content**: Shows the 4-step startup sequence (CID → RID → AMD → Init Complete)
 ```
 Participant: ESP32 Node
 Participant: CAN Bus / Network
@@ -67,13 +67,13 @@ Example:
 
 ---
 
-### D3: async_blink_esp32 Event State Machine (Mermaid State Diagram) ⭐ HIGH PRIORITY
+### D3: async_blink Event Flow (Mermaid Sequence Diagram) ⭐ HIGH PRIORITY
 
-**Status**: ⏳ Not Started  
-**Location**: Insert into `esp32-arduino.md` after async_blink_esp32 code block  
-**Purpose**: Show how events are produced/consumed in the application
+**Status**: ✅ Completed (2025-12-19)  
+**Location**: `intro_ab_events.md` "Events and Run Mode" section  
+**Purpose**: Shows how events flow between nodes (button → LED interaction)
 
-**Content**: Simple state machine
+**Content**: Simple sequence diagram showing button press → event production → LED consumption
 ```
 [Idle]
   ├─ Button pressed
