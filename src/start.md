@@ -142,18 +142,71 @@ JMRI (Java Model Railroad Interface) is an essential tool for working with OpenL
 
 Chapter 3 includes detailed JMRI setup and verification steps. You'll see your first OpenLCB messages within minutes of uploading code.
 
+## Network Architecture: Hubs and Nodes
+
+Now that we've introduced JMRI, it's important to understand the architecture that makes this all work. An OpenLCB network consists of two types of participants working together:
+
+**Nodes** are devices that produce and consume events—like your ESP32 with a button and LED. Each node has a unique 6-byte identifier and announces itself when joining the network.
+
+**Hubs** are central coordinators that route messages between nodes. In a WiFi/TCP network, the hub is a TCP server listening on port 12021. When JMRI or other tools connect to the hub, they can see all network traffic and send commands to any node.
+
+The clever part: your ESP32 can be **both a node and a hub simultaneously**. It runs the OpenLCB protocol stack (making it a node), and it also runs a TCP Hub service (making it a network coordinator). This is exactly what we'll do in Chapter 3—create a single device that acts as both.
+
+Here's how the architecture works:
+
+```mermaid
+graph TB
+    subgraph ESP32["ESP32 Device"]
+        Node["OpenLCB Node<br/>(produces/consumes events)"]
+        Hub["TCP Hub<br/>(port 12021)"]
+        Node ---|message routing| Hub
+    end
+    
+    JMRI["JMRI Monitor<br/>(TCP Client)"]
+    Node2["Other ESP32 Node<br/>(optional future)"]
+    CAN["CAN Bus<br/>(optional future)"]
+    
+    JMRI ---|TCP connection| Hub
+    Node2 ---|TCP connection| Hub
+    CAN -.->|CAN transceiver| Hub
+    
+    style ESP32 fill:#e1f5ff
+    style Node fill:#fff9c4
+    style Hub fill:#f3e5f5
+    style CAN fill:#eeeeee
+    style Node2 fill:#eeeeee
+```
+
+**What You See in This Architecture**:
+
+- **ESP32 Node**: Produces events (button presses) and consumes events (LED changes). It announces itself to the network during startup with the CID/RID/AMD sequence.
+- **TCP Hub**: Listens on port 12021, accepts connections from JMRI and other TCP clients, and forwards all OpenLCB messages between connected participants.
+- **JMRI Monitor**: Connects as a TCP client to see all network traffic. Can send test events to your node and observe responses.
+- **Future Expansion**: You can add more ESP32 nodes (all connecting to the same hub), or add CAN hardware to bridge between TCP and CAN participants.
+
+**Why This Design?** OpenMRNLite makes it easy to add a TCP Hub service to any node. The hub needs just a few lines of code—we'll see this in Chapter 3. This approach is perfect for learning because:
+
+1. **No extra hardware** - The hub runs on the same ESP32 as your node
+2. **Scalable** - Add more nodes just by connecting them to port 12021
+3. **Transport-agnostic** - Whether using TCP, CAN, or both, the message format stays the same
+4. **Future-proof** - Later chapters will add CAN hardware and integrate it seamlessly with the existing TCP hub
+
+We're starting with **TCP because it requires no special hardware**. In later chapters, we'll add CAN transceivers to support traditional LCC installations—but the hub concept remains identical.
+
 ## What's Next
 
 Now that you understand the platform choices and tools, Chapter 3 will guide you through:
 
 1. **Installing PlatformIO** - Step-by-step setup in VS Code
-2. **Hardware Assembly** - Breadboard wiring for button and LED
+2. **Installing OpenMRNLite** - Adding the library to your project
 3. **Building async_blink_esp32** - Complete walkthrough of the example code
 4. **Deploying to ESP32** - Upload and run your first OpenLCB node
-5. **Verification with JMRI** - See your node join the network and exchange events
+5. **Verification with JMRI** - See your node join the network and exchange events over WiFi
 6. **Troubleshooting** - Common issues and solutions
 
 By the end of Chapter 3, you'll have a working OpenLCB node that you built yourself. You'll understand the code, see the messages, and be ready to create your own custom nodes.
+
+Chapter 4 will then cover adding physical buttons and LEDs to interact with the real world.
 
 Let's get started!
 

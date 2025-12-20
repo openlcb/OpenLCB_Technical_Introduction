@@ -94,18 +94,24 @@ The introduction has been restructured from implementation-focused to concept-fo
 | **Nucleo Hardware** | ✅ Archived | Moved to archive/start-nucleo.md |
 | **CAN Configuration** | ✅ Archived | Moved to archive/start-nucleo.md |
 
-### Chapter 3: ESP32 with Arduino & PlatformIO (esp32-arduino.md) — 🔄 SKELETON READY
+### Chapter 3: ESP32 with Arduino & PlatformIO (esp32-arduino.md) — 🔄 95% COMPLETE (WiFi-Only Focus)
 
 | Section | Current Status | v0.1 Target | Notes |
 |---|---|---|---|
-| PlatformIO Installation | ⏳ New | 🔄 Write | Step-by-step setup guide |
-| ESP32 Board Selection | ⏳ New | 🔄 Write | Recommended boards (ESP32 DevKit v1, etc.) |
-| Library Installation | ⏳ New | 🔄 Write | OpenMRNLite via Arduino Library Manager or source |
-| Hardware Setup | ⏳ New | 🔄 Write | GPIO pins, button/LED circuit, breadboard layout, BOM, wiring diagram |
-| Building async_blink_esp32 | ⏳ New | 🔄 Write | platformio.ini template, project structure, build commands |
-| Deploying to ESP32 | ⏳ New | 🔄 Write | Serial port selection, upload process, debugging output |
-| Verification & Troubleshooting | ⏳ New | 🔄 Write | Expected startup messages, event verification, common issues |
-| What's Next | ⏳ New | 🔄 Write | Preview CAN hardware, advanced events, memory config |
+| Overview | ✅ Complete | ✅ Done | Software-only + optional hardware structure |
+| PlatformIO Installation | ✅ Complete | ✅ Done | Step-by-step setup guide |
+| ESP32 Board Selection | ✅ Complete | ✅ Done | Recommended boards (ESP32 DevKit v1, etc.) |
+| Library Installation | ✅ Complete | ✅ Done | OpenMRNLite via Arduino Library Manager or source |
+| Creating async_blink_esp32 | ✅ Complete | ✅ Done | Full code with inline comments, tested & validated |
+| Code Walkthrough | ✅ Complete | ✅ Done | Detailed explanation of each section (WiFi, OpenMRN, TCP) |
+| Building & Uploading | ✅ Complete | ✅ Done | PlatformIO build and firmware upload steps |
+| Serial Monitor Verification | ✅ Complete | ✅ Done | Expected output, verification steps, troubleshooting |
+| JMRI Configuration | ✅ Complete | ✅ Done | TCP connection setup, message monitoring, traffic interpretation |
+| Physical Hardware Section | ⏳ Moving to Ch4 | 🔄 Deferred | Moving to gpio-hardware.md (Chapter 4, future release) |
+| Troubleshooting | ✅ Complete | ✅ Done | Library, USB detection, WiFi, JMRI issues |
+| What's Next | ✅ Complete | ✅ Done | References Chapter 4 (Physical I/O) for future hardware integration |
+
+**Status Summary**: Chapter 3 is now focused purely on WiFi async blink (Sections 1-9). Only remaining task is T2.3: move incomplete "Physical Hardware (Optional)" section to Chapter 4 (gpio-hardware.md).
 
 ---
 

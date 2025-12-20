@@ -115,77 +115,77 @@
 - **Blocks**: T2.1, T2.2
 
 ### T2.1 - Create async_blink_esp32 Arduino Sketch
-- **Status**: ⏳ Not Started
+- **Status**: ✅ COMPLETED
 - **Priority**: HIGH
 - **Effort**: 2-3 hours
 - **Description**:
   - Create `async_blink_esp32.ino` sketch featuring:
-    - WiFi connection setup (SSID/password hardcoded for v1)
-    - OpenMRNLite SimpleStack with TCP transport
-    - GPIO button input (detect press, produce event)
-    - GPIO LED output (consume event, toggle LED)
-    - Serial debug output showing startup and events
-    - Two fixed event IDs (one for button, one for LED)
-  - Include detailed inline comments explaining startup sequence and event handling
-  - **NEW**: Use `OpenMRNLite/examples/ESP32/` as reference (now locally available!)
-  - Test on actual ESP32 hardware
-- **Owner**: Next session (sub-agent research SA3 now OPTIONAL)
-- **Depends On**: T2.0
+    - WiFi connection setup (SSID/password hardcoded for v1) ✅
+    - OpenMRNLite SimpleStack with TCP transport ✅
+    - GPIO button input (detect press, produce event) ✅
+    - GPIO LED output (consume event, toggle LED) ✅
+    - Serial debug output showing startup and events ✅
+    - Two fixed event IDs (one for button, one for LED) ✅
+  - Include detailed inline comments explaining startup sequence and event handling ✅
+  - **NEW**: Use `OpenMRNLite/examples/ESP32/` as reference (now locally available!) ✅
+  - Test on actual ESP32 hardware ✅ VALIDATED
+- **Owner**: Completed 2025-12-20
+- **Depends On**: T2.0 ✅
 - **Blocks**: T2.3, T4.1
 
 ### T2.2 - Create PlatformIO Configuration Template
-- **Status**: ⏳ Not Started
+- **Status**: ✅ COMPLETED
 - **Priority**: HIGH
 - **Effort**: 1 hour
 - **Description**:
   - Create `platformio.ini` template with:
-    - ESP32 board selection (e.g., esp32doit-devkit-v1)
-    - Arduino framework
-    - OpenMRNLite library dependency (per README: use Library Manager or GitHub source)
-    - Build flags for WiFi + TCP
-    - Serial monitor configuration (baud rate, port auto-detection)
-    - Upload speed and protocol settings
-  - Include inline comments for customization
-  - Document required edits (WiFi SSID, password)
-  - Document library installation options (Arduino Library Manager, GitHub ZIP, or local source)
+    - ESP32 board selection (e.g., esp32doit-devkit-v1) ✅
+    - Arduino framework ✅
+    - OpenMRNLite library dependency ✅
+    - Build flags for WiFi + TCP ✅
+    - Serial monitor configuration ✅
+    - Upload speed and protocol settings ✅
+  - Working example in async_blink_esp32 project, tested and validated on hardware ✅
+- **Owner**: Completed 2025-12-20
+- **Depends On**: T2.0 ✅
+- **Blocks**: T4.1
   - Include in `esp32-arduino.md` as code block + downloadable file
 - **Owner**: Next session
 - **Depends On**: T2.0
 - **Blocks**: T4.1
 
-### T2.3 - Document Breadboard Circuit (Button + LED)
-- **Status**: ⏳ Not Started
-- **Priority**: HIGH
-- **Effort**: 1.5 hours
+### T2.3 - Move Physical I/O Content to Chapter 4 (gpio-hardware.md)
+- **Status**: ⏳ PENDING
+- **Priority**: MEDIUM (defers hardware to v0.2, refocuses Chapter 3 on WiFi-only)
+- **Effort**: 30 minutes
 - **Description**:
-  - Create section in `esp32-arduino.md`: "Hardware Setup"
-  - GPIO pin assignment (recommend safe, accessible pins)
-  - Button wiring: GPIO pin → Button → GND (with pull-up config)
-  - LED wiring: GPIO pin → Resistor (220Ω) → LED → GND
-  - BOM: ESP32, breadboard, tactile button, LED, resistors, jumpers
-  - Create Mermaid diagram or ASCII schematic showing connections
-  - Include photo reference or detailed text description
+  - Remove 'Adding Physical Hardware (Optional)' section from esp32-arduino.md ✓ Identified
+    - GPIO Pin Assignment (GPIO 12 button, GPIO 13 LED) → Move to gpio-hardware.md
+    - Bill of Materials (breadboard, button, LED, resistor, jumpers) → Move to gpio-hardware.md
+  - Update gpio-hardware.md with moved content
+  - Modify esp32-arduino.md 'What's Next' section to reference Chapter 4 for hardware integration
+  - **Result**: Chapter 3 focused purely on WiFi async blink (no hardware setup needed)
 - **Owner**: Next session
-- **Depends On**: T1.2
-- **Blocks**: T2.1, T4.1
+- **Depends On**: T2.1 ✅
+- **Blocks**: Chapter 4 completion
 
 ### T2.4 - Create Detailed JMRI TCP Setup Guide
-- **Status**: ⏳ Not Started
+- **Status**: ✅ COMPLETED
 - **Priority**: HIGH
 - **Effort**: 1.5 hours
 - **Description**:
-  - Add section to `esp32-arduino.md`: "Verification with JMRI"
-  - Step-by-step JMRI configuration (detailed):
+  - Add section to `esp32-arduino.md`: "Verification with JMRI" ✅
+  - Step-by-step JMRI configuration (detailed): ✅
     - Download/install JMRI
     - New Connection → LCC Interface → GridConnect
     - TCP settings (localhost:12021 or ESP32 IP address)
     - Connection verify steps
-  - Show expected output: startup messages (CID/RID/AMD/Init Complete)
-  - Show event production/consumption in JMRI console
-  - Troubleshooting: connection refused, no messages, etc.
-  - Include sample console output screenshot/transcript
-- **Owner**: Next session
-- **Depends On**: T2.1
+  - Show expected output: startup messages (CID/RID/AMD/Init Complete) ✅
+  - Show event production/consumption in JMRI console ✅
+  - Troubleshooting: connection refused, no messages, etc. ✅
+  - Include sample console output screenshot/transcript ✅
+- **Owner**: Completed 2025-12-19
+- **Depends On**: T2.1 ✅
 - **Blocks**: T4.1
 
 ---

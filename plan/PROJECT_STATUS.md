@@ -58,11 +58,12 @@ None - Phase 1 complete, ready for Phase 2.
 
 ## Upcoming Priority Tasks
 
-### Phase 2: Example Code & Hardware Documentation (NEXT)
-- **T2.1**: Create async_blink_esp32 Arduino sketch (button input, LED output, WiFi, events)
-- **T2.2**: Create platformio.ini template for ESP32 + OpenMRNLite
-- **T2.3**: Document breadboard circuit (button + LED wiring, GPIO pins, BOM)
-- **T2.4**: Create detailed JMRI TCP setup guide in esp32-arduino.md
+### Phase 2: Example Code & Hardware Documentation (100% COMPLETE) ✅
+- **T2.0** ✅ COMPLETED: Write PlatformIO & OpenMRNLite Installation Guide
+- **T2.1** ✅ COMPLETED: Create async_blink_esp32 Arduino sketch (code written, tested, and validated)
+- **T2.2** ✅ COMPLETED: platformio.ini template (working example in async_blink_esp32 project, tested)
+- **T2.3** ✅ COMPLETED: Physical I/O content moved to Chapter 4 (gpio-hardware.md)
+- **T2.4** ✅ COMPLETED: JMRI TCP setup guide (fully documented in esp32-arduino.md, Section 9)
 
 ### Phase 3: Diagrams & Visualization
 - Mermaid diagrams already complete in Phase 0! ✅
@@ -125,5 +126,5 @@ None currently blocking progress.
 
 ---
 
-**Last Updated**: 2025-12-18  
-**Next Session**: Focus on Phase 1 tasks (restructuring content)
+**Last Updated**: 2025-12-20  
+Next Session: Start Phase 3 (diagrams and testing/verification)

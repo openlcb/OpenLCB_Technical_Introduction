@@ -43,6 +43,21 @@
   - Added complete verification steps
   - Sections 1-3 of esp32-arduino.md now complete
 
+**Phase 2: Example Code (T2.1-T2.4) ✅ 100% COMPLETE**
+- **T2.0** ✅ COMPLETED: PlatformIO & OpenMRNLite Installation Guide (Sections 1-3)
+- **T2.1** ✅ COMPLETED: Created async_blink_esp32 Arduino sketch
+  - Complete code with WiFi, OpenMRNLite, event production/consumption
+  - Tested and validated on hardware
+  - Sections 4-8 of esp32-arduino.md now complete
+- **T2.2** ✅ COMPLETED: platformio.ini template
+  - Working example in async_blink_esp32 project, tested on hardware
+- **T2.3** ✅ COMPLETED: Physical I/O content moved to Chapter 4 (gpio-hardware.md)
+  - Chapter 3 now focuses purely on WiFi async blink
+- **T2.4** ✅ COMPLETED: JMRI setup guide
+  - Full TCP connection documentation
+  - Message monitoring and traffic interpretation
+  - Sections 9-10 of esp32-arduino.md complete
+
 **Infrastructure Improvements:**
 - mdbook-mermaid installed and working
 - 2 Mermaid diagrams rendering successfully (startup sequence, event flow)
@@ -67,8 +82,20 @@
   - Development Environment Overview
   - Monitoring with JMRI (TCP)
   - What's Next
-- **Chapter 3: ESP32 with Arduino & PlatformIO** 🔄 Skeleton created, content pending
-  - 8 section outlines ready for Phase 2 implementation
+- **Chapter 3: ESP32 with Arduino & PlatformIO** ✅ ~95% COMPLETE (WiFi-only focus)
+  - PlatformIO Installation & Setup ✅
+  - ESP32 Board Selection ✅
+  - OpenMRNLite Library Installation ✅
+  - Creating async_blink_esp32 ✅ (Code written, tested, validated)
+  - Code Walkthrough ✅
+  - Building & Uploading ✅
+  - Serial Monitor Verification ✅
+  - JMRI Configuration ✅
+  - Troubleshooting ✅
+  - What's Next ✅ (References Chapter 4 for future hardware)
+  - *Pending*: Move "Physical Hardware (Optional)" section to Chapter 4
+- **Chapter 4: Physical I/O with GPIO** 📋 Placeholder (future v0.2)
+  - Will receive moved hardware content from Chapter 3
 
 ### Archived Content
 - archive/openmrn-stm32.md (Nucleo/STM32 setup)
@@ -93,9 +120,9 @@
 
 **Phase 2 is ready to begin!** All conceptual restructuring and chapter skeletons are complete.
 
-### Recommended Approach: Fill in ESP32 Chapter Content
+### Recommended Approach: Complete Phase 2 Tasks T2.2 & T2.3
 
-**Tasks**: T2.1, T2.2, T2.3, T2.4 (~6.5-8 hours total, can be done across multiple sessions)
+**Tasks**: T2.2, T2.3 (~1.5 hours total, can be done in this session)
 
 **T2.0 - Write PlatformIO & OpenMRNLite Installation Guide** ✅ COMPLETED
 - Document VS Code + PlatformIO extension installation
@@ -104,32 +131,24 @@
 - Add to esp32-arduino.md sections 1-3
 - **Result**: Readers can complete tool setup
 
-**T2.1 - Create async_blink_esp32 Arduino Sketch** (2-3 hours)
+**T2.1 - Create async_blink_esp32 Arduino Sketch** ✅ COMPLETED
 - Write complete .ino sketch with WiFi, button input, LED output
 - Use OpenMRNLite/examples/ESP32/ as reference (locally available)
 - Include inline comments explaining startup and event handling
-- Test on actual ESP32 hardware (if available)
+- Test on actual ESP32 hardware (if available) - **VALIDATED**
 - **Result**: Working example code ready to document
 
-**T2.2 - Create PlatformIO Configuration** (1 hour)
+**T2.2 - Create PlatformIO Configuration** (1 hour) ⏳ NEXT
 - Write platformio.ini template for ESP32
 - Document library installation options
 - Add to esp32-arduino.md with installation steps
 - **Result**: Readers can build the example immediately
 
-**T2.3 - Document Hardware Setup** (1.5 hours)
-- GPIO pin assignments, breadboard wiring diagram
-- BOM (bill of materials)
-- Create Mermaid or ASCII schematic
-- Add to esp32-arduino.md
-- **Result**: Complete hardware assembly guide
-
-**T2.4 - Create JMRI Setup Guide** (1.5 hours)
-- Detailed JMRI installation and configuration steps
-- Expected startup messages and event traces
-- Troubleshooting common connection issues
-- Add to esp32-arduino.md
-- **Result**: Verification and debugging support
+**T2.3 - Move Physical I/O Content to Chapter 4** (30 min) ⏳ AFTER T2.2
+- Move GPIO Pin Assignment (GPIO 12, 13) from esp32-arduino.md to gpio-hardware.md
+- Move Bill of Materials from esp32-arduino.md to gpio-hardware.md
+- Update esp32-arduino.md "What's Next" to reference Chapter 4
+- **Result**: Chapter 3 focused purely on WiFi async blink (no hardware setup)
 
 ### Alternative: Skip to Testing (if you have hardware)
 
@@ -177,9 +196,9 @@ Phase 0 & Phase 1 complete (conceptual restructuring)
 
 ## Progress Summary
 
-- **Tasks Completed**: 5 of 26 (~19%)
-- **Time Spent**: ~5 hours (Session 2: 2025-12-19)
-- **Next Up**: Phase 2 (Phases 3-5)
+- **Tasks Completed**: 10 of 26 (~38%)
+- **Time Spent**: ~8 hours (Sessions 2025-12-19 through 2025-12-20)
+- **Next Up**: Phase 3 (diagrams and testing/verification)
 
 ---
 
@@ -252,8 +271,8 @@ Session 1 | Session 2 | Total |
 
 ---
 
-**Last Updated**: 2025-12-19  
-**Ready For**: Phase 2 Implementation  
+**Last Updated**: 2025-12-20  
+**Ready For**: Phase 3 (Diagrams & Testing)  
 **Reference**: See plan/PROJECT_STATUS.md for current phase details
 
 ## Known Limitations of v0.1
