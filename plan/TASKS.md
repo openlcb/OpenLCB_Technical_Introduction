@@ -98,6 +98,22 @@
 
 ## Phase 2: Example Code & Hardware Documentation
 
+### T2.0 - Write PlatformIO & OpenMRNLite Installation Guide
+- **Status**: ✅ Completed
+- **Priority**: HIGH
+- **Effort**: 1.5 hours
+- **Description**:
+  - Add content to `esp32-arduino.md` for first 3 sections:
+    - **PlatformIO Installation & Setup**: Step-by-step VS Code + PlatformIO extension installation, verify installation ✅
+    - **ESP32 Board Selection**: Recommended boards (ESP32 DevKit v1, etc.), ESP32 platform installation in PlatformIO ✅
+    - **OpenMRNLite Library Installation**: Library Manager method (simplified for v0.1), verification steps ✅
+  - Included command examples and code snippets ✅
+  - Linked to official documentation for deeper details ✅
+  - Readers can complete setup before moving to T2.1/T2.2 ✅
+- **Owner**: Completed 2025-12-19
+- **Depends On**: T1.4
+- **Blocks**: T2.1, T2.2
+
 ### T2.1 - Create async_blink_esp32 Arduino Sketch
 - **Status**: ⏳ Not Started
 - **Priority**: HIGH
@@ -114,7 +130,7 @@
   - **NEW**: Use `OpenMRNLite/examples/ESP32/` as reference (now locally available!)
   - Test on actual ESP32 hardware
 - **Owner**: Next session (sub-agent research SA3 now OPTIONAL)
-- **Depends On**: T1.2
+- **Depends On**: T2.0
 - **Blocks**: T2.3, T4.1
 
 ### T2.2 - Create PlatformIO Configuration Template
@@ -134,7 +150,7 @@
   - Document library installation options (Arduino Library Manager, GitHub ZIP, or local source)
   - Include in `esp32-arduino.md` as code block + downloadable file
 - **Owner**: Next session
-- **Depends On**: T1.2
+- **Depends On**: T2.0
 - **Blocks**: T4.1
 
 ### T2.3 - Document Breadboard Circuit (Button + LED)

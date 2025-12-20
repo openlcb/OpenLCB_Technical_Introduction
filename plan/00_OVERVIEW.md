@@ -35,6 +35,14 @@
   - Archived old Nucleo content → archive/start-nucleo.md
   - New structure: What We're Building, Why WiFi/TCP, Platform Choice, Prerequisites, Dev Environment, JMRI Overview, What's Next
 
+**Phase 2: Documentation & Setup (T2.0) ✅**
+- **T2.0**: Wrote PlatformIO & OpenMRNLite Installation Guide
+  - Documented VS Code + PlatformIO extension installation
+  - Documented ESP32 board selection (DevKit recommendations)
+  - Documented OpenMRNLite Library Manager installation
+  - Added complete verification steps
+  - Sections 1-3 of esp32-arduino.md now complete
+
 **Infrastructure Improvements:**
 - mdbook-mermaid installed and working
 - 2 Mermaid diagrams rendering successfully (startup sequence, event flow)
@@ -87,7 +95,14 @@
 
 ### Recommended Approach: Fill in ESP32 Chapter Content
 
-**Tasks**: T2.1, T2.2, T2.3, T2.4 (~6-8 hours total, can be done across multiple sessions)
+**Tasks**: T2.1, T2.2, T2.3, T2.4 (~6.5-8 hours total, can be done across multiple sessions)
+
+**T2.0 - Write PlatformIO & OpenMRNLite Installation Guide** ✅ COMPLETED
+- Document VS Code + PlatformIO extension installation
+- ESP32 board/platform selection and setup
+- OpenMRNLite library installation (Library Manager only)
+- Add to esp32-arduino.md sections 1-3
+- **Result**: Readers can complete tool setup
 
 **T2.1 - Create async_blink_esp32 Arduino Sketch** (2-3 hours)
 - Write complete .ino sketch with WiFi, button input, LED output
@@ -111,7 +126,23 @@
 
 **T2.4 - Create JMRI Setup Guide** (1.5 hours)
 - Detailed JMRI installation and configuration steps
-- Phase 0 & Phase 1 complete (conceptual restructuring)  
+- Expected startup messages and event traces
+- Troubleshooting common connection issues
+- Add to esp32-arduino.md
+- **Result**: Verification and debugging support
+
+### Alternative: Skip to Testing (if you have hardware)
+
+If you have an ESP32 and want to jump straight to testing:
+- **Phase 3 tasks** (T3.1-T3.4) let you build, test, and verify the system
+- You'll need to reference async_blink example in openmrn/applications/async_blink/targets/esp32
+- Useful for validation before writing documentation
+
+---
+
+## What's Ready Right Now
+
+Phase 0 & Phase 1 complete (conceptual restructuring)  
 ✅ Introduction chapter restructured with Mermaid diagrams  
 ✅ Getting Started chapter rewritten for ESP32/WiFi  
 ✅ ESP32 chapter skeleton created and ready for content  
@@ -128,16 +159,9 @@
 |------|--------|-------------|
 | src/intro.md | ✅ Updated | Added "Transport Layers" section |
 | src/intro_async_blink.md | ✅ Rewritten | "Node Startup Sequence" with Mermaid diagram |
-| src/intro_ab_events.md | ✅ Rewritten | "Events and Run Mode" with Mermaid diagram |
-| src/start.md | ✅ Rewritten | Complete ESP32/WiFi-focused rewrite |
-| src/esp32-arduino.md | ✅ Created | Skeleton with 8 section outlines |
-| src/archive/openmrn-stm32.md | ✅ Archived | Old OpenMRN/Nucleo content |
-| src/archive/start-nucleo.md | ✅ Archived | Old DevKit hardware content |
-| src/SUMMARY.md | ✅ Updated | New chapter titles and structure |
-| book.toml | ✅ Updated | mdbook-mermaid configuration |
-| plan/TASKS.md | ✅ Updated | Added T1.4, updated T2.4 scope |
-| plan/PROJECT_STATUS.md | ✅ Updated | Phase 0 & 1 completion documented |
-| plan/FORWARD_REFERENCES.md | ✅ Updated | Current forward references tracked |
+| plan/DIAGRAMS.md | ✅ Updated | Marked D1, D3 as completed |
+| plan/QUICK_START.md | ✅ Updated | Phase 2 workflow guide |
+| plan/CHAPTERS.md | ✅ Updated | Current completion status |
 
 ---
 
@@ -147,7 +171,15 @@
 |------|------|---------|
 | async_blink_esp32.ino | T2.1 | Working example sketch |
 | platformio.ini | T2.2 | Build configuration template |
-| src/esp32-arduino.md | T2.2, T2.3, T2.4 | Fill in all 8 sections with content2 (Phases 3-5)
+| src/esp32-arduino.md | T2.0-T2.4 | Fill in all 8 sections with content |
+
+---
+
+## Progress Summary
+
+- **Tasks Completed**: 5 of 26 (~19%)
+- **Time Spent**: ~5 hours (Session 2: 2025-12-19)
+- **Next Up**: Phase 2 (Phases 3-5)
 
 ---
 
