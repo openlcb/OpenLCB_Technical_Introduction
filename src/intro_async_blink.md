@@ -2,6 +2,10 @@
 
 When an OpenLCB node powers up or resets, it goes through a defined startup sequence to join the network. Understanding this sequence is essential to building your own nodes.
 
+> **Note for Library Users**: If you're using OpenMRNLite or other OpenLCB libraries, all of the mechanics described in this chapter are handled automatically for you. You don't need to implement alias reservation, collision detection, or recovery—the library does it all in the background. 
+>
+> This chapter exists to help you **understand how it works**, which is valuable knowledge when debugging network issues or designing advanced features. However, if you just want to build a working node with async_blink_esp32, you can skip straight to Chapter 3 without missing anything essential. The library takes care of it.
+
 ## What Happens During Startup
 
 Every node follows this sequence:
@@ -27,7 +31,7 @@ sequenceDiagram
     Node->>Bus: CID Frame 3 (Node ID bytes 4-5)
     Node->>Bus: CID Frame 4 (checks alias)
     
-    Note over Node,Others: Wait for conflicts (750ms)
+    Note over Node,Others: Wait for conflicts (200ms)
     
     Node->>Bus: RID (Reserve alias)
     Node->>Bus: AMD (Map Node ID to alias)
@@ -67,8 +71,87 @@ This cooperative behavior ensures:
 
 When your node starts up, it's not alone—the entire network is watching and ready to help it join successfully.
 
+## What Happens When Things Go Wrong
+
+The startup sequence above describes the happy path—when everything works perfectly on the first try. In practice, nodes must be prepared to handle conflicts and retries.
+
+### Alias Collision Detection
+
+If another node on the network is already using the alias your node wants to reserve, that other node will respond to your CID frames with a Reserve ID (RID) frame. This signals a collision:
+
+- **During CID phase**: If you receive an RID while sending your CID frames, your chosen alias is already in use. Your node must:
+  - Abandon the current alias
+  - Generate a new tentative alias
+  - Start the entire CID → wait → RID sequence over from the beginning
+
+- **During the 200ms wait**: If another node transmits any non-CID frame using your tentative alias, you know there's a collision and must restart.
+
+Here's what the collision and recovery process looks like:
+
+```mermaid
+sequenceDiagram
+    participant Node as New Node
+    participant Bus as OpenLCB Network
+    participant Other as Node Already Online
+    
+    Note over Node: Generate Alias ABC
+    
+    Node->>Bus: CID Frame 1 (with alias ABC)
+    Other->>Bus: RID (Collision!)
+    Node->>Node: Detect Collision
+    
+    Note over Node: Collision detected!<br/>Generate New Alias DEF
+    
+    Node->>Bus: CID Frame 1 (with alias DEF)
+    Node->>Bus: CID Frame 2 (with alias DEF)
+    Node->>Bus: CID Frame 3 (with alias DEF)
+    Node->>Bus: CID Frame 4 (with alias DEF)
+    
+    Note over Node,Other: Wait for conflicts (200ms)
+    Note over Other: No conflict, silent
+    
+    Node->>Bus: RID (Reserve alias DEF)
+    Node->>Bus: AMD (Map Node ID to alias DEF)
+    Node->>Bus: Initialized Complete
+    
+    Note over Node: Now reachable with alias DEF
+```
+
+Your node's alias generation algorithm (described in section 6.3 of S-9.7.2.1) ensures that each collision produces a different alias candidate, so nodes won't get stuck in a loop trying the same alias repeatedly.
+
+### AMD and Alias Validation
+
+Once you've successfully reserved an alias and sent your AMD (Alias Map Definition) frame, the alias mapping is established. However, your node must remain vigilant:
+
+- **Alias Mapping Enquiry (AME)**: Other nodes can query your alias at any time using an AME frame. Your node is expected to respond with another AMD frame confirming the mapping.
+
+- **Duplicate Node ID Detection**: If your node receives an AMD frame from another node claiming to have the same 6-byte Node ID as you, this indicates a serious problem—two nodes with identical IDs exist on the network. Your node should:
+  - Signal this condition to the user (LED blink pattern, log message, etc.)
+  - Optionally transition back to the Inhibited state
+  - Restart the alias reservation process with error handling
+
+### Collision Recovery in Your Code
+
+When implementing your node:
+
+1. **Always expect CID collisions** - Your initial alias choice might conflict; be prepared to generate alternatives
+2. **Implement retry logic** - After detecting a collision during the CID phase, generate a new alias and restart
+3. **Validate on receipt** - When receiving AMD frames from other nodes, check for duplicate Node IDs
+4. **Handle AME queries** - Always respond to AME frames with AMD frames to maintain alias mappings
+
+Most of this is handled transparently by OpenMRNLite, but understanding these scenarios helps when debugging network startup issues.
+
+> **Note**: For implementation details on alias collision handling and retry algorithms, see the async_blink_esp32 example code in Chapter 3, which demonstrates how OpenMRNLite handles these scenarios automatically.
+
+## References
+
 For detailed protocol specifications, see:
-- [S-9.7.2.1 CAN Frame Transfer](https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/s-9.7.2.1-canframetransfer-2015-02-17.pdf)
-- [TN-9.7.2.1 CAN Frame Transfer](https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/tn-9.7.2.1-canframetransfer-2016-02-06.pdf)
+
+**CAN Frame Transfer (Node Startup Sequence)**
+- [S-9.7.2.1 CAN Frame Transfer Standard](https://www.nmra.org/sites/default/files/standards/sandrp/LCC/S/s-9.7.2.1-canframetransfer-2024-07-22.pdf) - Normative specification for CID, RID, AMD frames and the 200ms wait requirement (section 6.2.1)
+- [TN-9.7.2.1 CAN Frame Transfer Technical Note](https://www.nmra.org/sites/default/files/standards/sandrp/LCC/TN/tn-9.7.2.1-canframetransfer-2024-07-22.pdf) - Background and examples
+
+**Message Network (Initialization Complete)**
+- [S-9.7.3 Message Network Standard](https://www.nmra.org/sites/default/files/standards/sandrp/LCC/S/s-9.7.3-messagenetwork-2024-07-22.pdf) - Normative specification for Initialization Complete message (section 3.3.1) and message network protocol
 
 > **Note**: Future chapters will dive deeper into how the alias generation algorithm works and how to handle collisions in your code.
