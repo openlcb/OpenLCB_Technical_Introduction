@@ -268,7 +268,7 @@
 - **Depends On**: T1.4 (Getting Started chapter) ✅
 - **Blocks**: None
 
----\n\n## Phase 3: Diagrams & Visualization
+## Phase 3: Diagrams & Visualization
 
 ### T3.1 - Create Mermaid: Node Startup Sequence
 - **Status**: ⏳ Not Started
