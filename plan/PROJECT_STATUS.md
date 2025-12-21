@@ -2,10 +2,32 @@
 
 ## Current Phase
 
-**Phase**: Phase 1 → Phase 2 Transition  
-**Milestone**: Content restructuring complete, ready for example code creation  
-**Status**: ✅ Phase 0 & Phase 1 Complete | 🔄 Phase 2 Ready  
-**Last Updated**: 2025-12-19
+**Phase**: Phase 2 - Example Code (T2.6 COMPLETED)  
+**Milestone**: OpenMRN-Lite CDI documentation updated; T2.6.1 next  
+**Status**: ✅ Phase 0 & Phase 1 Complete | ✅ Phase 2 Major Tasks Complete (T2.0-T2.6)  
+**Last Updated**: 2025-12-21
+
+## Strategic Decision: OpenMRN-Lite Architecture Clarification
+
+**Decision Made**: 2025-12-21 (CORRECTED)  
+**Previous assumption (incorrect)**: Full OpenMRN vs OpenMRN-Lite  
+**Accurate architecture**:
+- **OpenMRN-Lite IS the Arduino version** of OpenMRN (single-threaded, no RTOS required)
+- **Full OpenMRN requires FreeRTOS/POSIX threading** and cannot run in Arduino environment
+- **CDI is already supported in OpenMRN-Lite** - it was disabled in our async_blink example
+- **No library migration needed** - enhance async_blink to use existing CDI support
+
+**Correct Strategic Decision**:
+- Keep OpenMRN-Lite (the only choice for Arduino/ESP32)
+- Enable CDI in async_blink_esp32 (library supports it, we just need to configure it)
+- Hardcoded approach in v0.1 (same as before)
+- CDI-based configuration in Chapter 5 (same as planned)
+
+**Impact on Planning**:
+- T2.0.1 is now enhancement, not migration (no library changes needed)
+- Chapter 3 uses OpenMRN-Lite with CDI (correct architecture from start)
+- Chapter 2.5 explains why OpenMRN-Lite is the right choice + what it can/cannot do
+- Existing async_blink_esp32 code remains valid; just add CDI support
 
 ## Completed Items ✅
 
@@ -58,12 +80,24 @@ None - Phase 1 complete, ready for Phase 2.
 
 ## Upcoming Priority Tasks
 
-### Phase 2: Example Code & Hardware Documentation (100% COMPLETE) ✅
-- **T2.0** ✅ COMPLETED: Write PlatformIO & OpenMRNLite Installation Guide
-- **T2.1** ✅ COMPLETED: Create async_blink_esp32 Arduino sketch (code written, tested, and validated)
-- **T2.2** ✅ COMPLETED: platformio.ini template (working example in async_blink_esp32 project, tested)
-- **T2.3** ✅ COMPLETED: Physical I/O content moved to Chapter 4 (gpio-hardware.md)
-- **T2.4** ✅ COMPLETED: JMRI TCP setup guide (fully documented in esp32-arduino.md, Section 9)
+### Phase 2: Example Code & Hardware Documentation (IN PROGRESS) 🔄
+- **T2.0** ✅ COMPLETED: Write PlatformIO Installation Guide (OpenMRNLite version)
+- **T2.0.1** ✅ COMPLETED: Enhance async_blink_esp32 with CDI support
+  - Keep OpenMRN-Lite library (no migration needed) ✅
+  - Rewrite config.h to enable CDI structure ✅
+  - Rewrite main.cpp to generate and expose CDI ✅
+  - Test on ESP32 hardware, verify JMRI sees events and CDI ✅
+- **T2.1** ✅ COMPLETED (OpenMRNLite) → ✅ UPDATED (via T2.0.1)
+- **T2.2** ✅ COMPLETED (OpenMRNLite) → ✅ UPDATED (via T2.0.1)
+- **T2.3** ✅ COMPLETED: Physical I/O Content deferred to Chapter 4
+- **T2.4** ✅ COMPLETED: JMRI TCP setup guide (no changes needed)
+- **T2.5** 📋 DEFERRED: Make WiFi Configuration & Event IDs Configurable (Chapter 5)
+- **T2.6** ✅ COMPLETED (2025-12-21): Updated Chapter 3 Documentation for OpenMRN-Lite CDI
+  - Updated config.h code block with SNIP_NODE_NAME, SNIP_NODE_DESC, Acdi, UserInfoSegment ✅
+  - Updated main.cpp with refactored helper functions ✅
+  - Enhanced code walkthrough with SPIFFS/SNIP explanations ✅
+  - Added 9 detailed code walkthrough sections ✅
+- **T2.6.1** 📋 NEXT: Create OpenMRN-Lite Architecture Chapter (Chapter 2.5)
 
 ### Phase 3: Diagrams & Visualization
 - Mermaid diagrams already complete in Phase 0! ✅

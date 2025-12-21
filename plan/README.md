@@ -25,9 +25,10 @@ Create an online book that helps embedded C++ developers understand and implemen
 | Decision | Rationale |
 |----------|-----------|
 | **PlatformIO + Arduino IDE** | Modern toolchain, easy build configuration, good platform support |
+| **OpenMRN-Lite (Arduino version)** | Single-threaded, no RTOS required; supports CDI, events, datagrams, SNIP; sufficient for ESP32 learning; full OpenMRN requires FreeRTOS/POSIX and cannot run in Arduino |
 | **WiFi/TCP transport (v1)** | No CAN hardware needed initially; switch to CAN in later chapters |
 | **Breadboard circuit (button + LED)** | Makes events tangible; demonstrates real input/output device pattern |
-| **Fixed event IDs (v1)** | Simplify learning curve; show custom event generation in later chapter |
+| **Fixed event IDs (v1)** | Simplify learning curve; make configurable via CDI in Chapter 5 |
 | **JMRI for monitoring** | Existing tool; allows verification without custom tooling |
 | **Mermaid diagrams** | VS Code + mdBook support; version-controllable; easy to maintain |
 | **Archive Nucleo/STM32 content** | Reduce v1 scope; preserve for reference appendix later |

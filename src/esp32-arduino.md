@@ -223,7 +223,7 @@ Create the file `include/config.h` with this content:
 
 namespace openlcb {
 
-/// Node identification information
+/// SNIP Static Data - Manufacturer information (read-only, compiled into firmware)
 extern const SimpleNodeStaticValues SNIP_STATIC_DATA = {
     4,               // Version
     "OpenMRN",       // Manufacturer
@@ -231,6 +231,11 @@ extern const SimpleNodeStaticValues SNIP_STATIC_DATA = {
     "ESP32",         // Hardware version
     "1.00"           // Software version
 };
+
+/// SNIP Dynamic Data - User-editable node name and description
+/// These are stored in the config file and can be read/written via JMRI
+static const char SNIP_NODE_NAME[] = "async_blink";
+static const char SNIP_NODE_DESC[] = "ESP32 Blink demo";
 
 /// Version number for the configuration structure
 static constexpr uint16_t CANONICAL_VERSION = 0x0001;
@@ -243,7 +248,9 @@ CDI_GROUP_END();
 /// The main CDI structure
 CDI_GROUP(ConfigDef, MainCdi());
 CDI_GROUP_ENTRY(ident, Identification);
-CDI_GROUP_ENTRY(seg, AsyncBlinkSegment);
+CDI_GROUP_ENTRY(acdi, Acdi);
+CDI_GROUP_ENTRY(userinfo, UserInfoSegment, Name("User Info"));
+CDI_GROUP_ENTRY(seg, AsyncBlinkSegment, Name("Settings"));
 CDI_GROUP_END();
 
 } // namespace openlcb
@@ -251,7 +258,13 @@ CDI_GROUP_END();
 #endif // _ASYNC_BLINK_CONFIG_H_
 ```
 
-**What this does**: Defines the minimal CDI structure OpenMRNLite needs. The `SNIP_STATIC_DATA` provides node identification (manufacturer, model, version), and `ConfigDef` defines the configuration memory layout. Even though we don't use configuration in this simple example, OpenMRNLite requires these structures to exist.
+**What this does**: Defines the CDI (Configuration Description Information) structure that OpenMRNLite uses to expose node configuration to JMRI. The configuration includes:
+- **SNIP Static Data**: Read-only manufacturer, model, and version information (compiled into firmware)
+- **SNIP Dynamic Data**: User-editable node name and description stored in the config file (visible in JMRI node properties)
+- **Acdi and UserInfo**: Standard OpenLCB configuration segments
+- **AsyncBlinkSegment**: Internal configuration area for this node (currently minimal, but available for future expansion)
+
+> In this v0.1 example, configuration is read-only (hardcoded). We'll make it editable in a future chapter using SPIFFS persistence.
 
 ### The Complete Main Code
 
@@ -304,14 +317,8 @@ static constexpr openlcb::ConfigDef cfg(0);
 
 // OpenLCB configuration - required by OpenMRNLite
 namespace openlcb {
-  
-  // Path to the CDI (Configuration Description Information) file
-  const char CDI_FILENAME[] = "/spiffs/cdi.xml";
-  
-  // This disables CDI exports - we don't need configuration for this simple example
-  extern const char CDI_DATA[] = "";
-  
   // Path to the config file and its size
+  // Increased to 512 bytes to accommodate UserInfo segment (name + description)
   const char* const CONFIG_FILENAME = "/spiffs/openlcb_config";
   const size_t CONFIG_FILE_SIZE = 256;
   
@@ -327,18 +334,42 @@ unsigned long last_event_time = 0;
 const unsigned long EVENT_INTERVAL = 1000;
 
 /**
- * Arduino setup() - runs once at startup
+ * Initialize SNIP (Simple Node Information Protocol) user data in the config file.
+ * The SNIP dynamic values structure contains:
+ * - Byte 0: version (must be 2 for user data)
+ * - Bytes 1-63: user node name
+ * - Bytes 64-127: user node description
  * 
- * This function:
- * 1. Initializes serial communication for debugging
- * 2. Initializes SPIFFS filesystem
- * 3. Connects to WiFi
- * 4. Creates config file if needed
- * 5. Starts the OpenMRN stack
- * 6. Initiates OpenLCB node initialization sequence (CID, RID, AMD)
+ * This data is displayed by JMRI in the node properties dialog.
  */
-void setup() {
-  // Initialize Serial for debugging output
+void init_snip_user_data()
+{
+  FILE* config_file = fopen(openlcb::CONFIG_FILENAME, "r+b");
+  if (config_file != nullptr) {
+    // Write version byte at offset 0 (must be 2 per SNIP protocol specification)
+    fseek(config_file, 0, SEEK_SET);
+    uint8_t version = 2;
+    fwrite(&version, 1, 1, config_file);
+    
+    // Write node name at offset 1 (max 63 bytes including null terminator)
+    fseek(config_file, 1, SEEK_SET);
+    fwrite(openlcb::SNIP_NODE_NAME, 1, strlen(openlcb::SNIP_NODE_NAME) + 1, config_file);
+    
+    // Write node description at offset 64 (max 64 bytes including null terminator)
+    fseek(config_file, 64, SEEK_SET);
+    fwrite(openlcb::SNIP_NODE_DESC, 1, strlen(openlcb::SNIP_NODE_DESC) + 1, config_file);
+    
+    fclose(config_file);
+    Serial.println("SNIP user data initialized (version, name, and description)");
+  } else {
+    Serial.println("Warning: Could not open config file to initialize SNIP user data");
+  }
+}
+
+/**
+ * Initialize Serial communication and print startup banner.
+ */
+void init_serial() {
   Serial.begin(115200);
   delay(500);  // Give serial time to initialize
   
@@ -346,16 +377,24 @@ void setup() {
   Serial.printf("Node ID: 0x%012llX\n", NODE_ID);
   Serial.printf("Event 0: 0x%016llX\n", EVENT_ID_0);
   Serial.printf("Event 1: 0x%016llX\n", EVENT_ID_1);
-  
-  // Initialize SPIFFS filesystem for configuration storage
+}
+
+/**
+ * Initialize SPIFFS filesystem for configuration storage.
+ */
+void init_filesystem() {
   Serial.println("\nInitializing SPIFFS...");
   if (!SPIFFS.begin(true)) {  // true = format if mount fails
     Serial.println("SPIFFS mount failed! Halting.");
     while (1) { delay(1000); }  // Stop here if filesystem fails
   }
   Serial.println("SPIFFS initialized successfully");
-  
-  // Connect to WiFi
+}
+
+/**
+ * Connect to WiFi network.
+ */
+void init_network() {
   Serial.printf("\nConnecting to WiFi SSID: %s\n", ssid);
   WiFi.begin(ssid, password);
   
@@ -367,14 +406,24 @@ void setup() {
   
   Serial.println("\nWiFi connected!");
   Serial.printf("IP Address: %s\n", WiFi.localIP().toString().c_str());
-  
+}
+
+/**
+ * Initialize OpenMRN stack and configuration.
+ * This creates the config file, initializes SNIP data, and starts the stack.
+ */
+void init_openlcb_stack() {
   // Create the config file if it doesn't exist
   // OpenMRNLite requires this even for simple nodes
   Serial.println("\nInitializing OpenLCB configuration...");
   openmrn.stack()->create_config_file_if_needed(cfg.seg().internal_config(),
                                                   openlcb::CANONICAL_VERSION,
                                                   openlcb::CONFIG_FILE_SIZE);
-  
+
+  // Initialize SNIP user data (node name and description)
+  // This populates the dynamic SNIP segment that JMRI displays
+  init_snip_user_data();
+
   // Start the OpenMRN stack
   // This initiates the OpenLCB node initialization sequence:
   // 1. Check ID (CID) - verifies Node ID is unique
@@ -388,15 +437,36 @@ void setup() {
   // REQUIRED for TCP Hub to accept connections
   Serial.println("Starting executor thread...");
   openmrn.start_executor_thread();
-  
-  // Create and start the TCP Hub
-  // This allows JMRI and other TCP clients to connect
+}
+
+/**
+ * Initialize TCP Hub for JMRI connectivity.
+ */
+void init_tcp_hub() {
   Serial.println("Starting TCP Hub on port 12021...");
   tcp_hub = new GcTcpHub(
     openmrn.stack()->can_hub(),  // Reference to the CAN hub
     12021                        // TCP port (standard for OpenLCB)
   );
   Serial.println("TCP Hub listening. JMRI can connect to this device on port 12021");
+}
+
+/**
+ * Arduino setup() - runs once at startup
+ * 
+ * This function initializes all hardware and software subsystems:
+ * 1. Serial communication
+ * 2. SPIFFS filesystem
+ * 3. WiFi network
+ * 4. OpenMRN stack
+ * 5. TCP Hub for JMRI connectivity
+ */
+void setup() {
+  init_serial();
+  init_filesystem();
+  init_network();
+  init_openlcb_stack();
+  init_tcp_hub();
   
   Serial.println("OpenLCB node initialization complete!");
   Serial.println("Entering run mode - will alternate events every 1 second\n");
@@ -441,7 +511,12 @@ void loop() {
 
 ### Code Walkthrough
 
-Let's break down each section to understand how it works.
+This code is organized into:
+1. **Configuration** (config.h): Node identity and CDI structure
+2. **Initialization** (setup function with helpers): WiFi, SPIFFS, OpenLCB stack, TCP Hub  
+3. **Event production** (loop function): Alternate between two events every second
+
+The code includes detailed comments explaining each section. We'll walk through the key concepts below.
 
 #### 1. Includes and WiFi Configuration
 
@@ -488,8 +563,6 @@ OpenMRN openmrn(NODE_ID);
 static constexpr openlcb::ConfigDef cfg(0);
 
 namespace openlcb {
-  const char CDI_FILENAME[] = "/spiffs/cdi.xml";
-  extern const char CDI_DATA[] = "";
   const char* const CONFIG_FILENAME = "/spiffs/openlcb_config";
   const size_t CONFIG_FILE_SIZE = 256;
   const char* const SNIP_DYNAMIC_FILENAME = CONFIG_FILENAME;
@@ -498,109 +571,170 @@ namespace openlcb {
 
 **OpenMRN stack**: Creates the entire OpenLCB protocol stack (message routing, node initialization, event handling, network transport).
 
-**ConfigDef**: Instantiates the configuration structure from config.h. The `(0)` parameter is the offset in memory.
+**ConfigDef**: Instantiates the CDI configuration structure from config.h (already described above). The `(0)` parameter is the offset in memory.
 
 **OpenLCB namespace constants**:
-- `CDI_FILENAME`: Where to store the CDI XML file (we won't use it)
-- `CDI_DATA`: Empty string disables CDI exports for this simple example
 - `CONFIG_FILENAME`: Path to the config file in SPIFFS filesystem (note `/spiffs/` prefix)
-- `CONFIG_FILE_SIZE`: 256 bytes is minimal for a simple node
+- `CONFIG_FILE_SIZE`: 256 bytes is sufficient for this node's configuration
 - `SNIP_DYNAMIC_FILENAME`: Store SNIP data in the same file as config
 
-#### 4. SPIFFS Filesystem Initialization (setup function)
+#### 4. SPIFFS Filesystem and SNIP Configuration
+
+The code includes two helper functions that handle filesystem and SNIP initialization:
 
 ```cpp
-Serial.println("\nInitializing SPIFFS...");
-if (!SPIFFS.begin(true)) {
-  Serial.println("SPIFFS mount failed! Halting.");
-  while (1) { delay(1000); }
+void init_filesystem() {
+  Serial.println("\nInitializing SPIFFS...");
+  if (!SPIFFS.begin(true)) {
+    Serial.println("SPIFFS mount failed! Halting.");
+    while (1) { delay(1000); }
+  }
+  Serial.println("SPIFFS initialized successfully");
 }
-Serial.println("SPIFFS initialized successfully");
+
+void init_snip_user_data() {
+  FILE* config_file = fopen(openlcb::CONFIG_FILENAME, "r+b");
+  if (config_file != nullptr) {
+    // Write version byte at offset 0 (must be 2 per SNIP protocol specification)
+    fseek(config_file, 0, SEEK_SET);
+    uint8_t version = 2;
+    fwrite(&version, 1, 1, config_file);
+    
+    // Write node name at offset 1 (max 63 bytes including null terminator)
+    fseek(config_file, 1, SEEK_SET);
+    fwrite(openlcb::SNIP_NODE_NAME, 1, strlen(openlcb::SNIP_NODE_NAME) + 1, config_file);
+    
+    // Write node description at offset 64 (max 64 bytes including null terminator)
+    fseek(config_file, 64, SEEK_SET);
+    fwrite(openlcb::SNIP_NODE_DESC, 1, strlen(openlcb::SNIP_NODE_DESC) + 1, config_file);
+    
+    fclose(config_file);
+    Serial.println("SNIP user data initialized (version, name, and description)");
+  } else {
+    Serial.println("Warning: Could not open config file to initialize SNIP user data");
+  }
+}
 ```
 
-**SPIFFS** (SPI Flash File System) is the ESP32's built-in filesystem. OpenMRNLite needs it to store configuration data persistently.
+**SPIFFS** (SPI Flash File System) is the ESP32's built-in filesystem where OpenMRNLite stores configuration data persistently. The `SPIFFS.begin(true)` call formats the filesystem on first run if needed.
 
-**`SPIFFS.begin(true)`**: The `true` parameter means "format if mount fails" - on first run, it automatically formats the filesystem.
+**SNIP** (Simple Node Information Protocol) is the OpenLCB standard for node identification. The SNIP data includes:
+- Node name (e.g., 'async_blink')
+- Description (e.g., 'ESP32 Blink demo')
+- Manufacturer, model, and version information
 
-**Error handling**: If SPIFFS fails to mount even after formatting, we halt in an infinite loop. This prevents the node from starting without proper storage.
+JMRI displays this SNIP data in the node properties dialog, making it easy to identify nodes on your network. The data is stored in the config file with specific byte offsets:
+- Offset 0: Version byte (must be 2)
+- Offset 1-63: Node name (null-terminated string)
+- Offset 64-127: Node description (null-terminated string)
+
+In this v0.1 example, SNIP values are hardcoded in `config.h` and written to the config file during initialization. In a future chapter, we'll make them editable via JMRI.
 
 #### 5. WiFi Connection
 
 ```cpp
-WiFi.begin(ssid, password);
-while (WiFi.status() != WL_CONNECTED) {
-  delay(500);
-  Serial.print(".");
+void init_network() {
+  Serial.printf("\nConnecting to WiFi SSID: %s\n", ssid);
+  WiFi.begin(ssid, password);
+  
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  
+  Serial.println("\nWiFi connected!");
+  Serial.printf("IP Address: %s\n", WiFi.localIP().toString().c_str());
 }
 ```
 
-This establishes the WiFi connection before starting OpenLCB. The ESP32 won't be able to communicate on the OpenLCB network until WiFi is connected, so we wait here.
+This helper function establishes the WiFi connection before starting OpenLCB. The ESP32 won't be able to communicate on the OpenLCB network until WiFi is connected, so we wait here.
 
 The dots printed to serial provide visual feedback during connection.
 
-#### 6. Configuration File Creation
+#### 6. Configuration File Creation and SNIP Initialization
 
 ```cpp
-Serial.println("\nInitializing OpenLCB configuration...");
-openmrn.stack()->create_config_file_if_needed(cfg.seg().internal_config(),
-                                              openlcb::CANONICAL_VERSION,
-                                              openlcb::CONFIG_FILE_SIZE);
-```
+void init_openlcb_stack() {
+  Serial.println("\nInitializing OpenLCB configuration...");
+  openmrn.stack()->create_config_file_if_needed(cfg.seg().internal_config(),
+                                                  openlcb::CANONICAL_VERSION,
+                                                  openlcb::CONFIG_FILE_SIZE);
 
-This creates `/spiffs/openlcb_config` if it doesn't already exist. The file stores:
-- Internal configuration data (version marker, etc.)
-- SNIP dynamic data (node name, description)
+  init_snip_user_data();
 
-**Why this is needed**: OpenMRNLite's configuration system expects this file to exist before `openmrn.begin()` is called. The `create_config_file_if_needed()` method handles creating and initializing it with the proper structure.
-
-#### 7. OpenLCB Stack Startup
-
-```cpp
-openmrn.begin();
-```
-
-This single call initiates the entire OpenLCB node initialization sequence:
-
-1. **Check ID (CID)**: Broadcasts the Node ID on the network to see if anyone else is using it
-2. **Reserve ID (RID)**: If no conflicts, claims the Node ID
-3. **Announce Membership (AMD)**: Tells other nodes this node is now active
-4. **Initialization Complete**: Node enters normal operation mode
-
-This matches the sequence diagram from Chapter 1. All of this happens inside `openmrn.begin()` - you don't need to implement it yourself!
-
-#### 8. Starting the Executor Thread and TCP Hub
-
-After the OpenLCB stack initializes, we need to start two essential services:
-
-```cpp
-// Start the executor thread for background processing
-// REQUIRED for TCP Hub to accept connections
-Serial.println("Starting executor thread...");
-openmrn.start_executor_thread();
-
-// Create and start the TCP Hub
-// This allows JMRI and other TCP clients to connect
-Serial.println("Starting TCP Hub on port 12021...");
-tcp_hub = new GcTcpHub(
-  openmrn.stack()->can_hub(),  // Reference to the CAN hub
-  12021                        // TCP port (standard for OpenLCB)
-);
-Serial.println("TCP Hub listening. JMRI can connect to this device on port 12021");
-```
-
-**Why This Matters**: 
-
-Remember from Chapter 2, your ESP32 is now both a **node** (producing events) and a **hub** (accepting JMRI connections). The TCP Hub is what makes JMRI connection possible.
-
-- **`start_executor_thread()`**: OpenLCB uses background tasks to process network messages. The executor thread runs these tasks. **This is required for the TCP Hub to work.**
+  Serial.println("\nStarting OpenLCB stack...");
+  openmrn.begin();
   
-- **`GcTcpHub`**: Creates a TCP server on port 12021 using the GridConnect protocol (the ASCII format that JMRI expects). It's passed:
-  - `openmrn.stack()->can_hub()`: Reference to the message router
-  - `12021`: The TCP port to listen on (standard for OpenLCB TCP hubs)
+  Serial.println("Starting executor thread...");
+  openmrn.start_executor_thread();
+}
+```
 
-- **Multiple Clients**: The TCP Hub can accept multiple JMRI instances connecting simultaneously. Messages are routed between all connected clients and the local node.
+This helper function:
 
-**In Your Code**: This code goes right after `openmrn.begin()` in the `setup()` function, before your node enters the event production loop. It's how we expose your node to JMRI for monitoring and testing.
+1. **Creates the config file**: `/spiffs/openlcb_config` is created with proper structure if it doesn't exist. The file stores:
+   - Internal configuration data (version marker, etc.)
+   - SNIP dynamic data (node name, description)
+
+2. **Initializes SNIP user data**: Calls `init_snip_user_data()` to populate the node name and description fields in the config file. When JMRI queries this node, it will display these values in the node properties, helping you identify which ESP32 is which on your network.
+
+3. **Starts the OpenLCB stack**: Initiates the entire OpenLCB node initialization sequence:
+   - **Check ID (CID)**: Broadcasts the Node ID on the network to see if anyone else is using it
+   - **Reserve ID (RID)**: If no conflicts, claims the Node ID
+   - **Announce Membership (AMD)**: Tells other nodes this node is now active
+   - **Initialization Complete**: Node enters normal operation mode
+
+   This matches the sequence diagram from Chapter 1. All of this happens inside `openmrn.begin()`.
+
+4. **Starts the executor thread**: OpenLCB uses background tasks to process network messages. The executor thread runs these tasks. **This is required for the TCP Hub to work.**
+
+#### 7. TCP Hub for JMRI Connectivity
+
+```cpp
+void init_tcp_hub() {
+  Serial.println("Starting TCP Hub on port 12021...");
+  tcp_hub = new GcTcpHub(
+    openmrn.stack()->can_hub(),
+    12021
+  );
+  Serial.println("TCP Hub listening. JMRI can connect to this device on port 12021");
+}
+```
+
+This helper function creates a TCP server on port 12021 using the GridConnect protocol (the ASCII format that JMRI expects). It's passed:
+- `openmrn.stack()->can_hub()`: Reference to the message router
+- `12021`: The TCP port to listen on (standard for OpenLCB TCP hubs)
+
+The TCP Hub allows JMRI and other TCP clients to connect and monitor your node's events in real-time. Multiple JMRI instances can connect simultaneously; messages are routed between all connected clients and the local node.
+
+#### 8. Initialization Helper Functions and Setup
+
+```cpp
+void setup() {
+  init_serial();
+  init_filesystem();
+  init_network();
+  init_openlcb_stack();
+  init_tcp_hub();
+  
+  Serial.println("OpenLCB node initialization complete!");
+  Serial.println("Entering run mode - will alternate events every 1 second\n");
+  
+  last_event_time = millis();
+}
+```
+
+The `setup()` function calls five helper functions in sequence:
+
+1. **`init_serial()`**: Initialize Serial, print startup banner with Node ID and Event IDs
+2. **`init_filesystem()`**: Initialize SPIFFS filesystem
+3. **`init_network()`**: Connect to WiFi (required before OpenLCB)
+4. **`init_openlcb_stack()`**: Create config file, initialize SNIP data, start OpenLCB protocol stack, start executor thread
+5. **`init_tcp_hub()`**: Start TCP server for JMRI connectivity
+
+**Why break it down?** Each helper function focuses on a single responsibility, making the code easier to understand and modify. If you need to add new initialization steps or change how the node starts up, it's clear where to make those changes.
+
+After all initialization completes, the code records the start time and enters the event production loop.
 
 #### 9. Event Production Loop
 
@@ -617,10 +751,27 @@ void loop() {
       openmrn.stack()->send_event(event_to_send);
     }));
     
+    Serial.printf("Produced event: 0x%016llX (state: %d)\n", 
+                  event_to_send, event_state ? 1 : 0);
+    
     last_event_time = current_time;
   }
 }
 ```
+
+**Critical Detail**: `openmrn.loop()` must be called frequently (ideally every few milliseconds). This processes:
+- Incoming network messages
+- Outgoing message queues
+- Protocol state machines
+- Internal timers
+
+**Event Production**: Every 1000ms (1 second), we:
+1. Toggle `event_state` (false → true → false → ...)
+2. Select which event ID to send based on state
+3. Queue the event for transmission using the executor
+4. Print confirmation to serial monitor
+
+**Why use the executor?** OpenLCB message handling runs in a separate execution context. The `executor()->add()` pattern ensures thread-safe event production.
 
 **Critical Detail**: `openmrn.loop()` must be called frequently (ideally every few milliseconds). This processes:
 - Incoming network messages
@@ -655,6 +806,9 @@ WiFi connected!
 IP Address: 192.168.1.100
 
 Initializing OpenLCB configuration...
+Creating config file /spiffs/openlcb_config
+SNIP user data initialized (version, name, and description)
+
 Starting OpenLCB stack...
 Starting executor thread...
 Starting TCP Hub on port 12021...
@@ -670,12 +824,21 @@ Produced event: 0x0502010202000001 (state: 1)
 ...
 ```
 
+**On First Run Only**: You may see a brief pause and an SPIFFS error message:
+```
+Initializing SPIFFS...
+E (523) SPIFFS: mount failed, -10025
+SPIFFS initialized successfully
+```
+
+This is **normal and expected**. On first boot, SPIFFS needs to format the filesystem, which takes approximately **20 seconds** on ESP32 DevKit. The error message appears because the filesystem doesn't exist yet, but the `SPIFFS.begin(true)` call automatically formats it. During this time, the ESP32 will appear to hang—just wait and don't interrupt it. Subsequent boots will skip this formatting step and proceed immediately.
+
 This confirms:
-- SPIFFS filesystem initialized
-- WiFi connection succeeded
-- OpenLCB node initialized
-- **TCP Hub is listening on port 12021** - JMRI can now connect!
-- Events are being produced alternately
+- ✅ SPIFFS filesystem initialized (formatted on first run if needed)
+- ✅ WiFi connection succeeded (shows your network SSID and IP address)
+- ✅ OpenLCB node initialized (config file created, SNIP data written)
+- ✅ **TCP Hub is listening on port 12021** - JMRI can now connect!
+- ✅ Events are being produced alternately
 
 ### Before You Build
 

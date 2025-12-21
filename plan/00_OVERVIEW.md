@@ -1,8 +1,8 @@
-# Project Progress: Phase 0 & Phase 1 Complete ✅
+# Project Progress: Phase 0 & Phase 1 Complete, Phase 2 In Progress ✅
 
-**Date**: 2025-12-19 (Updated)  
-**Sessions**: Initial Planning (2025-12-18) + Implementation (2025-12-19)  
-**Status**: Ready for Phase 2 (Example Code & Documentation)
+**Date**: 2025-12-21 (Architecture Clarification: OpenMRN-Lite IS Arduino Version)  
+**Sessions**: Initial Planning (2025-12-18) + Implementation (2025-12-19) + Architecture Clarification (2025-12-21)  
+**Status**: Phase 2 In Progress (T2.0.1 - CDI Enhancement)
 
 ---
 
@@ -35,28 +35,37 @@
   - Archived old Nucleo content → archive/start-nucleo.md
   - New structure: What We're Building, Why WiFi/TCP, Platform Choice, Prerequisites, Dev Environment, JMRI Overview, What's Next
 
-**Phase 2: Documentation & Setup (T2.0) ✅**
-- **T2.0**: Wrote PlatformIO & OpenMRNLite Installation Guide
-  - Documented VS Code + PlatformIO extension installation
-  - Documented ESP32 board selection (DevKit recommendations)
-  - Documented OpenMRNLite Library Manager installation
-  - Added complete verification steps
-  - Sections 1-3 of esp32-arduino.md now complete
+**Phase 2: Documentation & Setup (T2.0) - ARCHITECTURE CLARIFICATION (2025-12-21)**
+- **T2.0**: Wrote PlatformIO Installation Guide
+  - Documented VS Code + PlatformIO extension installation ✅
+  - Documented ESP32 board selection (DevKit recommendations) ✅
+  - Library: OpenMRN-Lite (Arduino version of OpenMRN) ✅
+  - Added complete verification steps ✅
+  - Sections 1-3 of esp32-arduino.md complete
 
-**Phase 2: Example Code (T2.1-T2.4) ✅ 100% COMPLETE**
-- **T2.0** ✅ COMPLETED: PlatformIO & OpenMRNLite Installation Guide (Sections 1-3)
-- **T2.1** ✅ COMPLETED: Created async_blink_esp32 Arduino sketch
-  - Complete code with WiFi, OpenMRNLite, event production/consumption
-  - Tested and validated on hardware
-  - Sections 4-8 of esp32-arduino.md now complete
-- **T2.2** ✅ COMPLETED: platformio.ini template
-  - Working example in async_blink_esp32 project, tested on hardware
-- **T2.3** ✅ COMPLETED: Physical I/O content moved to Chapter 4 (gpio-hardware.md)
-  - Chapter 3 now focuses purely on WiFi async blink
-- **T2.4** ✅ COMPLETED: JMRI setup guide
-  - Full TCP connection documentation
-  - Message monitoring and traffic interpretation
-  - Sections 9-10 of esp32-arduino.md complete
+**Phase 2: Example Code (T2.1-T2.4) - CDI ENHANCEMENT COMPLETED ✅**
+- **T2.0.1** ✅ COMPLETED: Enhance async_blink_esp32 with SNIP/CDI support
+  - Implemented direct SNIP user data initialization (refactored into separate function)
+  - Added SNIP_NODE_NAME and SNIP_NODE_DESC configuration constants
+  - Verified node name and description display correctly in JMRI
+  - Refactored setup() into 5 focused helper functions (init_serial, init_filesystem, init_network, init_openlcb_stack, init_tcp_hub)
+  - Cleaned up unused CDI_FILENAME constant
+  - Added detailed comments explaining SNIP protocol version byte requirement
+  - **Key Learning**: Configuration is read-only in v0.1 (no apply_configuration handler yet) - this is intentional for getting started guide
+  - **Code Quality**: All configuration centralized in config.h, initialization logic in dedicated functions
+- **T2.1** ✅ COMPLETED: async_blink_esp32 code (OpenMRN-Lite)
+  - Original: Complete code, tested and validated
+  - Enhancement: Add CDI support (same library, expanded capability)
+- **T2.2** ✅ COMPLETED: platformio.ini template (OpenMRN-Lite)
+  - Library stays the same: openmrn/OpenMRNLite
+  - No changes needed
+- **T2.3** ✅ COMPLETED: Physical I/O content deferred to Chapter 4
+  - Chapter 3 focused on WiFi-only async_blink for v0.1
+- **T2.4** ✅ COMPLETED: JMRI setup guide (works with OpenMRN-Lite)
+
+**NEW TASKS (Deferred, Post-Enhancement)**:
+- **T2.6** (Planned): Update Chapter 3 documentation (clarify OpenMRN-Lite architecture)
+- **T2.6.1** (Planned): Create Chapter 2.5 explaining OpenMRN-Lite capabilities/limitations
 
 **Infrastructure Improvements:**
 - mdbook-mermaid installed and working
@@ -78,6 +87,10 @@
   - What We're Building
   - Why WiFi/TCP First?
   - Platform Choice: ESP32
+- **Chapter 2.5: OpenMRN-Lite Architecture & Capabilities** 📋 PLANNED
+  - Why OpenMRN-Lite is the correct choice for Arduino/ESP32
+  - Comparison table (threading, features, when to use what)
+  - When to stay with OpenMRN-Lite vs when to switch toolchains (ESP-IDF + full OpenMRN)
   - Prerequisites & Assumptions
   - Development Environment Overview
   - Monitoring with JMRI (TCP)
@@ -313,6 +326,90 @@ Intentionally NOT included (for later chapters):
 
 ---
 
-**Last Updated**: 2025-12-18  
-**Ready For**: Next Copilot session  
+---
+
+## Implementation Notes for Chapter 3 Rewrite (Session 2025-12-22+)
+
+### Key Concepts to Explain in esp32-arduino.md
+
+**1. SNIP (Simple Node Information Protocol)**
+- Explain two-part SNIP structure:
+  - **SNIP_STATIC_DATA**: Manufacturer info (read-only, compiled into firmware)
+    - Version (4), Manufacturer, Model, Hardware Version, Software Version
+  - **SNIP Dynamic Data**: User-editable node name and description
+    - Stored in config file, read by SNIPHandler at offset 0 (version), 1-63 (name), 64-127 (description)
+- Clarify that SNIPHandler is built into OpenMRN stack, automatically responds to SNIP queries
+- Explain why SNIP data matters: JMRI displays this in node properties dialog
+
+**2. SPIFFS (SPI Flash File System)**
+- Simple explanation: ESP32's built-in filesystem for storing persistent configuration
+- Why needed: OpenMRNLite requires config file to exist before stack startup
+- Note: `SPIFFS.begin(true)` means "format if mount fails" - important for first boot
+
+**3. Configuration and CDI**
+- CDI (Configuration Description Information): The structure that defines what configuration options exist
+- In this simple example: minimal CDI with just internal config
+- CANONICAL_VERSION: Configuration schema version (not same as SNIP protocol version!)
+- CONFIG_FILE_SIZE: Must be large enough for all segments (we use 256 bytes for minimal example)
+
+**4. Initialization Sequence**
+- Emphasize the order matters:
+  1. Serial init (debugging)
+  2. SPIFFS init (storage)
+  3. WiFi init (network)
+  4. Config file creation (if needed)
+  5. SNIP user data init (populates dynamic segment)
+  6. OpenMRN stack startup (node initialization sequence)
+  7. Executor thread (background processing)
+  8. TCP Hub (JMRI connectivity)
+
+**5. Production vs. Getting Started Patterns**
+- Add sidebar explaining how IOBoard.ino uses DefaultConfigUpdateListener for:
+  - Automatic factory_reset() callback on first boot
+  - apply_configuration() callback when JMRI updates config
+- Explicitly note: async_blink uses direct file writing for simplicity, not best practice
+- Forward reference: "See IOBoard example and Chapter 5 for production patterns"
+
+**6. Why Configuration is Read-Only in v0.1**
+- async_blink has no apply_configuration() handler
+- JMRI can READ config but changes don't persist
+- This is intentional design choice for getting started guide
+- Real nodes would implement ConfigUpdateListener to handle changes
+
+### Code Structure to Document
+
+Emphasize how refactoring into functions improves readability:
+- `init_serial()` - 10 lines
+- `init_filesystem()` - 10 lines  
+- `init_network()` - 12 lines
+- `init_openlcb_stack()` - 20 lines (config + SNIP + stack)
+- `init_tcp_hub()` - 7 lines
+
+Main setup() becomes just 5 function calls + final messages.
+
+### Terminology Glossary to Add
+
+Add brief definitions section explaining:
+- **SNIP**: Protocol for sharing node identity information
+- **SPIFFS**: Filesystem for storing configuration
+- **CDI**: Blueprint describing what configuration options exist
+- **CANONICAL_VERSION**: Configuration schema version number
+- **CONFIG_FILE_SIZE**: Total bytes allocated for all config segments
+- **SNIP_DYNAMIC_FILENAME**: File path where user-editable SNIP data lives
+- **apply_configuration()**: Callback when JMRI updates settings
+- **factory_reset()**: Callback to reset all config to defaults
+
+### What NOT to Include in Chapter 3 (v0.1)
+
+- CAN/TWAI hardware setup (defer to Chapter 4)
+- Advanced CDI with producers/consumers (defer to later)
+- Full configuration system with EEPROM writes (defer to Chapter 5)
+- BootloaderHal or firmware update features
+- Multi-node virtual topology
+- Custom event mapping via CDI
+
+---
+
+**Last Updated**: 2025-12-21 (T2.0.1 COMPLETED)  
+**Ready For**: Chapter 3 rewrite session  
 **Questions?**: Check plan/README.md or plan/QUICK_START.md

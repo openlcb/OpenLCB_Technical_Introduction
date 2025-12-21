@@ -1,22 +1,33 @@
 # Quick Start: Next Session Workflow
 
-**Last Updated**: 2025-12-19  
-**Current Phase**: Ready for Phase 2 (Example Code & Documentation)
+**Last Updated**: 2025-12-21  
+**Current Phase**: Phase 2 In Progress - OpenMRN-Lite CDI Enhancement
 
 ## For Next Session: Start Here
 
-### 1. Read These Files (5 minutes)
-In order:
-1. **plan/PROJECT_STATUS.md** - Current phase and what's been completed
-2. **plan/TASKS.md** - Prioritized work items (T2.x tasks ready)
-3. **plan/00_OVERVIEW.md** - Quick summary of progress
+### ⚠️ IMMEDIATE TASK: T2.0.1 (OpenMRN-Lite CDI Enhancement)
+**This session's focus**: Enhance async_blink_esp32 with CDI support (same library, expanded capability)
 
-### 2. Pick Your First Task (1 minute)
-From TASKS.md Phase 2, choose based on priority and effort:
-- **HIGHEST PRIORITY**: T2.1 (Create async_blink_esp32 sketch) - 2-3 hours
-- **Foundation** (1 hr): T2.2 (Create platformio.ini template)
-- **Hardware** (1.5 hr): T2.3 (Document breadboard circuit)
-- **Verification** (1.5 hr): T2.4 (Create JMRI setup guide)
+1. **Read These Files First** (5 minutes):
+   - **plan/PROJECT_STATUS.md** - Strategic decision + current phase
+   - **plan/TASKS.md** - T2.0.1 details (immediate priority)
+   - **plan/OpenMRN_vs_Lite.md** - Why OpenMRN-Lite is the correct choice for Arduino/ESP32
+
+2. **Execute T2.0.1** (1.5 hours): Code enhancement + hardware testing
+   - Update platformio.ini library reference
+   - Rewrite config.h with minimal CDI
+   - Rewrite main.cpp with Esp32WiFiManager
+   - Test on ESP32 hardware
+
+3. **After T2.0.1 Works**: Documentation updates (T2.6 / T2.6.1)
+   - Update Chapter 3 for OpenMRN-Lite CDI
+   - Create library comparison chapter (Chapter 2.5)
+
+### Previous Tasks (Completed, No Changes Needed)
+- ✅ T2.0: PlatformIO installation guide (update coming)
+- ✅ T2.1: async_blink sketch (will enhance with CDI)
+- ✅ T2.2: platformio.ini template (no library change needed)
+- ✅ T2.4: JMRI TCP setup (no library changes needed)
 
 ### 3. Reference Material (As Needed)
 - **plan/FORWARD_REFERENCES.md** - ✨ **NEW**: Tracks forward references to future chapters that need link updates later

@@ -1,7 +1,7 @@
 # Book Chapters & Content Status
 
-**Last Updated**: 2025-12-19  
-**Current Status**: Phase 0 & 1 Complete, Phase 2 Ready
+**Last Updated**: 2025-12-21  
+**Current Status**: Phase 0 & 1 Complete, Phase 2 In Progress (T2.0.1 - CDI Enhancement)
 
 ## Current Table of Contents (from SUMMARY.md)
 
@@ -12,7 +12,10 @@
   - Node Startup Sequence (with Mermaid diagram)
   - Events and Run Mode (with Mermaid diagram)
 - Chapter 2: "Getting Started" (start.md) ✅ REWRITTEN
-- Chapter 3: "ESP32 with Arduino & PlatformIO" (esp32-arduino.md) 🔄 SKELETON
+- Chapter 2.5: "OpenMRN-Lite Architecture & Capabilities" (openmrn-architecture.md) 📋 PLANNED
+  - What is OpenMRN-Lite (it IS the Arduino version)
+  - Why it's the correct choice for ESP32 learning
+- Chapter 3: "ESP32 with Arduino & PlatformIO" (esp32-arduino.md) 🔄 IN PROGRESS (T2.0.1 - CDI Enhancement)
 ```
 
 ## Archived Content
@@ -36,12 +39,20 @@
   - Add: "Monitoring with JMRI (TCP)" section
   - Target audience and prerequisites
 
-- Chapter 3: "ESP32 with Arduino & PlatformIO" (esp32-arduino.md) [NEW]
+- Chapter 2.5: "OpenMRN-Lite Architecture & Capabilities" (openmrn-architecture.md) [NEW - PLANNED]
+  - What is OpenMRN-Lite (it IS the Arduino version, single-threaded, no RTOS required)
+  - Why it's the correct choice for embedded learning on ESP32
+  - Capabilities: CDI, events, datagrams, SNIP, CAN, TCP Hub
+  - Limitations: Virtual nodes, traction protocol, multi-transport bridging (require FreeRTOS)
+  - When to use OpenMRN-Lite for Arduino vs full OpenMRN with ESP-IDF (different toolchain)
+  - Learning implications: CDI enables JMRI configuration without recompilation
+
+- Chapter 3: "ESP32 with Arduino & PlatformIO" (esp32-arduino.md) [UPDATED]
   - PlatformIO Installation & Setup
   - ESP32 Board Selection & Configuration
-  - OpenMRNLite Library Installation
+  - **OpenMRN Library Installation** (OpenMRN-Lite: Arduino version with CDI support)
   - Hardware Setup (breadboard, button, LED, wiring diagram)
-  - Building async_blink_esp32
+  - **Building async_blink_esp32** (uses OpenMRN-Lite with CDI infrastructure; hardcoded for v0.1)
   - Deploying to ESP32
   - Verification & Troubleshooting (JMRI connection, GPIO issues, etc.)
   - What's Next (preview of future topics)
