@@ -10,6 +10,8 @@ As described in the "Network Architecture" section of Chapter 2, your ESP32 will
 - An **OpenLCB node** that produces and consumes events
 - A **TCP Hub** listening on port 12021 for JMRI connections
 
+We'll be using the **OpenMRN-Lite library**, which is the Arduino version of OpenMRN. If you're curious about why OpenMRN-Lite specifically, or what it can (and can't) do, see Chapter 2.5 ("OpenMRN-Lite Architecture & Capabilities") for a deeper dive. For now, know that it's the right tool for the job and it has everything we need to build real, functional OpenLCB nodes.
+
 We'll build this in two phases:
 1. **Software-only**: Create a node that produces and consumes events via JMRI (no physical hardware needed yet)
 2. **Hardware integration** (optional): Add a physical button and LED to your breadboard

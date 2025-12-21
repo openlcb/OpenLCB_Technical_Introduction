@@ -16,6 +16,12 @@ This file tracks all forward references in the book to future chapters that don'
 |----------|--------------|-----------------|--------|-------|
 | Transport Layers section | "Future chapters will cover adding CAN hardware" | Adding CAN Hardware (future) | ⏳ Not yet written | Migrating from WiFi/TCP to CAN bus transport |
 
+### start.md (Chapter 2)
+
+| Location | Current Text | Target Chapter | Status | Notes |
+|----------|--------------|-----------------|--------|-------|
+| "Understanding OpenMRN-Lite" section | "See Chapter 3 for deeper dive" | OpenMRN-Lite Architecture & Capabilities | ✅ COMPLETED | Forward reference to Chapter 3, added 2025-12-21 |
+
 ### intro_async_blink.md (Node Startup Sequence)
 
 | Location | Current Text | Target Chapter | Status | Notes |
@@ -28,10 +34,11 @@ This file tracks all forward references in the book to future chapters that don'
 |----------|--------------|-----------------|--------|-------|
 | End note | "Future chapters will show you how to create your own nodes with real button inputs and LED outputs on an ESP32 microcontroller" | ESP32 with Arduino & PlatformIO | ✅ Chapter exists! | Can be converted to link when esp32-arduino.md content is complete (T2.x tasks) |
 
-### esp32-arduino.md (when content added)
+### esp32-arduino.md (Chapter 3)
 
 | Location | Current Text | Target Chapter | Status | Notes |
 |----------|--------------|-----------------|--------|-------|
+| Overview section | "See Chapter 3 for deeper dive into architecture" | OpenMRN-Lite Architecture & Capabilities | ✅ COMPLETED | Forward reference to Chapter 3, added 2025-12-21 |
 | What's Next section | "Future chapters will explore: Adding CAN hardware, Advanced events, Memory config, SNIP, Train control" | Various future chapters | ⏳ Not yet written | Multiple forward refs to post-v0.1 content |
 
 ---
@@ -52,37 +59,37 @@ Chapter 2: Getting Started
 ├─ Monitoring with JMRI (TCP)
 └─ → Forward ref to: Chapter X: Hardware Setup
 
-Chapter 3: ESP32 with Arduino & PlatformIO
+Chapter 4: ESP32 with Arduino & PlatformIO
 ├─ PlatformIO, library installation, GPIO basics
 ├─ → Forward ref to: Chapter X: Adding CAN Hardware
 ├─ → Forward ref to: Chapter X: SNIP and Configuration
 └─ → Forward ref to: Chapter X: Advanced Features
 
-Chapter 4: Understanding Startup Sequence (FUTURE)
+Chapter 5: Understanding Startup Sequence (FUTURE)
 ├─ Detailed CID/RID/AMD negotiation
 ├─ Multi-node startup behavior
 ├─ What other nodes do during startup
 └─ Timeout and collision detection
 
-Chapter 5: Adding CAN Hardware (FUTURE)
+Chapter 6: Adding CAN Hardware (FUTURE)
 ├─ Transceiver selection (SN65HVD230 vs MCP2551)
 ├─ GPIO wiring and pin assignments
 ├─ Bus termination and power considerations
 └─ Adapting async_blink_esp32 for CAN
 
-Chapter 6: Node Configuration & SNIP (FUTURE)
+Chapter 7: Node Configuration & SNIP (FUTURE)
 ├─ Simple Node Information Protocol
 ├─ CDI (Configuration Description Information)
 ├─ Making nodes discoverable and configurable
 └─ Examples: manufacturer, model, version info
 
-Chapter 7: Advanced Events (FUTURE)
+Chapter 8: Advanced Events (FUTURE)
 ├─ Custom event ID generation and allocation
 ├─ Producer/consumer patterns
 ├─ Event filtering and routing
 └─ Event data payload handling
 
-Chapter 8: Advanced Features (FUTURE)
+Chapter 9: Advanced Features (FUTURE)
 ├─ Train Control (Traction Protocol)
 ├─ Broadcast Time
 ├─ Fast Clock
@@ -109,8 +116,8 @@ Appendix A: Archived Content (FUTURE)
 
 ### Current Status Summary
 
-- ⏳ **Not Yet Written**: 11 forward references across 4 source files
-- ✅ **Linked**: 0
+- ⏳ **Not Yet Written**: 10 forward references across 4 source files
+- ✅ **Linked**: 2 (Chapter 3 references from Chapter 2 and Chapter 4)
 - 🔄 **In Progress**: 0
 
 ---

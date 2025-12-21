@@ -45,25 +45,41 @@ As mentioned in Chapter 1, OpenLCB works over multiple physical transports. We'r
 
 We'll cover adding CAN hardware in future chapters. For now, WiFi/TCP lets you focus on understanding OpenLCB without hardware complexity.
 
+## Library Choice: OpenMRN-Lite
+
+Before choosing a microcontroller, we need to choose an OpenLCB library. There are two main options:
+
+**Full OpenMRN** uses FreeRTOS and POSIX threading, giving you access to advanced features like virtual nodes and traction protocol. But it requires Linux, macOS, Windows, or native ESP-IDF—a full real-time operating system environment. The learning curve is steep: you need to understand threading, mutexes, message queues, and how RTOS schedulers work *before* you can focus on OpenLCB itself.
+
+**OpenMRN-Lite** is the Arduino version: single-threaded, no RTOS required, designed specifically for learning and hobby projects. It has everything you need for your first OpenLCB node (events, producers/consumers, CDI configuration, CAN/TCP support). Most importantly, it lets you focus on OpenLCB concepts without fighting with threading complexity.
+
+**We're choosing OpenMRN-Lite** for this book because:
+
+- **Lower learning curve** - Arduino's simple `setup()`/`loop()` model is familiar to most hobbyists and embedded developers
+- **Faster progress** - You'll have working code and see results within hours, not days
+- **Proven examples** - OpenMRN-Lite has excellent examples (IOBoard, WifiCanBridge) that demonstrate real patterns
+- **Future flexibility** - Once you understand OpenLCB concepts, upgrading to full OpenMRN (with FreeRTOS) becomes a natural next step, not a barrier
+
+This is not a limitation—it's a pedagogical choice. You can absolutely build production OpenLCB nodes with OpenMRN-Lite. Chapter 2.5 goes deeper into what OpenMRN-Lite supports and when you might want to switch toolchains.
+
 ## Platform Choice: ESP32
 
-We've chosen the ESP32 microcontroller platform for this book:
+We've chosen the ESP32 microcontroller platform for this book because it's one of the best-supported platforms for OpenMRN-Lite:
 
-**Why ESP32?**
+**Why ESP32 for OpenMRN-Lite?**
+- **Excellent Arduino support** - Arduino framework is mature and stable on ESP32
+- **WiFi built-in** - Perfect match for our WiFi/TCP transport choice
+- **CAN capable** - Built-in CAN controller for adding CAN hardware in future chapters
 - **Affordable** - Development boards are $5-15 USD
-- **WiFi built-in** - Dual-mode WiFi and Bluetooth
-- **CAN capable** - Built-in CAN controller for future expansion
-- **Powerful** - Dual-core processor, plenty of memory for OpenLCB
-- **Well-supported** - Mature Arduino ecosystem and libraries
+- **Powerful** - Dual-core processor, plenty of memory for OpenMRNLite applications
 - **GPIO-rich** - Enough pins for inputs, outputs, and expansion
 
-**Alternative Platforms**: OpenLCB and OpenMRNLite support many other microcontrollers:
-- STM32 family (Nucleo boards, custom designs)
+**Other Platforms with OpenMRN-Lite Support**: OpenMRN-Lite works on other Arduino-compatible boards:
+- STM32 family (Nucleo boards) via Arduino core
 - Arduino variants (Mega, Due)
-- Raspberry Pi Pico
-- ESP8266 (limited, but usable)
+- Other ESP32 variants (ESP32-S3, ESP32-C3)
 
-Future chapters will discuss platform trade-offs and migration paths. For now, ESP32 gives you the best learning experience.
+If you have a different board available, you can likely adapt the examples. Chapter 2.5 has more details on platform trade-offs. For now, ESP32 is the best starting point: affordable, well-documented, and fully supported by the OpenMRN-Lite community.
 
 ## Prerequisites & Assumptions
 
@@ -115,6 +131,17 @@ We'll be using modern, cross-platform tools:
 - Memory-efficient design for microcontrollers
 
 Chapter 3 will walk through installation and configuration step-by-step. No prior PlatformIO experience required.
+
+## Understanding OpenMRN-Lite
+
+Before we dive into code, you might be wondering: **What exactly is OpenMRN-Lite? Is it a cut-down version? Will I outgrow it?**
+
+Chapter 2.5 ("OpenMRN-Lite Architecture & Capabilities") answers these questions in detail. It explains:
+- Why OpenMRN-Lite is the *only* OpenMRN version that runs on Arduino (not a limitation, just a fact)
+- What features it supports (CDI, events, datagrams, CAN, and more)
+- When you might want to switch toolchains entirely (and when you won't)
+
+For now, know this: **OpenMRN-Lite is the right tool for learning OpenLCB on ESP32.** It has everything you need to build real nodes, and understanding how it works sets you up perfectly for more advanced projects later.
 
 ## Monitoring with JMRI (TCP)
 

@@ -12,10 +12,10 @@
   - Node Startup Sequence (with Mermaid diagram)
   - Events and Run Mode (with Mermaid diagram)
 - Chapter 2: "Getting Started" (start.md) ✅ REWRITTEN
-- Chapter 2.5: "OpenMRN-Lite Architecture & Capabilities" (openmrn-architecture.md) 📋 PLANNED
+- Chapter 3: "OpenMRN-Lite Architecture & Capabilities" (openmrn-architecture.md) ✅ COMPLETED
   - What is OpenMRN-Lite (it IS the Arduino version)
   - Why it's the correct choice for ESP32 learning
-- Chapter 3: "ESP32 with Arduino & PlatformIO" (esp32-arduino.md) 🔄 IN PROGRESS (T2.0.1 - CDI Enhancement)
+- Chapter 4: "ESP32 with Arduino & PlatformIO" (esp32-arduino.md) 🔄 IN PROGRESS (T2.0.1 - CDI Enhancement)
 ```
 
 ## Archived Content
@@ -39,7 +39,7 @@
   - Add: "Monitoring with JMRI (TCP)" section
   - Target audience and prerequisites
 
-- Chapter 2.5: "OpenMRN-Lite Architecture & Capabilities" (openmrn-architecture.md) [NEW - PLANNED]
+- Chapter 3: "OpenMRN-Lite Architecture & Capabilities" (openmrn-architecture.md) [NEW - COMPLETED ✅]
   - What is OpenMRN-Lite (it IS the Arduino version, single-threaded, no RTOS required)
   - Why it's the correct choice for embedded learning on ESP32
   - Capabilities: CDI, events, datagrams, SNIP, CAN, TCP Hub
@@ -47,7 +47,7 @@
   - When to use OpenMRN-Lite for Arduino vs full OpenMRN with ESP-IDF (different toolchain)
   - Learning implications: CDI enables JMRI configuration without recompilation
 
-- Chapter 3: "ESP32 with Arduino & PlatformIO" (esp32-arduino.md) [UPDATED]
+- Chapter 4: "ESP32 with Arduino & PlatformIO" (esp32-arduino.md) [UPDATED]
   - PlatformIO Installation & Setup
   - ESP32 Board Selection & Configuration
   - **OpenMRN Library Installation** (OpenMRN-Lite: Arduino version with CDI support)
@@ -105,7 +105,31 @@ The introduction has been restructured from implementation-focused to concept-fo
 | **Nucleo Hardware** | ✅ Archived | Moved to archive/start-nucleo.md |
 | **CAN Configuration** | ✅ Archived | Moved to archive/start-nucleo.md |
 
-### Chapter 3: ESP32 with Arduino & PlatformIO (esp32-arduino.md) — 🔄 95% COMPLETE (WiFi-Only Focus)
+### Chapter 3: OpenMRN-Lite Architecture & Capabilities (openmrn-architecture.md) — ✅ COMPLETED
+
+**v0.1 Approach: ARCHITECTURAL CLARITY BEFORE IMPLEMENTATION** (COMPLETED 2025-12-21)
+
+This chapter clarifies the relationship between OpenMRN (full version) and OpenMRN-Lite (Arduino version), answering common questions before readers dive into Chapter 4 code.
+
+**Completed Content**:
+
+| Section | Status | Notes |
+|---------|--------|-------|
+| What is OpenMRN-Lite? | ✅ Complete | Explains it's the Arduino version, not a "lite" compromise |
+| Why it's the Right Choice | ✅ Complete | Single-threaded, Arduino-native, supports CDI/events/datagrams |
+| What OpenMRN-Lite Does NOT Support | ✅ Complete | Virtual nodes, traction, bridging (require FreeRTOS) |
+| When to Use Each | ✅ Complete | Decision matrix for OpenMRN-Lite vs full OpenMRN with ESP-IDF |
+| Configuration & Learning Implications | ✅ Complete | CDI support, why configuration can be hardcoded in v0.1 |
+| Looking Ahead | ✅ Complete | Preview of Chapter 3 and future topics |
+
+**Key Learning Achieved**: Readers understand the toolchain choices and why OpenMRN-Lite is the only option for Arduino/ESP32, not a stepping stone.
+
+**Cross-References**:
+- Referenced from Chapter 2 (Getting Started) - new section "Understanding OpenMRN-Lite"
+- Referenced from Chapter 4 (ESP32 Arduino) - Overview section mentions "Chapter 3 for deeper dive"
+- Tracked in FORWARD_REFERENCES.md
+
+### Chapter 4: ESP32 with Arduino & PlatformIO (esp32-arduino.md) — 🔄 95% COMPLETE (WiFi-Only Focus)
 
 | Section | Current Status | v0.1 Target | Notes |
 |---|---|---|---|
@@ -122,7 +146,7 @@ The introduction has been restructured from implementation-focused to concept-fo
 | Troubleshooting | ✅ Complete | ✅ Done | Library, USB detection, WiFi, JMRI issues |
 | What's Next | ✅ Complete | ✅ Done | References Chapter 4 (Physical I/O) for future hardware integration |
 
-**Status Summary**: Chapter 3 is now focused purely on WiFi async blink (Sections 1-9). Only remaining task is T2.3: move incomplete "Physical Hardware (Optional)" section to Chapter 4 (gpio-hardware.md).
+**Status Summary**: Chapter 4 is now focused purely on WiFi async blink (Sections 1-9). Only remaining task is T2.3: move incomplete "Physical Hardware (Optional)" section to Chapter 5 (gpio-hardware.md).
 
 ---
 

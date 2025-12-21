@@ -65,7 +65,12 @@
 
 **NEW TASKS (Deferred, Post-Enhancement)**:
 - **T2.6** (Planned): Update Chapter 3 documentation (clarify OpenMRN-Lite architecture)
-- **T2.6.1** (Planned): Create Chapter 2.5 explaining OpenMRN-Lite capabilities/limitations
+- **T2.6.1** ✅ COMPLETED (2025-12-21): Create Chapter 3 (OpenMRN-Lite Architecture) explaining capabilities/limitations
+  - Created [src/openmrn-architecture.md](src/openmrn-architecture.md) with comprehensive architecture clarity
+  - Added forward references from Chapter 2 and Chapter 4
+  - Updated SUMMARY.md with chapter link
+  - Updated CHAPTERS.md status tracking
+  - Updated FORWARD_REFERENCES.md with new cross-references
 
 **Infrastructure Improvements:**
 - mdbook-mermaid installed and working
@@ -87,15 +92,15 @@
   - What We're Building
   - Why WiFi/TCP First?
   - Platform Choice: ESP32
-- **Chapter 2.5: OpenMRN-Lite Architecture & Capabilities** 📋 PLANNED
-  - Why OpenMRN-Lite is the correct choice for Arduino/ESP32
-  - Comparison table (threading, features, when to use what)
-  - When to stay with OpenMRN-Lite vs when to switch toolchains (ESP-IDF + full OpenMRN)
-  - Prerequisites & Assumptions
-  - Development Environment Overview
-  - Monitoring with JMRI (TCP)
-  - What's Next
-- **Chapter 3: ESP32 with Arduino & PlatformIO** ✅ ~95% COMPLETE (WiFi-only focus)
+- **Chapter 3: OpenMRN-Lite Architecture & Capabilities** ✅ COMPLETED (2025-12-21)
+  - What is OpenMRN-Lite (it IS the Arduino version, not a compromise)
+  - Why it's the correct choice for embedded learning on ESP32
+  - Capabilities: CDI, events, datagrams, SNIP, CAN, TCP Hub
+  - Limitations: Virtual nodes, traction protocol, multi-transport bridging (require FreeRTOS)
+  - Decision matrix: When to use OpenMRN-Lite vs ESP-IDF + full OpenMRN
+  - Learning implications: CDI enables JMRI configuration without recompilation
+  - Cross-references: Linked from Chapter 2 "Understanding OpenMRN-Lite" section and Chapter 4 Overview
+- **Chapter 4: ESP32 with Arduino & PlatformIO** ✅ ~95% COMPLETE (WiFi-only focus)
   - PlatformIO Installation & Setup ✅
   - ESP32 Board Selection ✅
   - OpenMRNLite Library Installation ✅

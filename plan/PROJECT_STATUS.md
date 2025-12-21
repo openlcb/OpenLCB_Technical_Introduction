@@ -26,7 +26,7 @@
 **Impact on Planning**:
 - T2.0.1 is now enhancement, not migration (no library changes needed)
 - Chapter 3 uses OpenMRN-Lite with CDI (correct architecture from start)
-- Chapter 2.5 explains why OpenMRN-Lite is the right choice + what it can/cannot do
+- Chapter 3 (OpenMRN-Lite Architecture) explains the learning-first approach + what it supports
 - Existing async_blink_esp32 code remains valid; just add CDI support
 
 ## Completed Items ✅
@@ -97,7 +97,7 @@ None - Phase 1 complete, ready for Phase 2.
   - Updated main.cpp with refactored helper functions ✅
   - Enhanced code walkthrough with SPIFFS/SNIP explanations ✅
   - Added 9 detailed code walkthrough sections ✅
-- **T2.6.1** 📋 NEXT: Create OpenMRN-Lite Architecture Chapter (Chapter 2.5)
+- **T2.6.1** ✅ COMPLETED (2025-12-21): Create Chapter 3 (OpenMRN-Lite Architecture)
 
 ### Phase 3: Diagrams & Visualization
 - Mermaid diagrams already complete in Phase 0! ✅

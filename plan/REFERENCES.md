@@ -81,10 +81,13 @@ Used for: Node ID generation, uniqueness requirements, 6-byte identifier format,
 ### Chapter 2: Getting Started
 - (No specific standards referenced yet; general concepts)
 
-### Chapter 3: ESP32 with Arduino & PlatformIO
+### Chapter 3: OpenMRN-Lite Architecture & Capabilities
+- (References may be added when covering feature comparisons)
+
+### Chapter 4: ESP32 with Arduino & PlatformIO
 - (References may be added when covering WiFi/TCP mapping)
 
-### Chapter 4: Physical I/O with GPIO
+### Chapter 5: Physical I/O with GPIO
 - (Future content - will reference CAN standards if needed)
 
 ---

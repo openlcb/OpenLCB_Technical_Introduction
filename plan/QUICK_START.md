@@ -21,7 +21,7 @@
 
 3. **After T2.0.1 Works**: Documentation updates (T2.6 / T2.6.1)
    - Update Chapter 3 for OpenMRN-Lite CDI
-   - Create library comparison chapter (Chapter 2.5)
+   - Create library comparison chapter (Chapter 3) ✅
 
 ### Previous Tasks (Completed, No Changes Needed)
 - ✅ T2.0: PlatformIO installation guide (update coming)

@@ -248,33 +248,25 @@
 - **Depends On**: T2.0.1 (code working) ✅
 - **Blocks**: None
 
-### T2.6.1 - Create OpenMRN-Lite Architecture Chapter (Chapter 2.5)
-- **Status**: 📋 PLANNED (new chapter 2.5)
-- **Priority**: MEDIUM (informative, not blocking)
+### T2.6.1 - Create OpenMRN-Lite Architecture Chapter (Chapter 3)
+- **Status**: ✅ COMPLETED (2025-12-21)
+- **Priority**: MEDIUM (informative, educational)
 - **Effort**: 1.5 hours
 - **Description**:
-  - **Create new file**: `src/libraries-openmrn-comparison.md` (will become Chapter 2.5)
+  - **Create new file**: `src/openmrn-architecture.md` (became Chapter 3) ✅
   - **Contents**:
-    - Opening: "Choosing Your OpenMRN Library"
-    - Why we chose full OpenMRN for this book
-      - CDI support enables JMRI-based configuration
-      - Prevents limitations when experimenting
-      - Minimal code complexity increase
-    - Comparison table:
-      - Code complexity
-      - Configuration workflow
-      - Experimentation friction (recompile vs JMRI)
-      - Production readiness
-      - When to use each (hobbyists with fixed nodes → OpenMRNLite, learners/experimentation → full OpenMRN)
-    - Key insight: "False simplicity trap" of OpenMRNLite
-      - Looks easier but forces firmware updates for every change
-      - Full OpenMRN's upfront complexity pays off immediately
-    - What's deferred (factory reset, CAN, etc.) to later chapters
-  - **Add to SUMMARY.md** as Chapter 2.5 (between "Getting Started" and "ESP32 with Arduino")
-  - **Result**: Transparent explanation of library choice, manages expectations
-- **Owner**: TBD (after T2.0.1 verified)
-- **Depends On**: T2.0.1
-- **Blocks**: T2.6
+    - Opening: "Why OpenMRN-Lite is the Right Choice for Learning OpenLCB"
+    - The Alternative: ESP-IDF + full OpenMRN (threading complexity)
+    - Why OpenMRN-Lite instead: lower learning curve, faster results, proven examples
+    - What OpenMRN-Lite DOES Support: CDI, SNIP, events, datagrams, CAN, TCP
+    - What OpenMRN-Lite Does NOT Support: virtual nodes, traction, bridging (why they need FreeRTOS)
+    - Decision matrix: when to use each toolchain
+    - Configuration & learning implications
+  - **Add to SUMMARY.md** as Chapter 3 (between "Getting Started" and "ESP32 with Arduino") ✅
+  - **Result**: Clear pedagogical rationale for library and platform choices ✅
+- **Owner**: Completed 2025-12-21
+- **Depends On**: T1.4 (Getting Started chapter) ✅
+- **Blocks**: None
 
 ---\n\n## Phase 3: Diagrams & Visualization
 
