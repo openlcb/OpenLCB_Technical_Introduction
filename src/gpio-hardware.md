@@ -58,13 +58,14 @@ These pins are chosen because:
 
 ### Alternative Pin Assignments
 
-If you need to use different pins, you can adapt by:
-- Choosing any GPIO pin **except**: GPIO 0, 2, 4, 5, 12*, 13, 14, 15, 16, 17, 25, 26, 27 (these have boot/flash mode constraints)
+If you need to use different pins, follow these guidelines:
+- For maximum safety, **prefer** one of these general-purpose pins: **GPIO 18, 19, 21, 22, 23, 32, 33** (good for inputs or outputs)
+- **GPIO 34, 35, 36, 37, 38, 39** are also very safe, but they are **input-only** (cannot drive an LED directly)
+- Avoid GPIO pins with boot/flash-mode or other special constraints in new designs: **GPIO 0, 2, 4, 5, 12\*, 14, 15, 16, 17, 25, 26, 27**
 - **GPIO 1, 3**: Reserved for UART (serial communication)
-- **GPIO 6-11**: Used for flash memory
-- For maximum safety, choose from: **GPIO 18, 19, 21, 22, 23, 32, 33, 34, 35, 36, 37, 38, 39**
+- **GPIO 6-11**: Used for flash memory; do not use for external circuits
 
-*GPIO 12 works but must be HIGH at boot. Our design respects this.
+*GPIO 12 works but must be HIGH at boot. Our design respects this, but for other projects you should generally prefer the “maximum safety” pins above.
 
 ## Breadboard Wiring Diagram
 

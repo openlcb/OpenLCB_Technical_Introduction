@@ -10,7 +10,7 @@ One of the OpenLCB members, Balazs Racz, has put together a _daughter_ board for
 
 ![Dev Kit](images/devkit.jpg)
 
-It uses all through-hole components for two reasons. First, because it doesn't require experience soldering surface-mounted parts. And second, parhaps more importantly, the components can be replaced easily if you happen to destroy them as part of testing.
+It uses all through-hole components for two reasons. First, because it doesn't require experience soldering surface-mounted parts. And second, perhaps more importantly, the components can be replaced easily if you happen to destroy them as part of testing.
 
 The next photo shows a Nucleo F091RC board, which has an ARM Coretex-M0 processor.
 
@@ -26,7 +26,7 @@ The DevKit has the following features:
 
 ### Supported Nucleo Boards
 
-This board currently supports the following Nucleo borads (in order of increasing price and features):
+This board currently supports the following Nucleo boards (in order of increasing price and features):
 
 * Nucleo-F091RC
 * Nucleo-F303RE
