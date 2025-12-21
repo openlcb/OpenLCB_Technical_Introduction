@@ -1046,9 +1046,9 @@ Think of it as a "network packet sniffer" for OpenLCB.
    - Start **DecoderPro** or **PanelPro** (either works - they share the same connection system)
    - First launch may take 30-60 seconds as JMRI initializes
 
-### Configuring the OpenLCB Connection
+### Configuring the LCC Connection
 
-JMRI needs to know how to connect to the OpenLCB network. As discussed in Chapter 2 ("Network Architecture"), your ESP32 runs a TCP Hub on port 12021 that JMRI will connect to. Let's configure that connection.
+JMRI needs to know how to connect to your ESP32's TCP Hub on port 12021. Let's configure that connection.
 
 1. **Open Preferences**:
    - In JMRI, go to **Edit → Preferences** (Windows/Linux) or **JMRI → Preferences** (macOS)
@@ -1058,96 +1058,92 @@ JMRI needs to know how to connect to the OpenLCB network. As discussed in Chapte
    - Click the **+** button (bottom left) to add a new connection
 
 3. **Configure the connection**:
-   - **System manufacturer**: Select `OpenLCB`
+   - **System manufacturer**: Select `LCC` (this is the OpenLCB standard system name in JMRI)
    - **System connection**: Select `CAN via GridConnect Network Interface`
    - **Connection name**: Enter `ESP32 async_blink` (or any descriptive name)
-   - **IP Address/Host Name**: Enter the IP address your ESP32 showed in serial monitor (e.g., `192.168.1.100`)
+   - **IP Address/Host Name**: Enter the IP address your ESP32 showed in serial monitor (e.g., `192.168.2.16`)
    - **TCP/UDP Port**: Enter `12021`
-   - **Connection Protocol**: Select `TCP`
+   - **Connection Protocol**: Select `OpenLCB`
+
+   ![JMRI Preferences - LCC Connection Configuration](images/JMRI_Preferences.png)
 
 4. **Save settings**:
    - Click **Save** at the bottom of the Preferences window
    - JMRI will prompt to restart - click **Restart Now**
 
-### Monitoring OpenLCB Traffic
+### Monitoring LCC Traffic
 
-After JMRI restarts, let's open the message monitor to see network traffic.
+After JMRI restarts, let's open the message monitor to see your ESP32's events.
 
-1. **Open the OpenLCB Monitor**:
-   - Go to **OpenLCB → Monitor Traffic**
-   - A new window opens showing a live feed of OpenLCB messages
+1. **Open the LCC Monitor**:
+   - Go to **LCC → Monitor Traffic**
+   - A new window opens showing a live feed of LCC messages
 
-2. **Look for your ESP32's startup sequence**:
-   - If your ESP32 is already running, press its **RESET** button to trigger initialization
-   - Watch for messages in the monitor
+2. **Observe the event production**:
+   - You should see alternating event reports appearing every second
+   - Each event corresponds to the events your ESP32 is producing
 
-### Understanding the Message Traffic
+   ![LCC Traffic Monitor showing alternating events](images/Traffic_Monitor.png)
 
-You should see messages similar to this (your Node ID will differ):
+### Verifying the Node is Visible
 
-```
-[Check ID] 05 02 01 02 02 00
-[Reserve ID] 05 02 01 02 02 00
-[Announce Node] 05 02 01 02 02 00
-[Producer Consumer Event Report] 05 02 01 02 02 00 00 00
-[Producer Consumer Event Report] 05 02 01 02 02 00 00 01
-[Producer Consumer Event Report] 05 02 01 02 02 00 00 00
-[Producer Consumer Event Report] 05 02 01 02 02 00 00 01
-...
-```
+You can also verify that JMRI recognizes your ESP32 as a node on the network:
 
-Let's decode what you're seeing:
+1. **Open the LCC Network Tree**:
+   - Go to **LCC → Configure Nodes**
+   - The network tree shows all LCC nodes currently on the network
 
-#### 1. Node Initialization Sequence (First 3 messages)
+2. **Look for your ESP32 node**:
+   - You should see a node with the ID matching your code (`050201020200`)
+   - This confirms the node initialized successfully and is visible on the network
 
-These correspond to the startup sequence from Chapter 1:
+   ![LCC Network Tree showing the async_blink node](images/LCC_Network_Tree.png)
 
-- **Check ID (CID)**: `05 02 01 02 02 00` - "Is anyone using this Node ID?"
-- **Reserve ID (RID)**: `05 02 01 02 02 00` - "I'm claiming this Node ID"
-- **Announce Node (AMD)**: `05 02 01 02 02 00` - "New node active on the network"
+### Optional: View Events as Sensors
 
-This happens once when the node starts (or when you press RESET).
+Want to see your ESP32's events visualized as sensor states? You can create sensors in PanelPro that correspond to your event IDs.
 
-#### 2. Event Production (Repeating messages)
+**Important**: For this section, you need to have **PanelPro** open. If you only have DecoderPro running:
+- Either launch **PanelPro** separately (from your JMRI applications folder)
+- Or select **File → Open PanelPro** in DecoderPro to launch it
 
-After initialization, you'll see alternating event reports every second:
+Once PanelPro is open:
 
-- **Event `...00 00 00`**: First event (state 0)
-- **Event `...00 00 01`**: Second event (state 1)
-
-These should match the timestamps in your serial monitor output!
-
-**Verification**: Open both the JMRI monitor and your ESP32 serial monitor side-by-side. Every time the serial monitor prints `Produced event: 0x0502010202000000`, you should see a corresponding message in JMRI within ~100ms.
-
-### What This Proves
-
-By seeing the events in JMRI, you've confirmed:
-
-✅ **WiFi communication works**: ESP32 is connected to the network
-✅ **OpenLCB protocol is correct**: Node initialization followed proper CID/RID/AMD sequence
-✅ **Event production is working**: Events are broadcast and received by other nodes (JMRI)
-✅ **Timing is accurate**: Events alternate every ~1 second as expected
-
-Your ESP32 is now a functioning OpenLCB node!
-
-### Optional: Configure JMRI as an Event Consumer
-
-Want to see the interaction go the other way? Let's configure JMRI to consume your ESP32's events.
-
-1. **Create an event consumer in JMRI**:
+1. **Open the Sensor Table**:
    - Go to **Tools → Tables → Sensors**
+   - The sensor table displays any configured LCC sensors
+
+2. **Add your first sensor**:
    - Click **Add** to create a new sensor
-   - **System Name**: `MS05.02.01.02.02.00.00.00` (matches EVENT_ID_0)
-   - **User Name**: `ESP32 State 0`
-   - Click **OK**
+   - In the dialog:
+     - **System Name**: Enter the hardware address for your first event ID
+       - For `EVENT_ID_0` (0x0502010202000000), type: `0502010202000000`
+       - JMRI will automatically add the `MS` prefix when you click Create
+     - **User Name**: Enter `ESP32 Event 0` (or any descriptive name)
+   - Click **Create**
 
-2. **Repeat for the second event**:
-   - **System Name**: `MS05.02.01.02.02.00.00.01` (matches EVENT_ID_1)
-   - **User Name**: `ESP32 State 1`
+3. **Repeat for the second event**:
+   - Click **Add** again
+   - **System Name**: Type `0502010202000001`
+   - **User Name**: `ESP32 Event 1`
+   - Click **Create**
 
-3. **Watch the sensor table** - the sensors will toggle between ACTIVE/INACTIVE as your ESP32 produces events!
+4. **Watch the sensors**:
+   - Return to the sensor table
+   - Verify the system names are correct:
+     - Event 0 should show: `MS0502010202000000`
+     - Event 1 should show: `MS0502010202000001`
+   - As your ESP32 produces alternating events, observe the sensor behavior:
+     - **Expected behavior**: The sensors will flash ACTIVE for a brief moment, then return to INACTIVE
+     - **Why the brief flash?**: JMRI uses an event timeout mechanism. When an event is received, the sensor becomes ACTIVE. If the same event isn't re-sent within the timeout window, the sensor automatically reverts to INACTIVE (a safety feature to prevent stale states if a node disappears from the network)
+     - **Pattern**: Since your ESP32 alternates between EVENT_ID_0 and EVENT_ID_1 every second, you should see:
+       - Second 1: Sensor 0 flashes ACTIVE, Sensor 1 stays INACTIVE
+       - Second 2: Sensor 1 flashes ACTIVE, Sensor 0 stays INACTIVE
+       - Second 3: Sensor 0 flashes ACTIVE, and so on...
 
-This demonstrates the bidirectional nature of OpenLCB - any node can produce or consume events.
+   ![LCC Sensors showing alternating ACTIVE states](images/Sensors.png)
+
+This demonstrates the bidirectional nature of LCC - your JMRI sensors are consuming events produced by your ESP32!
 
 ### Troubleshooting JMRI Connection
 
