@@ -1,8 +1,31 @@
-# Project Progress: Phase 0 & Phase 1 Complete, Phase 2 In Progress ✅
+# Project Progress: Phase 0 & Phase 1 Complete, Phase 2 Complete ✅
 
-**Date**: 2025-12-21 (Architecture Clarification: OpenMRN-Lite IS Arduino Version)  
-**Sessions**: Initial Planning (2025-12-18) + Implementation (2025-12-19) + Architecture Clarification (2025-12-21)  
-**Status**: Phase 2 In Progress (T2.0.1 - CDI Enhancement)
+**Date**: 2025-12-22 (T2.7 Complete: LccPro Documentation & Config Comments)  
+**Sessions**: Initial Planning (2025-12-18) + Implementation (2025-12-19) + Architecture Clarification (2025-12-21) + Documentation Polish (2025-12-22)  
+**Status**: Phase 2 Complete (T2.0-T2.7) | Chapter 3 Ready for Review
+
+---
+
+## Quick Reference: Planning Documents
+
+**Start here each new session** - This file provides strategic overview. Then consult:
+
+| File | Purpose | When to Use |
+|------|---------|------------|
+| [TASKS.md](TASKS.md) | **Primary task tracking** — current status, effort estimates, blockers | Before picking tasks; mark progress in-progress/completed |
+| [PROJECT_STATUS.md](PROJECT_STATUS.md) | Phase summary, blockers, risk assessment, key findings | Understanding current state and phase dependencies |
+| [CHAPTERS.md](CHAPTERS.md) | Content status by chapter, what's written vs planned | Understanding book structure and progress |
+| [FORWARD_REFERENCES.md](FORWARD_REFERENCES.md) | Links to future chapters needing updates | When creating/updating chapters with forward refs |
+| [REFERENCES.md](REFERENCES.md) | NMRA standards and technical notes curated by chapter | When writing content that needs standards citations |
+| [STYLE_GUIDE.md](STYLE_GUIDE.md) | Tone, terminology, formatting conventions | When writing documentation or code comments |
+| [SUB_AGENT_GUIDE.md](SUB_AGENT_GUIDE.md) | Templates for research-heavy tasks using sub-agents | When delegating research or analysis tasks |
+
+**Workflow for new sessions**:
+1. Read this file (strategic overview)
+2. Check [TASKS.md](TASKS.md) (pick next task)
+3. Review [PROJECT_STATUS.md](PROJECT_STATUS.md) (understand blockers)
+4. Consult [STYLE_GUIDE.md](STYLE_GUIDE.md) before writing
+5. Use [CHAPTERS.md](CHAPTERS.md) for content mapping
 
 ---
 
@@ -72,6 +95,18 @@
   - Updated CHAPTERS.md status tracking
   - Updated FORWARD_REFERENCES.md with new cross-references
 
+- **T2.7** ✅ COMPLETED (2025-12-22): Revise esp32-arduino.md for LccPro & Fix Config Comments
+  - Verified main.cpp works on ESP32 hardware
+  - Replaced DecoderPro references with LccPro (authoritative tool in JMRI 5.12+)
+  - Added LccPro Wizard screenshot and JMRI Preferences screenshots
+  - Added LccProNodes.png showing node list with SNIP data
+  - Added SNIP vs ACDI explanation (device identity vs layout identity)
+  - Fixed config documentation comments (clarified SPIFFS persistence, factory_reset, apply_configuration)
+  - Added "Configuration & JMRI: CDI Discovery" subsection
+  - Updated menu references to use "ESP32 LCC" connection name
+  - Updated JMRI minimum version requirement to 5.12
+  - **Result**: Chapter 3 documentation complete and consistent with working code
+
 **Infrastructure Improvements:**
 - mdbook-mermaid installed and working
 - 2 Mermaid diagrams rendering successfully (startup sequence, event flow)
@@ -100,7 +135,7 @@
   - Decision matrix: When to use OpenMRN-Lite vs ESP-IDF + full OpenMRN
   - Learning implications: CDI enables JMRI configuration without recompilation
   - Cross-references: Linked from Chapter 2 "Understanding OpenMRN-Lite" section and Chapter 4 Overview
-- **Chapter 4: ESP32 with Arduino & PlatformIO** ✅ ~95% COMPLETE (WiFi-only focus)
+- **Chapter 4: ESP32 with Arduino & PlatformIO** ✅ COMPLETED (2025-12-22)
   - PlatformIO Installation & Setup ✅
   - ESP32 Board Selection ✅
   - OpenMRNLite Library Installation ✅
@@ -108,12 +143,20 @@
   - Code Walkthrough ✅
   - Building & Uploading ✅
   - Serial Monitor Verification ✅
-  - JMRI Configuration ✅
+  - JMRI Configuration ✅ (Updated for LccPro, 5.12+, with screenshots)
   - Troubleshooting ✅
-  - What's Next ✅ (References Chapter 4 for future hardware)
-  - *Pending*: Move "Physical Hardware (Optional)" section to Chapter 4
-- **Chapter 4: Physical I/O with GPIO** 📋 Placeholder (future v0.2)
-  - Will receive moved hardware content from Chapter 3
+  - What's Next ✅ (References Chapter 5 for configuration)
+  - Configuration & JMRI ✅ (CDI discovery explanation)
+- **Chapter 5: Configuration & Persistence** 📋 PLANNED (v0.2, T5.1)
+  - CDI structure and configuration discovery
+  - SNIP vs ACDI distinction (device identity vs layout identity)
+  - Config file versioning (CANONICAL_VERSION, schema evolution)
+  - Hands-on: Add EVENT_INTERVAL configuration to async_blink
+  - Techniques: Reserved space for forward-compatible schema updates
+  - PlatformIO Erase Flash option for development
+  - Hands-on JMRI walkthrough with LccPro
+- **Chapter 6: Physical I/O with GPIO** 📋 Placeholder (future v0.3)
+  - Will receive moved hardware content from Chapter 4
 
 ### Archived Content
 - archive/openmrn-stm32.md (Nucleo/STM32 setup)
@@ -134,46 +177,26 @@
 
 ---
 
-## Next Session: Recommended Starting Point
+## Next Sessions: Configuration Chapter & Beyond
 
-**Phase 2 is ready to begin!** All conceptual restructuring and chapter skeletons are complete.
+Phase 2 is now complete. Chapter 4 (esp32-arduino.md) is ready for review and use.
 
-### Recommended Approach: Complete Phase 2 Tasks T2.2 & T2.3
+### Session C: Configuration Chapter (T5.1, ~3-4 hours)
 
-**Tasks**: T2.2, T2.3 (~1.5 hours total, can be done in this session)
-
-**T2.0 - Write PlatformIO & OpenMRNLite Installation Guide** ✅ COMPLETED
-- Document VS Code + PlatformIO extension installation
-- ESP32 board/platform selection and setup
-- OpenMRNLite library installation (Library Manager only)
-- Add to esp32-arduino.md sections 1-3
-- **Result**: Readers can complete tool setup
-
-**T2.1 - Create async_blink_esp32 Arduino Sketch** ✅ COMPLETED
-- Write complete .ino sketch with WiFi, button input, LED output
-- Use OpenMRNLite/examples/ESP32/ as reference (locally available)
-- Include inline comments explaining startup and event handling
-- Test on actual ESP32 hardware (if available) - **VALIDATED**
-- **Result**: Working example code ready to document
-
-**T2.2 - Create PlatformIO Configuration** (1 hour) ⏳ NEXT
-- Write platformio.ini template for ESP32
-- Document library installation options
-- Add to esp32-arduino.md with installation steps
-- **Result**: Readers can build the example immediately
-
-**T2.3 - Move Physical I/O Content to Chapter 4** (30 min) ⏳ AFTER T2.2
-- Move GPIO Pin Assignment (GPIO 12, 13) from esp32-arduino.md to gpio-hardware.md
-- Move Bill of Materials from esp32-arduino.md to gpio-hardware.md
-- Update esp32-arduino.md "What's Next" to reference Chapter 4
-- **Result**: Chapter 3 focused purely on WiFi async blink (no hardware setup)
-
-### Alternative: Skip to Testing (if you have hardware)
-
-If you have an ESP32 and want to jump straight to testing:
-- **Phase 3 tasks** (T3.1-T3.4) let you build, test, and verify the system
-- You'll need to reference async_blink example in openmrn/applications/async_blink/targets/esp32
-- Useful for validation before writing documentation
+**T5.1 - Create Configuration & Persistence Chapter** ⏳ NEXT
+- Create new file: `src/configuration-persistence.md` (becomes Chapter 5)
+- Enhance async_blink_esp32 example with EVENT_INTERVAL configurable parameter
+  - Add to CDI in config.h
+  - Implement apply_configuration() to apply changes to running code
+- Document:
+  - CDI structure and JMRI configuration discovery
+  - SNIP vs ACDI distinction (device identity vs layout identity)
+  - Config file versioning (when to bump CANONICAL_VERSION)
+  - Techniques to avoid version bumps: reserved space in segments
+  - PlatformIO Erase Flash for development
+  - Hands-on: Change EVENT_INTERVAL via JMRI LccPro
+- Update SUMMARY.md with new chapter
+- **Result**: Users understand config management and how to add configurable parameters
 
 ---
 
@@ -289,19 +312,19 @@ Session 1 | Session 2 | Total |
 
 ---
 
-**Last Updated**: 2025-12-20  
-**Ready For**: Phase 3 (Diagrams & Testing)  
-**Reference**: See plan/PROJECT_STATUS.md for current phase details
+**Last Updated**: 2025-12-22 (T2.7 Complete)  
+**Next Session**: T5.1 (Create Configuration & Persistence chapter)  
+**Reference**: See plan/TASKS.md and plan/PROJECT_STATUS.md for current details
 
 ## Known Limitations of v0.1
 
 Intentionally NOT included (for later chapters):
 
 ❌ CAN hardware setup (deferred: future chapter)  
+❌ Physical GPIO (button/LED) integration (deferred: Chapter 6)
 ❌ Windows build instructions (use PlatformIO instead)  
-❌ Advanced features (CDI, SNIP, train control)  
+❌ Configurable parameters in CDI (deferred: Chapter 5)  
 ❌ Production-quality code (educational examples)  
-❌ Custom configuration systems (hardcoded for v1)  
 ❌ Deep OpenMRN C++ architecture (link to source + docs)  
 
 ---

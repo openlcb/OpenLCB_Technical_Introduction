@@ -268,6 +268,28 @@
 - **Depends On**: T1.4 (Getting Started chapter) ✅
 - **Blocks**: None
 
+### T2.7 - Revise esp32-arduino.md for LccPro & Fix Config Comments
+- **Status**: ✅ COMPLETED (2025-12-22)
+- **Priority**: HIGH
+- **Effort**: 2 hours
+- **Description**:
+  - ✅ Verify main.cpp works on hardware: builds, connects to WiFi, JMRI sees node and events
+  - ✅ Revise "Testing with JMRI" section (around line 1000+):
+    - ✅ Replace DecoderPro references with LccPro as authoritative tool
+    - ✅ Add SNIP vs ACDI explanation (static device identity vs user-editable layout identity)
+    - ✅ Note: SNIP appears in node list, ACDI User Name appears in Configure dialog
+    - ✅ Defer node renaming demo to Chapter 5 Configuration & Persistence chapter
+  - ✅ Fix config documentation in config.h and main.cpp:
+    - ✅ Remove "read-only" language; clarify config IS saved to SPIFFS
+    - ✅ Explain factory_reset() creates config file on first boot (initializes SNIP_NODE_NAME/DESC)
+    - ✅ Clarify apply_configuration() is for applying runtime changes when config is modified via JMRI
+    - ✅ Note: v0.1 has no config that impacts execution, so apply_configuration() returns UPDATED without changes
+  - ✅ Add new subsection "Configuration & JMRI" explaining CDI role in configuration discovery
+  - **Result**: Documentation matches working code; users understand config persistence and SNIP/ACDI distinction
+- **Owner**: Completed 2025-12-22
+- **Depends On**: None (main.cpp already complete from T2.0.1)
+- **Blocks**: T5.1 (Configuration & Persistence chapter depends on understanding current state)
+
 ## Phase 3: Diagrams & Visualization
 
 ### T3.1 - Create Mermaid: Node Startup Sequence
@@ -363,9 +385,38 @@
 
 ---
 
-## Phase 5: Book Build & Release
+## Phase 5: Configuration Chapter & Book Release
 
-### T5.1 - Final Book Build & Verification
+### T5.1 - Create Configuration & Persistence Chapter (NEW)
+- **Status**: 📋 PLANNED
+- **Priority**: HIGH (v0.2)
+- **Effort**: 3-4 hours
+- **Description**:
+  - Create new file: `src/configuration-persistence.md` (becomes Chapter 5 in book)
+  - Enhance async_blink_esp32 example with configurable EVENT_INTERVAL:
+    - Add `EventInterval` configuration entry to CDI in config.h
+    - Implement apply_configuration() to read interval from config and apply to running code
+    - Use configurable interval in loop() instead of hardcoded EVENT_INTERVAL constant
+    - Document how this pattern applies to other configuration values
+  - Document:
+    - CDI (Configuration Description Information) structure deep dive: what it is, how JMRI uses it for discovery
+    - SNIP vs ACDI distinction with concrete examples (SNIP in device firmware, ACDI in layout configuration)
+    - Config file versioning (CANONICAL_VERSION behavior):
+      - When to bump version (breaking schema changes)
+      - How OpenMRN handles version mismatch (triggers factory reset)
+    - Techniques to avoid version bumps without losing forward compatibility:
+      - Reserved space at end of config segments for future fields
+      - Example: add 16 bytes reserved in AsyncBlinkSegment for future use
+    - PlatformIO Erase Flash option for development (forces config file reinitialization)
+    - Hands-on walkthrough: modify EVENT_INTERVAL via JMRI LccPro, verify node produces events at new interval
+    - Difference between factory_reset() (one-time initialization) and apply_configuration() (runtime application)
+  - Update SUMMARY.md: add Chapter 5 in correct position (after esp32-arduino.md, before any future hardware chapters)
+  - Result: Users understand config management, schema versioning, and how to add new configurable parameters without breaking existing configurations
+- **Owner**: Implementation session after T2.7
+- **Depends On**: T2.7 (esp32-arduino.md updated with correct config explanation)
+- **Blocks**: None
+
+### T5.2 - Final Book Build & Verification
 - **Status**: ⏳ Not Started
 - **Priority**: HIGH
 - **Effort**: 1 hour
@@ -382,34 +433,45 @@
 - **Depends On**: All Phase 1-4 tasks
 - **Blocks**: None
 
-### T5.2 - Create Release Notes / Session Summary
+### T5.3 - Create Release Notes / Session Summary
 - **Status**: ⏳ Not Started
 - **Priority**: MEDIUM
 - **Effort**: 30 minutes
 - **Description**:
-  - Update PROJECT_STATUS.md: mark v0.1 complete
+  - Update PROJECT_STATUS.md: mark v0.2 complete
   - Document what was accomplished:
-    - Chapters added/moved
-    - Examples created
-    - Diagrams added
-  - List what's NOT included (CAN, advanced features) for future chapters
+    - Chapters revised/added (esp32-arduino.md for LccPro, new Configuration & Persistence chapter)
+    - Examples enhanced (main.cpp config integration, EVENT_INTERVAL example)
+    - Documentation clarifications (SNIP vs ACDI, config persistence, factory_reset vs apply_configuration)
+  - List what's NOT included (CAN hardware, advanced features, GPIO integration) for future chapters
   - Note any open questions or TODOs for next iteration
 - **Owner**: Final session
-- **Depends On**: T5.1
+- **Depends On**: T5.2
 - **Blocks**: None
 
 ---
 
 ## Work Prioritization Summary
 
-**If time is limited, prioritize in this order:**
+**Session A (Next Implementation — T2.7):**
+1. Verify main.cpp on hardware ✅
+2. Revise esp32-arduino.md for LccPro (2 hours)
+3. Fix config comments for clarity (30 min)
+4. Update TASKS.md and documentation
 
-1. **Must Have (Blocking)**: T1.1, T1.2, T2.1, T2.3, T2.4, T4.1
-2. **Should Have (High Value)**: T3.1, T3.2, T1.3
-3. **Nice to Have (Polish)**: T3.3, T4.2, T5.2
-4. **Future**: CAN hardware, advanced features
+**Session B (Following Implementation — T5.1):**
+1. Enhance async_blink_esp32 with EVENT_INTERVAL config
+2. Create Configuration & Persistence chapter (3-4 hours)
+3. Document config versioning and schema evolution
+4. Hands-on JMRI walkthrough
+
+**If time is limited in future:**
+1. **Must Have (Blocking)**: T1.1, T1.2, T2.1, T2.3, T2.4, T2.7, T5.1
+2. **Should Have (High Value)**: T3.1, T3.2, T4.1
+3. **Nice to Have (Polish)**: T3.3, T4.2, T5.2, T5.3
+4. **Future**: CAN hardware, GPIO integration, advanced features
 
 ---
 
-**Last Updated**: 2025-12-18  
-**Next Review**: Start of next session before picking tasks
+**Last Updated**: 2025-12-22  
+**Next Review**: Before starting T2.7 implementation session

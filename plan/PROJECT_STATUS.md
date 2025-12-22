@@ -2,10 +2,10 @@
 
 ## Current Phase
 
-**Phase**: Phase 2 - Example Code (T2.6 COMPLETED)  
-**Milestone**: OpenMRN-Lite CDI documentation updated; T2.6.1 next  
-**Status**: ✅ Phase 0 & Phase 1 Complete | ✅ Phase 2 Major Tasks Complete (T2.0-T2.6)  
-**Last Updated**: 2025-12-21
+**Phase**: Phase 2 - Example Code (T2.7 COMPLETED)  
+**Milestone**: JMRI documentation updated for LccPro; Chapter 3 complete and ready for review  
+**Status**: ✅ Phase 0 & Phase 1 Complete | ✅ Phase 2 Complete (T2.0-T2.7)  
+**Last Updated**: 2025-12-22
 
 ## Strategic Decision: OpenMRN-Lite Architecture Clarification
 
@@ -98,6 +98,18 @@ None - Phase 1 complete, ready for Phase 2.
   - Enhanced code walkthrough with SPIFFS/SNIP explanations ✅
   - Added 9 detailed code walkthrough sections ✅
 - **T2.6.1** ✅ COMPLETED (2025-12-21): Create Chapter 3 (OpenMRN-Lite Architecture)
+- **T2.7** ✅ COMPLETED (2025-12-22): Revise esp32-arduino.md for LccPro & Fix Config Comments
+  - Verified main.cpp works on ESP32 hardware (builds, WiFi connects, JMRI sees node/events) ✅
+  - Replaced DecoderPro references with LccPro (authoritative tool in JMRI 5.12+) ✅
+  - Added LccPro Wizard screenshot (LccPro_FirstConnection.png) for first-time setup ✅
+  - Added JMRI Preferences screenshot (JMRI_Preferences.png) for existing connections ✅
+  - Added LccProNodes.png showing node list with SNIP data ✅
+  - Added SNIP vs ACDI explanation (device identity vs layout identity) ✅
+  - Fixed config documentation comments (clarified SPIFFS persistence, factory_reset, apply_configuration) ✅
+  - Added "Configuration & JMRI: CDI Discovery" subsection explaining config discovery role ✅
+  - Updated menu references to use "ESP32 LCC" (connection name) ✅
+  - Updated JMRI minimum version requirement to 5.12 ✅
+  - **Result**: Chapter 3 documentation complete and consistent with working code
 
 ### Phase 3: Diagrams & Visualization
 - Mermaid diagrams already complete in Phase 0! ✅
