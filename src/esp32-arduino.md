@@ -319,10 +319,15 @@ static constexpr openlcb::ConfigDef cfg(0);
 
 // OpenLCB configuration - required by OpenMRNLite
 namespace openlcb {
+  // Name of CDI.xml to generate dynamically
+  const char CDI_FILENAME[] = "/spiffs/cdi.xml";
+  
+  // This will stop openlcb from exporting the CDI memory space upon start
+  const char CDI_DATA[] = "";
+  
   // Path to the config file and its size
-  // Increased to 512 bytes to accommodate UserInfo segment (name + description)
   const char* const CONFIG_FILENAME = "/spiffs/openlcb_config";
-  const size_t CONFIG_FILE_SIZE = 256;
+  const size_t CONFIG_FILE_SIZE = cfg.seg().size() + cfg.seg().offset();
   
   // SNIP (Simple Node Information Protocol) dynamic data storage
   const char* const SNIP_DYNAMIC_FILENAME = CONFIG_FILENAME;
@@ -336,37 +341,31 @@ unsigned long last_event_time = 0;
 const unsigned long EVENT_INTERVAL = 1000;
 
 /**
- * Initialize SNIP (Simple Node Information Protocol) user data in the config file.
- * The SNIP dynamic values structure contains:
- * - Byte 0: version (must be 2 for user data)
- * - Bytes 1-63: user node name
- * - Bytes 64-127: user node description
+ * Configuration update listener for factory reset and config persistence.
  * 
- * This data is displayed by JMRI in the node properties dialog.
+ * factory_reset() is called by OpenMRN on first boot to initialize SNIP dynamic
+ * data (node name and description). After boot, if you modify the config through
+ * JMRI, apply_configuration() would handle persistence (not implemented for v0.1).
  */
-void init_snip_user_data()
+class FactoryResetHelper : public DefaultConfigUpdateListener
 {
-  FILE* config_file = fopen(openlcb::CONFIG_FILENAME, "r+b");
-  if (config_file != nullptr) {
-    // Write version byte at offset 0 (must be 2 per SNIP protocol specification)
-    fseek(config_file, 0, SEEK_SET);
-    uint8_t version = 2;
-    fwrite(&version, 1, 1, config_file);
-    
-    // Write node name at offset 1 (max 63 bytes including null terminator)
-    fseek(config_file, 1, SEEK_SET);
-    fwrite(openlcb::SNIP_NODE_NAME, 1, strlen(openlcb::SNIP_NODE_NAME) + 1, config_file);
-    
-    // Write node description at offset 64 (max 64 bytes including null terminator)
-    fseek(config_file, 64, SEEK_SET);
-    fwrite(openlcb::SNIP_NODE_DESC, 1, strlen(openlcb::SNIP_NODE_DESC) + 1, config_file);
-    
-    fclose(config_file);
-    Serial.println("SNIP user data initialized (version, name, and description)");
-  } else {
-    Serial.println("Warning: Could not open config file to initialize SNIP user data");
-  }
-}
+public:
+    UpdateAction apply_configuration(int fd, bool initial_load,
+                                     BarrierNotifiable *done) OVERRIDE
+    {
+        AutoNotify n(done);
+        // In v0.1, config is read-only. Real nodes would save changes here.
+        return UPDATED;
+    }
+
+    void factory_reset(int fd) override
+    {
+        // Initialize SNIP dynamic data on first boot
+        // This data is displayed by JMRI in the node properties dialog
+        cfg.userinfo().name().write(fd, openlcb::SNIP_NODE_NAME);
+        cfg.userinfo().description().write(fd, openlcb::SNIP_NODE_DESC);
+    }
+} factory_reset_helper;
 
 /**
  * Initialize Serial communication and print startup banner.
@@ -412,19 +411,21 @@ void init_network() {
 
 /**
  * Initialize OpenMRN stack and configuration.
- * This creates the config file, initializes SNIP data, and starts the stack.
+ * This creates the config file and starts the stack.
+ * FactoryResetHelper automatically initializes SNIP data on first boot.
  */
 void init_openlcb_stack() {
+  // Create the CDI.xml dynamically
+  // CDI describes what configuration options are available
+  Serial.println("\nCreating CDI configuration descriptor...");
+  openmrn.create_config_descriptor_xml(cfg, openlcb::CDI_FILENAME);
+  
   // Create the config file if it doesn't exist
   // OpenMRNLite requires this even for simple nodes
-  Serial.println("\nInitializing OpenLCB configuration...");
+  Serial.println("Initializing OpenLCB configuration...");
   openmrn.stack()->create_config_file_if_needed(cfg.seg().internal_config(),
                                                   openlcb::CANONICAL_VERSION,
                                                   openlcb::CONFIG_FILE_SIZE);
-
-  // Initialize SNIP user data (node name and description)
-  // This populates the dynamic SNIP segment that JMRI displays
-  init_snip_user_data();
 
   // Start the OpenMRN stack
   // This initiates the OpenLCB node initialization sequence:
@@ -565,8 +566,10 @@ OpenMRN openmrn(NODE_ID);
 static constexpr openlcb::ConfigDef cfg(0);
 
 namespace openlcb {
+  const char CDI_FILENAME[] = "/spiffs/cdi.xml";
+  const char CDI_DATA[] = "";
   const char* const CONFIG_FILENAME = "/spiffs/openlcb_config";
-  const size_t CONFIG_FILE_SIZE = 256;
+  const size_t CONFIG_FILE_SIZE = cfg.seg().size() + cfg.seg().offset();
   const char* const SNIP_DYNAMIC_FILENAME = CONFIG_FILENAME;
 }
 ```
@@ -576,61 +579,48 @@ namespace openlcb {
 **ConfigDef**: Instantiates the CDI configuration structure from config.h (already described above). The `(0)` parameter is the offset in memory.
 
 **OpenLCB namespace constants**:
+- `CDI_FILENAME`: Path where the dynamic CDI.xml file will be written (used by JMRI for configuration discovery)
+- `CDI_DATA`: Empty string tells OpenMRN to generate CDI dynamically instead of using a static resource
 - `CONFIG_FILENAME`: Path to the config file in SPIFFS filesystem (note `/spiffs/` prefix)
-- `CONFIG_FILE_SIZE`: 256 bytes is sufficient for this node's configuration
+- `CONFIG_FILE_SIZE`: Calculated as the size of all configuration segments. This ensures the file is large enough for all data (SNIP + internal config + UserInfo)
 - `SNIP_DYNAMIC_FILENAME`: Store SNIP data in the same file as config
 
-#### 4. SPIFFS Filesystem and SNIP Configuration
-
-The code includes two helper functions that handle filesystem and SNIP initialization:
+#### 4. FactoryResetHelper and Configuration Initialization
 
 ```cpp
-void init_filesystem() {
-  Serial.println("\nInitializing SPIFFS...");
-  if (!SPIFFS.begin(true)) {
-    Serial.println("SPIFFS mount failed! Halting.");
-    while (1) { delay(1000); }
-  }
-  Serial.println("SPIFFS initialized successfully");
-}
+class FactoryResetHelper : public DefaultConfigUpdateListener
+{
+public:
+    UpdateAction apply_configuration(int fd, bool initial_load,
+                                     BarrierNotifiable *done) OVERRIDE
+    {
+        AutoNotify n(done);
+        return UPDATED;
+    }
 
-void init_snip_user_data() {
-  FILE* config_file = fopen(openlcb::CONFIG_FILENAME, "r+b");
-  if (config_file != nullptr) {
-    // Write version byte at offset 0 (must be 2 per SNIP protocol specification)
-    fseek(config_file, 0, SEEK_SET);
-    uint8_t version = 2;
-    fwrite(&version, 1, 1, config_file);
-    
-    // Write node name at offset 1 (max 63 bytes including null terminator)
-    fseek(config_file, 1, SEEK_SET);
-    fwrite(openlcb::SNIP_NODE_NAME, 1, strlen(openlcb::SNIP_NODE_NAME) + 1, config_file);
-    
-    // Write node description at offset 64 (max 64 bytes including null terminator)
-    fseek(config_file, 64, SEEK_SET);
-    fwrite(openlcb::SNIP_NODE_DESC, 1, strlen(openlcb::SNIP_NODE_DESC) + 1, config_file);
-    
-    fclose(config_file);
-    Serial.println("SNIP user data initialized (version, name, and description)");
-  } else {
-    Serial.println("Warning: Could not open config file to initialize SNIP user data");
-  }
-}
+    void factory_reset(int fd) override
+    {
+        cfg.userinfo().name().write(fd, openlcb::SNIP_NODE_NAME);
+        cfg.userinfo().description().write(fd, openlcb::SNIP_NODE_DESC);
+    }
+} factory_reset_helper;
 ```
 
-**SPIFFS** (SPI Flash File System) is the ESP32's built-in filesystem where OpenMRNLite stores configuration data persistently. The `SPIFFS.begin(true)` call formats the filesystem on first run if needed.
+This class handles configuration lifecycle events:
 
-**SNIP** (Simple Node Information Protocol) is the OpenLCB standard for node identification. The SNIP data includes:
-- Node name (e.g., 'async_blink')
-- Description (e.g., 'ESP32 Blink demo')
-- Manufacturer, model, and version information
+**`factory_reset(int fd)`**: Called by OpenMRN automatically on first boot when the config file is created. It initializes the SNIP dynamic data using OpenMRN's built-in CDI framework:
+- `cfg.userinfo().name().write()`: Writes the node name to the correct offset in the config file
+- `cfg.userinfo().description().write()`: Writes the node description to the correct offset
 
-JMRI displays this SNIP data in the node properties dialog, making it easy to identify nodes on your network. The data is stored in the config file with specific byte offsets:
-- Offset 0: Version byte (must be 2)
-- Offset 1-63: Node name (null-terminated string)
-- Offset 64-127: Node description (null-terminated string)
+This approach is better than manual file I/O because:
+- OpenMRN handles all byte offsets and layout automatically
+- Uses the same CDI structure (ConfigDef from config.h) consistently
+- Less prone to errors (no manual `fseek`, `fwrite` calls)
+- Foundation ready for `apply_configuration()` in future chapters when users modify config via JMRI
 
-In this v0.1 example, SNIP values are hardcoded in `config.h` and written to the config file during initialization. In a future chapter, we'll make them editable via JMRI.
+> **`apply_configuration()`**: Currently returns UPDATED without doing anything. In a real node, this would handle persistence when users modify configuration through JMRI. For v0.1, config is read-only.
+
+**SNIP data**: The node name and description are displayed by JMRI in the node properties dialog, helping identify which ESP32 is which on your network.
 
 #### 5. WiFi Connection
 
@@ -653,16 +643,17 @@ This helper function establishes the WiFi connection before starting OpenLCB. Th
 
 The dots printed to serial provide visual feedback during connection.
 
-#### 6. Configuration File Creation and SNIP Initialization
+#### 6. Initialization Helper Functions and Setup
 
 ```cpp
 void init_openlcb_stack() {
-  Serial.println("\nInitializing OpenLCB configuration...");
+  Serial.println("\nCreating CDI configuration descriptor...");
+  openmrn.create_config_descriptor_xml(cfg, openlcb::CDI_FILENAME);
+  
+  Serial.println("Initializing OpenLCB configuration...");
   openmrn.stack()->create_config_file_if_needed(cfg.seg().internal_config(),
                                                   openlcb::CANONICAL_VERSION,
                                                   openlcb::CONFIG_FILE_SIZE);
-
-  init_snip_user_data();
 
   Serial.println("\nStarting OpenLCB stack...");
   openmrn.begin();
@@ -672,23 +663,18 @@ void init_openlcb_stack() {
 }
 ```
 
-This helper function:
+This helper function performs several critical initialization steps:
 
-1. **Creates the config file**: `/spiffs/openlcb_config` is created with proper structure if it doesn't exist. The file stores:
-   - Internal configuration data (version marker, etc.)
-   - SNIP dynamic data (node name, description)
+1. **Create CDI.xml dynamically**: `openmrn.create_config_descriptor_xml()` generates a CDI (Configuration Description Information) file that describes all available configuration options. JMRI uses this file to know what settings the node supports. The file is written to `/spiffs/cdi.xml`.
 
-2. **Initializes SNIP user data**: Calls `init_snip_user_data()` to populate the node name and description fields in the config file. When JMRI queries this node, it will display these values in the node properties, helping you identify which ESP32 is which on your network.
+2. **Create config file if needed**: `create_config_file_if_needed()` ensures the config file exists with proper structure. On first boot:
+   - File is created with space for internal config, SNIP data, and UserInfo
+   - FactoryResetHelper's `factory_reset()` is called automatically
+   - SNIP user data (name and description) is populated
 
-3. **Starts the OpenLCB stack**: Initiates the entire OpenLCB node initialization sequence:
-   - **Check ID (CID)**: Broadcasts the Node ID on the network to see if anyone else is using it
-   - **Reserve ID (RID)**: If no conflicts, claims the Node ID
-   - **Announce Membership (AMD)**: Tells other nodes this node is now active
-   - **Initialization Complete**: Node enters normal operation mode
+3. **Start OpenMRN stack**: `openmrn.begin()` initiates the entire OpenLCB protocol sequence (CID, RID, AMD) as described in Chapter 1.
 
-   This matches the sequence diagram from Chapter 1. All of this happens inside `openmrn.begin()`.
-
-4. **Starts the executor thread**: OpenLCB uses background tasks to process network messages. The executor thread runs these tasks. **This is required for the TCP Hub to work.**
+4. **Start executor thread**: Background thread for processing OpenLCB messages. **This is required for TCP Hub to work.**
 
 #### 7. TCP Hub for JMRI Connectivity
 
@@ -709,7 +695,7 @@ This helper function creates a TCP server on port 12021 using the GridConnect pr
 
 The TCP Hub allows JMRI and other TCP clients to connect and monitor your node's events in real-time. Multiple JMRI instances can connect simultaneously; messages are routed between all connected clients and the local node.
 
-#### 8. Initialization Helper Functions and Setup
+#### 8. Main Setup Function
 
 ```cpp
 void setup() {
@@ -726,17 +712,15 @@ void setup() {
 }
 ```
 
-The `setup()` function calls five helper functions in sequence:
+The `setup()` function calls four helper functions in sequence:
 
 1. **`init_serial()`**: Initialize Serial, print startup banner with Node ID and Event IDs
 2. **`init_filesystem()`**: Initialize SPIFFS filesystem
 3. **`init_network()`**: Connect to WiFi (required before OpenLCB)
-4. **`init_openlcb_stack()`**: Create config file, initialize SNIP data, start OpenLCB protocol stack, start executor thread
+4. **`init_openlcb_stack()`**: Create CDI file, config file, initialize SNIP data via FactoryResetHelper, start OpenLCB protocol stack, start executor thread
 5. **`init_tcp_hub()`**: Start TCP server for JMRI connectivity
 
 **Why break it down?** Each helper function focuses on a single responsibility, making the code easier to understand and modify. If you need to add new initialization steps or change how the node starts up, it's clear where to make those changes.
-
-After all initialization completes, the code records the start time and enters the event production loop.
 
 #### 9. Event Production Loop
 
@@ -807,9 +791,8 @@ Connecting to WiFi SSID: YourNetwork
 WiFi connected!
 IP Address: 192.168.1.100
 
+Creating CDI configuration descriptor...
 Initializing OpenLCB configuration...
-Creating config file /spiffs/openlcb_config
-SNIP user data initialized (version, name, and description)
 
 Starting OpenLCB stack...
 Starting executor thread...
