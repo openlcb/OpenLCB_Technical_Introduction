@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Async Blink Initialization - OpenLCB Technical Introduction</title>
+        <title>Node Startup Sequence - OpenLCB Technical Introduction</title>
                 
 
         <!-- Custom HTML head -->
@@ -82,7 +82,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="intro_node.html"><strong aria-hidden="true">1.1.</strong> Node</a></li><li class="chapter-item expanded "><a href="intro_can.html"><strong aria-hidden="true">1.2.</strong> CAN</a></li><li class="chapter-item expanded "><a href="intro_async_blink.html" class="active"><strong aria-hidden="true">1.3.</strong> Async Blink Initialization</a></li><li class="chapter-item expanded "><a href="intro_ab_events.html"><strong aria-hidden="true">1.4.</strong> Async Blink Events</a></li></ol></li><li class="chapter-item expanded "><a href="start.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li></ol>            </div>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="intro_node.html"><strong aria-hidden="true">1.1.</strong> Node</a></li><li class="chapter-item expanded "><a href="intro_can.html"><strong aria-hidden="true">1.2.</strong> CAN</a></li><li class="chapter-item expanded "><a href="intro_async_blink.html" class="active"><strong aria-hidden="true">1.3.</strong> Node Startup Sequence</a></li><li class="chapter-item expanded "><a href="intro_ab_events.html"><strong aria-hidden="true">1.4.</strong> Events and Run Mode</a></li></ol></li><li class="chapter-item expanded "><a href="start.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="openmrn-architecture.html"><strong aria-hidden="true">3.</strong> OpenMRN-Lite Architecture &amp; Capabilities</a></li><li class="chapter-item expanded "><a href="esp32-arduino.html"><strong aria-hidden="true">4.</strong> ESP32 with Arduino &amp; PlatformIO</a></li><li class="chapter-item expanded "><a href="gpio-hardware.html"><strong aria-hidden="true">5.</strong> Physical I/O with GPIO</a></li></ol>            </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
@@ -143,76 +143,160 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="example-messages"><a class="header" href="#example-messages">Example Messages</a></h1>
-<p><a href="https://github.com/bakerstu/openmrn">OpenMRN</a> is a C++ library that implements the entire OpenLCB stack with some OpenLCB extensions. The GIT repository hosting OpenMRN also contains some sample applications that can be run as desktop applications to join an OpenLCB network.</p>
-<h2 id="async-blink"><a class="header" href="#async-blink">Async Blink</a></h2>
-<p>We won't go into details on how to build or run this application, as that is covered in the OpenMRN documentation. Instead, we'll use it to give you an idea of what actual messages look like.</p>
-<p>The async_blink application can be run without a layout or a CAN OpenLCB network. You can run it entirely on a single computer.</p>
-<p>The async_blink application sends an event every second, alternating between 0 and 1.</p>
-<p>Here is the output from running the application under Linux:</p>
-<p><img src="images/async_blink_output.png" alt="async_blink output" /></p>
-<p>This probably looks a little overwhelming. Let's start with the message format. Each line is a seperate message sent or received on the OpenLCB network. In this case of OpemMRN and the async_blink application, we're using TCP/IP rather than CAN as the transport mechanism. The current code uses a text rather than binary for the messages, using a format based the GridConnect protocol:</p>
-<pre><code>:X &lt;identifier&gt; &lt;N&gt; &lt;Data-0&gt;&lt;Data-1&gt;...&lt;Data-7&gt;;
-</code></pre>
-<p>As an example, the first message <code>:X17050415N;</code> has the ID <code>17050415</code> and no data. The ID and all other data are in HEX. </p>
-<p>There are some log messages in the output that will help us get an idea of what's going on. However, these messages may not make a lot of sense without both understanding the application and a little more about the OpenLCB standards.</p>
-<p>How do you map these messages back into the OpenLCB standards to understand what you're seeing?</p>
-<h2 id="decoded-messages"><a class="header" href="#decoded-messages">Decoded Messages</a></h2>
-<p>JMRI displays decoded messages. So for this example we connected JMRI to the same TCP/IP OpenLCB bus (all running on the same computer). We'll cover how to use JMRI later. For now we're just going to focus on the messages being sent.</p>
-<p><img src="images/alias_allocation_example.png" alt="Allocate Alias" /></p>
-<p>You'll notice the first set of messages all say &quot;CID.&quot; This is a <em>Check ID</em> frame that is used as part of allocating an <em>alias</em> for the Node ID.</p>
-<h2 id="node-aliases"><a class="header" href="#node-aliases">Node Aliases</a></h2>
-<p>The 29-bit headers for CAN messages need to be different for messages sent from different nodes to avoid collisions. The 6-byte Node ID is too long to fit into the header and leave room for more information. So instead, OpenLCB defines a 12-bit alias for Node IDs that are used in the header. By including the alias of the sender in most messages, we avoid collisions.</p>
-<p>These aliases are negotiated between the nodes. The CID messages are part of this process. If you're interested in the details, you can find them in section 6 of the specifications (with more information in the technical note):</p>
-<ul>
-<li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/s-9.7.2.1-canframetransfer-2015-02-17.pdf">S-9.7.2.1 CAN Frame Transfer</a></li>
-<li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/tn-9.7.2.1-canframetransfer-2016-02-06.pdf">TN-9.7.2.1 CAN Frame Transfer</a></li>
-</ul>
-<h3 id="check-id-cid"><a class="header" href="#check-id-cid">Check ID (CID)</a></h3>
-<p>There is one interesting detail here. The first four messages actually include the full node ID. The async_blink application has the following Node ID defined:</p>
-<pre><code class="language-cpp">const openlcb::NodeID NODE_ID = 0x050101011410ULL;
-</code></pre>
-<p>If you divide this ID into four parts, you'll get <code>050</code>, <code>101</code>, <code>011</code>, and <code>410</code>. Now look at the first four messages:</p>
-<pre><code>17050415
-16101415
-15011415
-14410415
-</code></pre>
-<p>Look the &quot;middle&quot; hex values: 17<code>050</code>415, 16<code>101</code>415, 15<code>011</code>415, and 14<code>410</code>15. In other words, the full Node ID is present in these four messages. That's the case because each of these messages by itself might not be unique when sent from each node in a segment, but the four messages together will be. Why is this important?</p>
-<p>These messages are basically saying that this node wants to use <code>415</code> as it's alias and is asking if anyone else is currently using that alias. In this example, there were no replies, which means this node is free to use this alias.</p>
+                        <h1 id="node-startup-sequence"><a class="header" href="#node-startup-sequence">Node Startup Sequence</a></h1>
+<p>When an OpenLCB node powers up or resets, it goes through a defined startup sequence to join the network. Understanding this sequence is essential to building your own nodes.</p>
 <blockquote>
-<p><strong>Note:</strong> The recommended algorithm for generating aliases in case there are collisions is based on a specific pseudo-random number generator that is dependent on the full Node ID.</p>
+<p><strong>Note for Library Users</strong>: If you're using OpenMRNLite or other OpenLCB libraries, all of the mechanics described in this chapter are handled automatically for you. You don't need to implement alias reservation, collision detection, or recovery—the library does it all in the background. </p>
+<p>This chapter exists to help you <strong>understand how it works</strong>, which is valuable knowledge when debugging network issues or designing advanced features. However, if you just want to build a working node with async_blink_esp32, you can skip straight to Chapter 3 without missing anything essential. The library takes care of it.</p>
 </blockquote>
-<h3 id="reserve-id-rid"><a class="header" href="#reserve-id-rid">Reserve ID (RID)</a></h3>
-<p>The fifth message, <code>10700415</code>, is the Reserve ID (RID) frame. Since the node didn't get any arguments from other nodes, it's now declaring that it's reserved the alias <code>415</code>.</p>
-<h3 id="alias-map-definition-amd"><a class="header" href="#alias-map-definition-amd">Alias Map Definition (AMD)</a></h3>
-<p>The sixth message reports the full Node ID associated with the alias that was just reserved:</p>
-<pre><code>10701415 05 01 01 01 14 10
+<h2 id="what-happens-during-startup"><a class="header" href="#what-happens-during-startup">What Happens During Startup</a></h2>
+<p>Every node follows this sequence:</p>
+<ol>
+<li>
+<p><strong>Check ID (CID)</strong>: The node sends four CID frames containing its 6-byte unique Node ID, spread across the frames. This allows the node to check if anyone else is using its desired alias.</p>
+</li>
+<li>
+<p><strong>Reserve ID (RID)</strong>: If no other node objects, the node sends an RID frame to reserve its chosen 12-bit alias for the Node ID.</p>
+</li>
+<li>
+<p><strong>Alias Map Definition (AMD)</strong>: The node announces the mapping between its full 6-byte Node ID and the 12-bit alias it just reserved.</p>
+</li>
+<li>
+<p><strong>Initialized (Init Complete)</strong>: The node sends an &quot;Initialized&quot; message telling the network it's now fully online and reachable.</p>
+</li>
+</ol>
+<pre><code class="language-mermaid">sequenceDiagram
+    participant Node as New Node
+    participant Bus as OpenLCB Network
+    participant Others as Other Nodes
+    
+    Note over Node: Power On / Reset
+    
+    Node-&gt;&gt;Bus: CID Frame 1 (Node ID bytes 0-1)
+    Node-&gt;&gt;Bus: CID Frame 2 (Node ID bytes 2-3)
+    Node-&gt;&gt;Bus: CID Frame 3 (Node ID bytes 4-5)
+    Node-&gt;&gt;Bus: CID Frame 4 (checks alias)
+    
+    Note over Node,Others: Wait for conflicts (200ms)
+    
+    Node-&gt;&gt;Bus: RID (Reserve alias)
+    Node-&gt;&gt;Bus: AMD (Map Node ID to alias)
+    Node-&gt;&gt;Bus: Initialized Complete
+    
+    Note over Node: Now reachable on network
+    
+    Node-&gt;&gt;Bus: Producer Identified (events)
+    Node-&gt;&gt;Bus: Consumer Identified (events)
 </code></pre>
-<h3 id="initialize-complete"><a class="header" href="#initialize-complete">Initialize Complete</a></h3>
-<p>The messages above are part of the node's initialization phase. During this time it's not _&quot;<em>reachable</em> on the network. In other words, it won't respond events or messages addressed to it. Once it's negotiated a Node Alias, it sends out an Initialize Complete message telling anyone who cares that it's not online:</p>
-<pre><code>19100415 05 01 01 01 14 10
-</code></pre>
-<p>This is documented in section 3.3.1 (with the CAD ID defined in 7.3.3.1):</p>
+<h2 id="why-use-aliases"><a class="header" href="#why-use-aliases">Why Use Aliases?</a></h2>
+<p>OpenLCB uses 6-byte Node IDs to ensure every device in the world has a unique identifier. However, CAN bus headers only have 29 bits available. To fit the sender information plus message type, OpenLCB uses temporary 12-bit aliases that represent the full Node ID during a session.</p>
+<p>This alias negotiation happens every time a node starts up. The aliases are not permanent—they're regenerated each time the node powers on.</p>
+<h2 id="node-participation"><a class="header" href="#node-participation">Node Participation</a></h2>
+<p>Other nodes on the network listen during this startup sequence. If another node is already using the alias the new node wants, it will send a conflict message, forcing the new node to pick a different alias. This ensures all active nodes have unique aliases.</p>
+<h2 id="multi-node-network-behavior"><a class="header" href="#multi-node-network-behavior">Multi-Node Network Behavior</a></h2>
+<p>The startup sequence isn't just about a single node announcing itself—it's a conversation with the entire network:</p>
+<p><strong>Other nodes participate by:</strong></p>
 <ul>
-<li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/s-9.7.3-messagenetwork-2016-02-06.pdf">S-9.7.3 Message Network</a></li>
+<li><strong>Listening</strong> to all CID frames to check for alias conflicts</li>
+<li><strong>Responding</strong> with conflict messages if their alias is being claimed</li>
+<li><strong>Recording</strong> the Node ID to alias mapping from AMD frames</li>
+<li><strong>Acknowledging</strong> new nodes with responses to queries</li>
 </ul>
-<h2 id="producerconsumer-events"><a class="header" href="#producerconsumer-events">Producer/Consumer Events</a></h2>
-<p>At this point there is another node that starts the Node Alias negotiation. You should be able to spot and read those messages now. We'll ignore them here.</p>
-<p>Part of the required initialization process for a node is for it to publish the list of events that it produces and consumes. Doing so helps with gateways so that bridges can choose which events to send to other segments.</p>
-<p>The next set of messages are this published information. The <code>async_blink</code> node supports two different events--one for 0 and the other for 1. It both produces and consumes these events, so it sends out four messages:</p>
-<pre><code>19545415 05 02 01 02 02 00 00 00    Producer Identified Invalid
-19544415 05 02 01 02 02 00 00 01    Producer Identified Valid
-
-194C5415 05 02 01 02 02 00 00 00    Consumer Identified Invalid
-194C4415 05 02 01 02 02 00 00 01    Consumer Identified Valid
-</code></pre>
-<p>The two event IDs are <code>05.02.01.02.02.00.00.00</code> and <code>05.02.01.02.02.00.00.01</code>.</p>
-<p>We won't go into the details here. You can find more in the specifications and techinal notes:</p>
+<p>This cooperative behavior ensures:</p>
 <ul>
-<li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/s-9.7.3.1-eventtransport-2016-02-06.pdf">S-9.7.3.1 Event Transport</a> section 4.6</li>
-<li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/tn-9.7.3.1-eventtransport-2016-02-06.pdf">TN-9.7.3.1 Event Transport</a></li>
+<li>No two nodes ever use the same alias simultaneously</li>
+<li>Nodes can discover each other's capabilities</li>
+<li>Gateways and bridges can manage routing efficiently</li>
+<li>Network monitoring tools (like JMRI) can track all active nodes</li>
 </ul>
+<p>When your node starts up, it's not alone—the entire network is watching and ready to help it join successfully.</p>
+<h2 id="what-happens-when-things-go-wrong"><a class="header" href="#what-happens-when-things-go-wrong">What Happens When Things Go Wrong</a></h2>
+<p>The startup sequence above describes the happy path—when everything works perfectly on the first try. In practice, nodes must be prepared to handle conflicts and retries.</p>
+<h3 id="alias-collision-detection"><a class="header" href="#alias-collision-detection">Alias Collision Detection</a></h3>
+<p>If another node on the network is already using the alias your node wants to reserve, that other node will respond to your CID frames with a Reserve ID (RID) frame. This signals a collision:</p>
+<ul>
+<li>
+<p><strong>During CID phase</strong>: If you receive an RID while sending your CID frames, your chosen alias is already in use. Your node must:</p>
+<ul>
+<li>Abandon the current alias</li>
+<li>Generate a new tentative alias</li>
+<li>Start the entire CID → wait → RID sequence over from the beginning</li>
+</ul>
+</li>
+<li>
+<p><strong>During the 200ms wait</strong>: If another node transmits any non-CID frame using your tentative alias, you know there's a collision and must restart.</p>
+</li>
+</ul>
+<p>Here's what the collision and recovery process looks like:</p>
+<pre><code class="language-mermaid">sequenceDiagram
+    participant Node as New Node
+    participant Bus as OpenLCB Network
+    participant Other as Node Already Online
+    
+    Note over Node: Generate Alias ABC
+    
+    Node-&gt;&gt;Bus: CID Frame 1 (with alias ABC)
+    Other-&gt;&gt;Bus: RID (Collision!)
+    Node-&gt;&gt;Node: Detect Collision
+    
+    Note over Node: Collision detected!&lt;br/&gt;Generate New Alias DEF
+    
+    Node-&gt;&gt;Bus: CID Frame 1 (with alias DEF)
+    Node-&gt;&gt;Bus: CID Frame 2 (with alias DEF)
+    Node-&gt;&gt;Bus: CID Frame 3 (with alias DEF)
+    Node-&gt;&gt;Bus: CID Frame 4 (with alias DEF)
+    
+    Note over Node,Other: Wait for conflicts (200ms)
+    Note over Other: No conflict, silent
+    
+    Node-&gt;&gt;Bus: RID (Reserve alias DEF)
+    Node-&gt;&gt;Bus: AMD (Map Node ID to alias DEF)
+    Node-&gt;&gt;Bus: Initialized Complete
+    
+    Note over Node: Now reachable with alias DEF
+</code></pre>
+<p>Your node's alias generation algorithm (described in section 6.3 of S-9.7.2.1) ensures that each collision produces a different alias candidate, so nodes won't get stuck in a loop trying the same alias repeatedly.</p>
+<h3 id="amd-and-alias-validation"><a class="header" href="#amd-and-alias-validation">AMD and Alias Validation</a></h3>
+<p>Once you've successfully reserved an alias and sent your AMD (Alias Map Definition) frame, the alias mapping is established. However, your node must remain vigilant:</p>
+<ul>
+<li>
+<p><strong>Alias Mapping Enquiry (AME)</strong>: Other nodes can query your alias at any time using an AME frame. Your node is expected to respond with another AMD frame confirming the mapping.</p>
+</li>
+<li>
+<p><strong>Duplicate Node ID Detection</strong>: If your node receives an AMD frame from another node claiming to have the same 6-byte Node ID as you, this indicates a serious problem—two nodes with identical IDs exist on the network. Your node should:</p>
+<ul>
+<li>Signal this condition to the user (LED blink pattern, log message, etc.)</li>
+<li>Optionally transition back to the Inhibited state</li>
+<li>Restart the alias reservation process with error handling</li>
+</ul>
+</li>
+</ul>
+<h3 id="collision-recovery-in-your-code"><a class="header" href="#collision-recovery-in-your-code">Collision Recovery in Your Code</a></h3>
+<p>When implementing your node:</p>
+<ol>
+<li><strong>Always expect CID collisions</strong> - Your initial alias choice might conflict; be prepared to generate alternatives</li>
+<li><strong>Implement retry logic</strong> - After detecting a collision during the CID phase, generate a new alias and restart</li>
+<li><strong>Validate on receipt</strong> - When receiving AMD frames from other nodes, check for duplicate Node IDs</li>
+<li><strong>Handle AME queries</strong> - Always respond to AME frames with AMD frames to maintain alias mappings</li>
+</ol>
+<p>Most of this is handled transparently by OpenMRNLite, but understanding these scenarios helps when debugging network startup issues.</p>
+<blockquote>
+<p><strong>Note</strong>: For implementation details on alias collision handling and retry algorithms, see the async_blink_esp32 example code in Chapter 3, which demonstrates how OpenMRNLite handles these scenarios automatically.</p>
+</blockquote>
+<h2 id="references"><a class="header" href="#references">References</a></h2>
+<p>For detailed protocol specifications, see:</p>
+<p><strong>CAN Frame Transfer (Node Startup Sequence)</strong></p>
+<ul>
+<li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/LCC/S/s-9.7.2.1-canframetransfer-2024-07-22.pdf">S-9.7.2.1 CAN Frame Transfer Standard</a> - Normative specification for CID, RID, AMD frames and the 200ms wait requirement (section 6.2.1)</li>
+<li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/LCC/TN/tn-9.7.2.1-canframetransfer-2024-07-22.pdf">TN-9.7.2.1 CAN Frame Transfer Technical Note</a> - Background and examples</li>
+</ul>
+<p><strong>Message Network (Initialization Complete)</strong></p>
+<ul>
+<li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/LCC/S/s-9.7.3-messagenetwork-2024-07-22.pdf">S-9.7.3 Message Network Standard</a> - Normative specification for Initialization Complete message (section 3.3.1) and message network protocol</li>
+</ul>
+<blockquote>
+<p><strong>Note</strong>: Future chapters will dive deeper into how the alias generation algorithm works and how to handle collisions in your code.</p>
+</blockquote>
 
                     </main>
 
@@ -260,6 +344,8 @@
         <script src="book.js" type="text/javascript" charset="utf-8"></script>
 
         <!-- Custom JS scripts -->
+                <script type="text/javascript" src="mermaid.min.js"></script>
+                <script type="text/javascript" src="mermaid-init.js"></script>
         
         
     </body>

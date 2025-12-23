@@ -82,7 +82,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html" class="active"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="intro_node.html"><strong aria-hidden="true">1.1.</strong> Node</a></li><li class="chapter-item expanded "><a href="intro_can.html"><strong aria-hidden="true">1.2.</strong> CAN</a></li><li class="chapter-item expanded "><a href="intro_async_blink.html"><strong aria-hidden="true">1.3.</strong> Async Blink Initialization</a></li><li class="chapter-item expanded "><a href="intro_ab_events.html"><strong aria-hidden="true">1.4.</strong> Async Blink Events</a></li></ol></li><li class="chapter-item expanded "><a href="start.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li></ol>            </div>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html" class="active"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="intro_node.html"><strong aria-hidden="true">1.1.</strong> Node</a></li><li class="chapter-item expanded "><a href="intro_can.html"><strong aria-hidden="true">1.2.</strong> CAN</a></li><li class="chapter-item expanded "><a href="intro_async_blink.html"><strong aria-hidden="true">1.3.</strong> Node Startup Sequence</a></li><li class="chapter-item expanded "><a href="intro_ab_events.html"><strong aria-hidden="true">1.4.</strong> Events and Run Mode</a></li></ol></li><li class="chapter-item expanded "><a href="start.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="openmrn-architecture.html"><strong aria-hidden="true">3.</strong> OpenMRN-Lite Architecture &amp; Capabilities</a></li><li class="chapter-item expanded "><a href="esp32-arduino.html"><strong aria-hidden="true">4.</strong> ESP32 with Arduino &amp; PlatformIO</a></li><li class="chapter-item expanded "><a href="gpio-hardware.html"><strong aria-hidden="true">5.</strong> Physical I/O with GPIO</a></li></ol>            </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
@@ -151,10 +151,10 @@ just enough depth to get you going, without bogging you down with all the
 details and possibilites. The standards and the technical notes have a lot
 more details.</p>
 <h2 id="focus-of-this-book"><a class="header" href="#focus-of-this-book">Focus of this book</a></h2>
-<p>We're going to focus on how to create board that can be added to an
-LCC bus. Therefore, we're going to focus on solutions that use the CAN
-bus. There are other options, such as WiFi, but we won't cover them in
-this book.</p>
+<p>We're going to focus on how to create a device (node) that can be added to an
+OpenLCB network. To make learning easier, we'll start with WiFi/TCP transport,
+which allows you to see network traffic easily and test without special hardware.
+Later chapters will cover adding CAN bus hardware for traditional LCC installations.</p>
 <h2 id="assumptions"><a class="header" href="#assumptions">Assumptions</a></h2>
 <p>We're assuming you've used LCC products, and therefore already understand
 concepts like the producer-consumer model. We also assume you've written
@@ -165,6 +165,18 @@ LCC is a brand name owned by the NMRA. It covers a set of standards that have
 been adopted by the NMRA for Layout Command Control (hence the LCC).</p>
 <p>OpenLCB is the name of the working group that created the standards approved by the NMRA and continues to create new standards. This is a group of dedicated volunteers who are working to fulfill the dream.</p>
 <p>You'll notice that the standards use the name OpenLCB everywhere except for the header at the top of the document. In this book, as in the standards, we'll use the term OpenLCB everywhere except this page.</p>
+<h2 id="transport-layers"><a class="header" href="#transport-layers">Transport Layers</a></h2>
+<p>OpenLCB is designed to work over different physical transport layers. The two main options are:</p>
+<p><strong>CAN (Controller Area Network)</strong>: The traditional transport for OpenLCB, used in most commercial LCC products. CAN uses a two-wire bus with excellent noise immunity and built-in arbitration, making it ideal for model railroad environments. It requires CAN transceiver hardware and proper bus termination.</p>
+<p><strong>WiFi/TCP</strong>: An alternative transport that uses standard WiFi networking and TCP/IP. This is particularly useful for development and learning because:</p>
+<ul>
+<li>No special hardware required beyond WiFi-capable microcontrollers</li>
+<li>Easy to monitor traffic using standard network tools</li>
+<li>Can connect to JMRI and other tools over your home network</li>
+<li>Simplifies initial prototyping and testing</li>
+</ul>
+<p>In this book, we'll start with WiFi/TCP transport because it's more accessible for learning. Once you understand the core concepts, the principles transfer directly to CAN-based implementations. Future chapters will cover adding CAN hardware.</p>
+<p>Both transports use the same OpenLCB protocols and message formats—only the physical layer changes.</p>
 
                     </main>
 
@@ -206,6 +218,8 @@ been adopted by the NMRA for Layout Command Control (hence the LCC).</p>
         <script src="book.js" type="text/javascript" charset="utf-8"></script>
 
         <!-- Custom JS scripts -->
+                <script type="text/javascript" src="mermaid.min.js"></script>
+                <script type="text/javascript" src="mermaid-init.js"></script>
         
         
     </body>

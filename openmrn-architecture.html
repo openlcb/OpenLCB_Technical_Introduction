@@ -1,0 +1,285 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>OpenMRN-Lite Architecture &amp; Capabilities - OpenLCB Technical Introduction</title>
+                
+
+        <!-- Custom HTML head -->
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+                <link rel="icon" href="favicon.svg">
+                        <link rel="shortcut icon" href="favicon.png">
+                <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+                <link rel="stylesheet" href="css/print.css" media="print">
+        
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+                <link rel="stylesheet" href="fonts/fonts.css">
+        
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+            </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="intro_node.html"><strong aria-hidden="true">1.1.</strong> Node</a></li><li class="chapter-item expanded "><a href="intro_can.html"><strong aria-hidden="true">1.2.</strong> CAN</a></li><li class="chapter-item expanded "><a href="intro_async_blink.html"><strong aria-hidden="true">1.3.</strong> Node Startup Sequence</a></li><li class="chapter-item expanded "><a href="intro_ab_events.html"><strong aria-hidden="true">1.4.</strong> Events and Run Mode</a></li></ol></li><li class="chapter-item expanded "><a href="start.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="openmrn-architecture.html" class="active"><strong aria-hidden="true">3.</strong> OpenMRN-Lite Architecture &amp; Capabilities</a></li><li class="chapter-item expanded "><a href="esp32-arduino.html"><strong aria-hidden="true">4.</strong> ESP32 with Arduino &amp; PlatformIO</a></li><li class="chapter-item expanded "><a href="gpio-hardware.html"><strong aria-hidden="true">5.</strong> Physical I/O with GPIO</a></li></ol>            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                                                <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                                            </div>
+
+                    <h1 class="menu-title">OpenLCB Technical Introduction</h1>
+
+                    <div class="right-buttons">
+                                                <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                                                                        
+                    </div>
+                </div>
+
+                                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="openmrn-lite-architecture--capabilities"><a class="header" href="#openmrn-lite-architecture--capabilities">OpenMRN-Lite Architecture &amp; Capabilities</a></h1>
+<p>You've learned the concepts behind OpenLCB. Now, before we write code, let's understand the software library we'll be using: OpenMRN-Lite. This chapter clarifies what it is, why it's the right choice for ESP32, and what it can (and can't) do.</p>
+<h2 id="what-is-openmrn-lite"><a class="header" href="#what-is-openmrn-lite">What is OpenMRN-Lite?</a></h2>
+<p><strong>OpenMRN-Lite is the Arduino version of OpenMRN.</strong></p>
+<p>This might sound like it's a cut-down or simplified version, but that would be misleading. Instead, think of it as a version optimized for single-threaded, resource-constrained environments like Arduino and ESP32.</p>
+<p>There are two ways to run OpenMRN code:</p>
+<table><thead><tr><th>Version</th><th>Threading Model</th><th>Best For</th><th>Platform</th></tr></thead><tbody>
+<tr><td><strong>Full OpenMRN</strong></td><td>Multi-threaded (FreeRTOS)</td><td>Complex systems, command stations, bridges</td><td>Linux, macOS, Windows, native ESP-IDF</td></tr>
+<tr><td><strong>OpenMRN-Lite</strong></td><td>Single-threaded executor</td><td>Learning, sensors, simple controllers</td><td>Arduino IDE, PlatformIO (Arduino framework) on ESP32, STM32</td></tr>
+</tbody></table>
+<p>The key insight: <strong>Arduino cannot run the multi-threaded version of OpenMRN.</strong> The Arduino runtime environment doesn't provide the POSIX threading APIs that full OpenMRN requires. Therefore, OpenMRN-Lite is not a &quot;lite&quot; compromise—it's the only OpenMRN version available for Arduino.</p>
+<h2 id="why-openmrn-lite-is-the-right-choice-for-learning-openlcb"><a class="header" href="#why-openmrn-lite-is-the-right-choice-for-learning-openlcb">Why OpenMRN-Lite is the Right Choice for Learning OpenLCB</a></h2>
+<p>When building an OpenLCB node on ESP32 using Arduino, OpenMRN-Lite is the right tool for this learning path because of its simplicity and low barrier to entry.</p>
+<p><strong>The Alternative</strong>: You <em>could</em> use the full OpenMRN library with native ESP-IDF (Espressif's real-time operating system for ESP32). This gives you access to advanced features and the full power of FreeRTOS threading. But it also requires:</p>
+<ul>
+<li>Understanding real-time operating systems, threading, and synchronization primitives</li>
+<li>Managing POSIX APIs and FreeRTOS queues before you even write a single OpenLCB message</li>
+<li>Debugging complex multi-threaded interactions</li>
+<li>A completely different development environment and build system</li>
+</ul>
+<p>For learning OpenLCB concepts, that's like learning to drive by starting with a race car instead of a regular car.</p>
+<p><strong>Why OpenMRN-Lite Instead</strong>: </p>
+<ul>
+<li><strong>Familiar environment</strong> - Arduino's <code>setup()</code>/<code>loop()</code> model is straightforward and widely understood</li>
+<li><strong>Focus on OpenLCB</strong> - You can understand nodes, events, and producers/consumers without threading complexity</li>
+<li><strong>Fast results</strong> - You'll have working code sending real OpenLCB messages within hours</li>
+<li><strong>Proven examples</strong> - The IOBoard example demonstrates CDI configuration, events, and hardware I/O patterns you can build on</li>
+<li><strong>Natural progression</strong> - Once you master OpenLCB concepts, you can migrate to ESP-IDF + full OpenMRN if needed</li>
+</ul>
+<p>This isn't a permanent limitation—it's a strategic choice that lets you learn faster and more effectively. Once you understand OpenLCB deeply, you'll be better equipped to understand why those advanced features (virtual nodes, traction protocol, multi-threading) exist and when you might need them.</p>
+<h2 id="what-openmrn-lite-does-support"><a class="header" href="#what-openmrn-lite-does-support">What OpenMRN-Lite DOES Support</a></h2>
+<p>OpenMRN-Lite has everything you need to build real, functional OpenLCB nodes:</p>
+<p><strong>Core Features</strong> ✅</p>
+<ul>
+<li><strong>CDI (Configuration Description Information)</strong> - Define configuration options that JMRI can edit without recompilation</li>
+<li><strong>SNIP (Simple Node Information Protocol)</strong> - Share node name and description with the network</li>
+<li><strong>Event Producers &amp; Consumers</strong> - The core OpenLCB pattern you learned in Chapter 1</li>
+<li><strong>Datagrams</strong> - Reliable message delivery for configuration and data exchange</li>
+<li><strong>ACDI (Abbreviated CDI)</strong> - Simpler configuration interface for basic nodes</li>
+<li><strong>CAN Transport (optional)</strong> - Add a CAN transceiver to use CAN bus instead of WiFi</li>
+<li><strong>TCP Hub (optional)</strong> - Connect to JMRI over WiFi using GridConnect protocol</li>
+<li><strong>Factory Reset Patterns</strong> - Reset to known states without recompilation</li>
+<li><strong>Persistent Configuration</strong> - Store settings in SPIFFS or SD card</li>
+</ul>
+<p>The IOBoard example (the most complete OpenMRN-Lite example) demonstrates all of these features in action: CDI-based configuration, event handling, hardware I/O, and network integration. It's exactly the pattern you'll use when building your own nodes.</p>
+<h2 id="what-openmrn-lite-does-not-support"><a class="header" href="#what-openmrn-lite-does-not-support">What OpenMRN-Lite Does NOT Support</a></h2>
+<p>There are some advanced features that require full OpenMRN with FreeRTOS threading:</p>
+<p><strong>What You Don't Get</strong> ❌</p>
+<ul>
+<li><strong>Virtual Nodes</strong> - Hosting multiple logical nodes on one microcontroller</li>
+<li><strong>Traction Protocol</strong> - Command station features (throttle control, trains)</li>
+<li><strong>Multi-Transport Bridging</strong> - Routing messages between CAN and TCP automatically</li>
+<li><strong>Multi-Threaded I/O</strong> - Background threads for independent subsystems</li>
+<li><strong>Hub Services</strong> - Virtual topology management and advanced networking</li>
+<li><strong>Extensive Memory Configurations</strong> - Very large configuration systems</li>
+</ul>
+<p>These features aren't missing from OpenMRN-Lite because the developers cut corners. They're missing because they require the threading and memory management capabilities that FreeRTOS provides, which the Arduino framework doesn't offer.</p>
+<p><strong>This is not a limitation for learning OpenLCB.</strong> In fact, OpenMRN-Lite's simplicity makes it easier to understand how OpenLCB works without being buried in threading complexity.</p>
+<h2 id="when-to-use-openmrn-lite-vs-full-openmrn"><a class="header" href="#when-to-use-openmrn-lite-vs-full-openmrn">When to Use OpenMRN-Lite vs Full OpenMRN</a></h2>
+<p>Use this decision matrix to understand which tool is right for your project:</p>
+<table><thead><tr><th>Your Need</th><th>Use</th><th>Why</th></tr></thead><tbody>
+<tr><td>Learning LCC on ESP32</td><td>OpenMRN-Lite</td><td>Single-threaded, Arduino-native, proven examples</td></tr>
+<tr><td>Building a sensor node (button, LED, turnout)</td><td>OpenMRN-Lite</td><td>Minimal code, small footprint, stable</td></tr>
+<tr><td>Fixed-function controller (no changes after deployment)</td><td>OpenMRN-Lite</td><td>No runtime configuration needed; extremely reliable</td></tr>
+<tr><td><strong>Hosting multiple nodes on one ESP32</strong></td><td>❌ Not possible with Arduino</td><td>Requires FreeRTOS; switch to native ESP-IDF + full OpenMRN</td></tr>
+<tr><td><strong>Building a command station</strong></td><td>❌ Not possible with Arduino</td><td>Requires traction protocol + FreeRTOS; use Linux or dedicated hardware</td></tr>
+<tr><td><strong>Bridging CAN and TCP automatically</strong></td><td>❌ Not possible with Arduino</td><td>Requires multi-threading; use Linux</td></tr>
+</tbody></table>
+<p>The key takeaway: <strong>If you're using Arduino/PlatformIO on ESP32, OpenMRN-Lite is the only OpenMRN version available.</strong> There is no &quot;upgrade path&quot; to full OpenMRN while staying in the Arduino ecosystem. If you need full OpenMRN features, you switch toolchains entirely (to native ESP-IDF + FreeRTOS), which requires rewriting in a different style.</p>
+<h2 id="configuration--learning-implications"><a class="header" href="#configuration--learning-implications">Configuration &amp; Learning Implications</a></h2>
+<p>One important capability worth highlighting: <strong>OpenMRN-Lite fully supports CDI</strong>, the configuration system. This means you can:</p>
+<ol>
+<li><strong>Define configuration options</strong> in your code (node name, GPIO pins, event IDs, etc.)</li>
+<li><strong>Connect to JMRI</strong> and see those options in a graphical interface</li>
+<li><strong>Change configuration</strong> without recompiling or uploading new firmware</li>
+<li><strong>Persist changes</strong> to the ESP32's filesystem (SPIFFS)</li>
+</ol>
+<p>This is powerful for learning because:</p>
+<ul>
+<li>You can experiment with event IDs without recompiling</li>
+<li>You understand how real OpenLCB nodes work (configuration happens at runtime)</li>
+<li>JMRI becomes a tool for monitoring <em>and</em> controlling your node</li>
+</ul>
+<p>In this book's v0.1, we'll start with hardcoded configuration for simplicity. In later chapters (Chapter 5), we'll enhance the example to use CDI configuration, showing you the pattern for building production nodes.</p>
+<h2 id="looking-ahead"><a class="header" href="#looking-ahead">Looking Ahead</a></h2>
+<p>In Chapter 3, you'll see how OpenMRN-Lite integrates into a real ESP32 project using Arduino and PlatformIO. The library handles all the protocol details—your job is just to define events, read inputs, and write outputs.</p>
+<p>And if you ever do need features that OpenMRN-Lite doesn't support, that's okay. You'll understand the OpenLCB concepts deeply enough to appreciate why those features exist and how they work in more complex systems. The goal of this book is to build that foundation.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                                                    <a rel="prev" href="start.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+                                                    <a rel="next" href="esp32-arduino.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                                    <a rel="prev" href="start.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+                                    <a rel="next" href="esp32-arduino.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                            </nav>
+
+        </div>
+
+        
+        
+        
+                <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+        
+                <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+                <script type="text/javascript" src="mermaid.min.js"></script>
+                <script type="text/javascript" src="mermaid-init.js"></script>
+        
+        
+    </body>
+</html>

@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Async Blink Events - OpenLCB Technical Introduction</title>
+        <title>Events and Run Mode - OpenLCB Technical Introduction</title>
                 
 
         <!-- Custom HTML head -->
@@ -82,7 +82,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="intro_node.html"><strong aria-hidden="true">1.1.</strong> Node</a></li><li class="chapter-item expanded "><a href="intro_can.html"><strong aria-hidden="true">1.2.</strong> CAN</a></li><li class="chapter-item expanded "><a href="intro_async_blink.html"><strong aria-hidden="true">1.3.</strong> Async Blink Initialization</a></li><li class="chapter-item expanded "><a href="intro_ab_events.html" class="active"><strong aria-hidden="true">1.4.</strong> Async Blink Events</a></li></ol></li><li class="chapter-item expanded "><a href="start.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li></ol>            </div>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="intro_node.html"><strong aria-hidden="true">1.1.</strong> Node</a></li><li class="chapter-item expanded "><a href="intro_can.html"><strong aria-hidden="true">1.2.</strong> CAN</a></li><li class="chapter-item expanded "><a href="intro_async_blink.html"><strong aria-hidden="true">1.3.</strong> Node Startup Sequence</a></li><li class="chapter-item expanded "><a href="intro_ab_events.html" class="active"><strong aria-hidden="true">1.4.</strong> Events and Run Mode</a></li></ol></li><li class="chapter-item expanded "><a href="start.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="openmrn-architecture.html"><strong aria-hidden="true">3.</strong> OpenMRN-Lite Architecture &amp; Capabilities</a></li><li class="chapter-item expanded "><a href="esp32-arduino.html"><strong aria-hidden="true">4.</strong> ESP32 with Arduino &amp; PlatformIO</a></li><li class="chapter-item expanded "><a href="gpio-hardware.html"><strong aria-hidden="true">5.</strong> Physical I/O with GPIO</a></li></ol>            </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
@@ -143,15 +143,78 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="async-blink-events"><a class="header" href="#async-blink-events">Async Blink Events</a></h1>
-<h2 id="blink-events"><a class="header" href="#blink-events">Blink Events</a></h2>
-<p>Let's take a look at the OpenLCB trace again from JMRI:</p>
-<p><img src="images/alias_allocation_example.png" alt="OpenLCB Trace" /></p>
-<p>The last two messages are what we've buildig toward. These are the events that were sent by the <code>async_blink</code> node. It sends one of these events every second, alternating between the &quot;0&quot; and &quot;1&quot; events.</p>
-<p>Let's take a closer look at the message itself, starting with the header:</p>
-<pre><code>195b4415
+                        <h1 id="events-and-run-mode"><a class="header" href="#events-and-run-mode">Events and Run Mode</a></h1>
+<p>After a node completes its startup sequence, it enters &quot;run mode&quot; where it actively participates in the network by producing and consuming events.</p>
+<h2 id="what-is-run-mode"><a class="header" href="#what-is-run-mode">What is Run Mode?</a></h2>
+<p>Once a node is initialized and online, it:</p>
+<ul>
+<li><strong>Produces events</strong> in response to physical inputs or internal state changes</li>
+<li><strong>Consumes events</strong> from other nodes to control outputs or change behavior</li>
+<li><strong>Responds to queries</strong> from other nodes about its capabilities and status</li>
+<li><strong>Maintains its network presence</strong> by keeping its alias active</li>
+</ul>
+<p>This is the normal operating state where your node does useful work on the layout.</p>
+<h2 id="event-flow-example"><a class="header" href="#event-flow-example">Event Flow Example</a></h2>
+<p>Here's a simple example of how events flow between nodes in run mode:</p>
+<pre><code class="language-mermaid">sequenceDiagram
+    participant Button as Button Node
+    participant Network as OpenLCB Network
+    participant LED as LED Node
+    
+    Note over Button: User presses button
+    Button-&gt;&gt;Network: Produce Event&lt;br/&gt;05.02.01.02.02.00.00.01
+    Network-&gt;&gt;LED: Event received
+    Note over LED: LED turns ON
+    
+    Note over Button: User releases button
+    Button-&gt;&gt;Network: Produce Event&lt;br/&gt;05.02.01.02.02.00.00.00
+    Network-&gt;&gt;LED: Event received
+    Note over LED: LED turns OFF
 </code></pre>
-<p>The right three characters, <code>415</code>, are the Node ID alias that we talked about already. The middle two characters, <code>5b4</code>, you'll find listed in section 4.1 of <a href="https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/s-9.7.3.1-eventtransport-2016-02-06.pdf">S-9.7.3.1</a> as the Producer/Consumer Event Report (PCER). The data for this message is the Event ID.</p>
+<p>In this example:</p>
+<ol>
+<li>The button node monitors a physical button</li>
+<li>When pressed, it produces an event with ID <code>05.02.01.02.02.00.00.01</code></li>
+<li>The LED node is configured to consume this event</li>
+<li>When it sees this event on the network, it turns on its LED</li>
+<li>A different event ID (<code>...00.00.00</code>) controls the LED turning off</li>
+</ol>
+<h2 id="producerconsumer-model"><a class="header" href="#producerconsumer-model">Producer/Consumer Model</a></h2>
+<p>OpenLCB uses a <strong>producer/consumer event model</strong>:</p>
+<ul>
+<li><strong>Producers</strong> send events when something happens (button press, sensor trigger, timer expiration)</li>
+<li><strong>Consumers</strong> listen for specific events and react to them (turn on LED, throw turnout, sound horn)</li>
+<li><strong>A single node can be both</strong> a producer and consumer of different (or even the same) events</li>
+</ul>
+<p>This decoupling is powerful: producers don't need to know who's listening, and consumers don't need to know where events come from. You can reconfigure your layout by just changing which nodes consume which events.</p>
+<h2 id="event-identification-messages"><a class="header" href="#event-identification-messages">Event Identification Messages</a></h2>
+<p>Part of the startup process includes announcing what events a node produces and consumes. The <code>async_blink</code> example sends these messages after completing initialization:</p>
+<pre><code>Producer Identified Valid:   Event 05.02.01.02.02.00.00.01
+Producer Identified Valid:   Event 05.02.01.02.02.00.00.00
+Consumer Identified Valid:   Event 05.02.01.02.02.00.00.01
+Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
+</code></pre>
+<p>This tells the network: &quot;I can produce these two events, and I can also consume the same two events.&quot;</p>
+<p>The &quot;Valid&quot; state means the node is actively configured to use these events. &quot;Invalid&quot; would mean the event is known but not currently in use.</p>
+<h2 id="async-blink-events"><a class="header" href="#async-blink-events">Async Blink Events</a></h2>
+<p>Let's look at what the <code>async_blink</code> example does in run mode. It's intentionally simple to demonstrate the concepts:</p>
+<p><strong>Every second, it alternates:</strong></p>
+<ol>
+<li>Produce event <code>05.02.01.02.02.00.00.01</code> (the &quot;1&quot; event)</li>
+<li>Because it also consumes this event, its own LED turns ON</li>
+<li>Produce event <code>05.02.01.02.02.00.00.00</code> (the &quot;0&quot; event)</li>
+<li>Because it consumes this event too, its own LED turns OFF</li>
+</ol>
+<p>This creates a blinking LED controlled entirely through OpenLCB events, demonstrating the producer/consumer model in a single node.</p>
+<p>In a real layout, you'd typically have separate nodes for inputs (buttons, sensors) and outputs (LEDs, turnouts), but the event flow works exactly the same way.</p>
+<p>For detailed event protocol specifications, see:</p>
+<ul>
+<li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/s-9.7.3.1-eventtransport-2016-02-06.pdf">S-9.7.3.1 Event Transport</a></li>
+<li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/tn-9.7.3.1-eventtransport-2016-02-06.pdf">TN-9.7.3.1 Event Transport</a></li>
+</ul>
+<blockquote>
+<p><strong>Note</strong>: Future chapters will show you how to create your own nodes with real button inputs and LED outputs on an ESP32 microcontroller.</p>
+</blockquote>
 
                     </main>
 
@@ -199,6 +262,8 @@
         <script src="book.js" type="text/javascript" charset="utf-8"></script>
 
         <!-- Custom JS scripts -->
+                <script type="text/javascript" src="mermaid.min.js"></script>
+                <script type="text/javascript" src="mermaid-init.js"></script>
         
         
     </body>
