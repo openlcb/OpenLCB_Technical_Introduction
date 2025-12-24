@@ -2,7 +2,7 @@
 
 [OpenLCB Programmer's Guide](./title-page.md)
 
-- [Introduction](./01-intro/intro.md)
+- [Introduction](./intro.md)
   - [Node](./01-intro/node_architecture.md)
   - [CAN](./01-intro/intro_can.md)
   - [Node Startup Sequence](./01-intro/intro_async_blink.md)

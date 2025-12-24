@@ -30,5 +30,3 @@ been adopted by the NMRA for Layout Command Control (hence the LCC).
 OpenLCB is the name of the working group that created the standards approved by the NMRA and continues to create new standards. This is a group of dedicated volunteers who are working to fulfill the dream.
 
 You'll notice that the standards use the name OpenLCB everywhere except for the header at the top of the document. In this book, as in the standards, we'll use the term OpenLCB everywhere except this page.
-
-
