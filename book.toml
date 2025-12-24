@@ -8,4 +8,8 @@ title = "OpenLCB Programmer's Guide"
 command = "mdbook-mermaid"
 
 [output.html]
-additional-js = ["mermaid.min.js", "mermaid-init.js"]
+additional-js = [
+    "mermaid.min.js",
+    "mermaid-init.js",
+    "theme/fix-highlighting.js"
+]
