@@ -1,5 +1,7 @@
 # Summary
 
+[OpenLCB Programmer's Guide](./title-page.md)
+
 - [Introduction](./01-intro/intro.md)
   - [Node](./01-intro/node_architecture.md)
   - [CAN](./01-intro/intro_can.md)
