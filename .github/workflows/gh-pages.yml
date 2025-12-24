@@ -11,11 +11,18 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Setup Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+
+    - name: Install mdbook-mermaid
+      run: cargo install mdbook-mermaid
+
     - name: Setup mdBook
       uses: peaceiris/actions-mdbook@v1
       with:
-        mdbook-version: '0.4.10'
-        # mdbook-version: 'latest'
+        mdbook-version: 'latest'
 
     - run: mdbook build
 
