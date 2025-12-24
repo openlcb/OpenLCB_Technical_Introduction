@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>OpenLCB Technical Introduction</title>
+        <title>OpenLCB Programmer&#x27;s Guide</title>
                 <meta name="robots" content="noindex" />
                 
 
@@ -83,7 +83,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="intro_node.html"><strong aria-hidden="true">1.1.</strong> Node</a></li><li class="chapter-item expanded "><a href="intro_can.html"><strong aria-hidden="true">1.2.</strong> CAN</a></li><li class="chapter-item expanded "><a href="intro_async_blink.html"><strong aria-hidden="true">1.3.</strong> Node Startup Sequence</a></li><li class="chapter-item expanded "><a href="intro_ab_events.html"><strong aria-hidden="true">1.4.</strong> Events and Run Mode</a></li></ol></li><li class="chapter-item expanded "><a href="start.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="openmrn-architecture.html"><strong aria-hidden="true">3.</strong> OpenMRN-Lite Architecture &amp; Capabilities</a></li><li class="chapter-item expanded "><a href="esp32-arduino.html"><strong aria-hidden="true">4.</strong> ESP32 with Arduino &amp; PlatformIO</a></li><li class="chapter-item expanded "><a href="gpio-hardware.html"><strong aria-hidden="true">5.</strong> Physical I/O with GPIO</a></li></ol>            </div>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="title-page.html">OpenLCB Programmer's Guide</a></li><li class="chapter-item expanded "><a href="01-intro/intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="01-intro/node_architecture.html"><strong aria-hidden="true">1.1.</strong> Node</a></li><li class="chapter-item expanded "><a href="01-intro/intro_can.html"><strong aria-hidden="true">1.2.</strong> CAN</a></li><li class="chapter-item expanded "><a href="01-intro/intro_async_blink.html"><strong aria-hidden="true">1.3.</strong> Node Startup Sequence</a></li><li class="chapter-item expanded "><a href="01-intro/intro_ab_events.html"><strong aria-hidden="true">1.4.</strong> Events and Run Mode</a></li></ol></li><li class="chapter-item expanded "><a href="02-start/start.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="02-start/arduino-and-migration.html"><strong aria-hidden="true">2.1.</strong> Arduino for Early Chapters (Migration Path)</a></li><li class="chapter-item expanded "><a href="02-start/openmrn-architecture.html"><strong aria-hidden="true">2.2.</strong> OpenMRN-Lite Architecture &amp; Capabilities</a></li><li class="chapter-item expanded "><a href="02-start/platform-esp32.html"><strong aria-hidden="true">2.3.</strong> Platform: ESP32 &amp; SPIFFS</a></li><li class="chapter-item expanded "><a href="02-start/development-environments.html"><strong aria-hidden="true">2.4.</strong> Development Environments &amp; Tooling</a></li><li class="chapter-item expanded "><a href="02-start/platform-and-transports.html"><strong aria-hidden="true">2.5.</strong> Transports: WiFi &amp; CAN</a></li><li class="chapter-item expanded "><a href="02-start/monitoring-and-tools.html"><strong aria-hidden="true">2.6.</strong> Monitoring &amp; Verification</a></li></ol></li><li class="chapter-item expanded "><a href="03-esp32-arduino/esp32-arduino.html"><strong aria-hidden="true">3.</strong> ESP32 with Arduino &amp; PlatformIO</a></li><li class="chapter-item expanded "><a href="04-gpio/gpio-hardware.html"><strong aria-hidden="true">4.</strong> Physical I/O with GPIO</a></li></ol>            </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
@@ -112,7 +112,7 @@
                         </button>
                                             </div>
 
-                    <h1 class="menu-title">OpenLCB Technical Introduction</h1>
+                    <h1 class="menu-title">OpenLCB Programmer&#x27;s Guide</h1>
 
                     <div class="right-buttons">
                                                 <a href="print.html" title="Print this book" aria-label="Print this book">
@@ -144,7 +144,14 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
+                        <h1 id="openlcb-programmers-guide"><a class="header" href="#openlcb-programmers-guide">OpenLCB Programmer's Guide</a></h1>
+<p><em>by John Socha‑Leialoha</em></p>
+<p>This edition is current as of 2025-12-23.</p>
+<p>I wrote this book to help developers get started with OpenLCB. I used GitHub Copilot to help draft the text; during writing Copilot was provided access to the OpenMRN and OpenMRN‑Lite source code, the NMRA LCC standards, and NMRA LCC technical notes to assist with examples and explanations.</p>
+<p>The source for this book is available at the project's GitHub repository: <a href="https://github.com/openlcb/OpenLCB_Technical_Introduction">openlcb/OpenLCB_Technical_Introduction</a>.</p>
+<p>Feedback and contributions are welcome — please open an issue or submit a pull request on the repository's issues page: <a href="https://github.com/openlcb/OpenLCB_Technical_Introduction/issues">openlcb/OpenLCB_Technical_Introduction issues</a>.</p>
+<p>Documentation Copyright © 2025 John Socha‑Leialoha. See the repository for license details: <a href="https://github.com/openlcb/OpenLCB_Technical_Introduction/blob/main/LICENSE_DOCS.md">LICENSE_DOCS.md</a> and <a href="https://github.com/openlcb/OpenLCB_Technical_Introduction/blob/main/LICENSE">LICENSE</a>.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
 <h2 id="purpose"><a class="header" href="#purpose">Purpose</a></h2>
 <p>The purpose of this book is to help you get up to speed on OpenLCB so you can
 start creating LCC products. There are a lot of concepts and we'll go into
@@ -166,6 +173,9 @@ LCC is a brand name owned by the NMRA. It covers a set of standards that have
 been adopted by the NMRA for Layout Command Control (hence the LCC).</p>
 <p>OpenLCB is the name of the working group that created the standards approved by the NMRA and continues to create new standards. This is a group of dedicated volunteers who are working to fulfill the dream.</p>
 <p>You'll notice that the standards use the name OpenLCB everywhere except for the header at the top of the document. In this book, as in the standards, we'll use the term OpenLCB everywhere except this page.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="node"><a class="header" href="#node">Node</a></h1>
+<p>A <em>Node</em> is the basic building block of an OpenLCB network. It's a device that can send and receive OpenLCB messages. We'll describe these messages in more detail in a later chapter.</p>
+<p>Each node has a unique 6-byte ID that must be assigned by the manufacturer. We'll describe in a later chapter how you can get your own set of IDs to use in your products (or DIY boards).</p>
 <h2 id="transport-layers"><a class="header" href="#transport-layers">Transport Layers</a></h2>
 <p>OpenLCB is designed to work over different physical transport layers. The two main options are:</p>
 <p><strong>CAN (Controller Area Network)</strong>: The traditional transport for OpenLCB, used in most commercial LCC products. CAN uses a two-wire bus with excellent noise immunity and built-in arbitration, making it ideal for model railroad environments. It requires CAN transceiver hardware and proper bus termination.</p>
@@ -178,16 +188,57 @@ been adopted by the NMRA for Layout Command Control (hence the LCC).</p>
 </ul>
 <p>In this book, we'll start with WiFi/TCP transport because it's more accessible for learning. Once you understand the core concepts, the principles transfer directly to CAN-based implementations. Future chapters will cover adding CAN hardware.</p>
 <p>Both transports use the same OpenLCB protocols and message formats—only the physical layer changes.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="node"><a class="header" href="#node">Node</a></h1>
-<p>A <em>Node</em> is the basic building block of an OpenLCB network. It's a device that can send and receive OpenLCB messages. We'll describe these messages in more detail in a later chapter.</p>
-<p>Each node has a unique 6-byte ID that must be assigned by the manufacturer. We'll describe in a later chapter how you can get your own set of IDs to use in your products (or DIY boards).</p>
+<h2 id="network-architecture"><a class="header" href="#network-architecture">Network Architecture</a></h2>
+<p>An OpenLCB network is made up of participants with different roles. The two primary roles are:</p>
+<p><strong>Nodes</strong> — devices that produce and consume events. Each node has a unique identifier and announces itself during startup.</p>
+<p><strong>Hubs</strong> — services that route and forward messages between participants. A hub may be implemented differently depending on the transport (for example, as a network server for TCP-based transports or as a bridge to a CAN bus). Hubs are optional in some deployments; on shared physical buses messages are exchanged directly between participants.</p>
+<p>A single device can implement both node and hub functions. Examples in later chapters show convenient development setups where one device acts in both roles, but the concepts below are transport-agnostic.</p>
+<p>Here's a conceptual architecture diagram:</p>
+<pre><code class="language-mermaid">graph TB
+	subgraph DeviceA[&quot;Device A&quot;]
+		NodeA[&quot;Node A&lt;br/&gt;(produces/consumes events)&quot;]
+	end
+
+	subgraph Hub[&quot;Hub (optional)&quot;]
+		Router[&quot;Message Router / Hub&quot;]
+	end
+
+	Monitor[&quot;Monitor / Tool&lt;br/&gt;(optional)&quot;]
+	DeviceB[&quot;Device B&lt;br/&gt;(other node)&quot;]
+	CAN[&quot;CAN Bus (optional)&quot;]
+
+	DeviceA ---|messages| Router
+	DeviceB ---|messages| Router
+	Monitor ---|connects| Router
+	CAN -.-&gt;|physical transport| Router
+
+	style DeviceA fill:#e1f5ff
+	style NodeA fill:#fff9c4
+	style Hub fill:#f3e5f5
+	style CAN fill:#eeeeee
+	style DeviceB fill:#eeeeee
+</code></pre>
+<p>What this shows:</p>
+<ul>
+<li><strong>Node</strong>: Produces and consumes events and announces itself on the network during startup.</li>
+<li><strong>Hub</strong>: Forwards messages between connected participants and may accept connections from monitoring tools.</li>
+<li><strong>Monitor/Tool</strong>: Observes network traffic and can send test messages.</li>
+<li><strong>Future Expansion</strong>: Multiple nodes and transports (e.g., CAN bridges, network servers) can be integrated behind hubs.</li>
+</ul>
+<p>Why this design works:</p>
+<ul>
+<li><strong>Separation of concerns</strong>: The messaging protocol is transport-agnostic; nodes, hubs, and tools speak the same message formats regardless of physical layer.</li>
+<li><strong>Scalable</strong>: Hubs enable multiple devices and tools to interconnect without changing node implementations.</li>
+<li><strong>Flexible</strong>: Hubs can be implemented differently per transport, allowing the same protocol to work in embedded, wired, and networked environments.</li>
+</ul>
+<p>Platform and transport choices (for example, why this book uses ESP32 and WiFi/TCP for early examples) are discussed in Chapter 2 (Getting Started).</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="introduction-to-can"><a class="header" href="#introduction-to-can">Introduction to CAN</a></h1>
 <p>Controller Area Network (CAN) is a standard that was initially created in 1981 by Bosch, and has since been used for factory automation and communication networks in cars, to name just a few uses. Today there are hundreds of billions of devices using CAN bus in daily use. </p>
 <p>As a result, there are a number of relatively inexpensive ICs available that fully implement the CAN specifications out of the box. By using CAN controllers and drivers, you do not have to write highly time-sensitive code. Instead, you can focus on implementing support for the messages in the application layers, which is a &quot;relatively&quot; simple task compared with implementing a transport layer.</p>
 <h2 id="can-messages"><a class="header" href="#can-messages">CAN Messages</a></h2>
 <p>CAN transmits messages, called <em>frames</em> on the bus. Every other device (node) on the bus can (and must) listen to all of the traffic on the bus. One of the interesting and useful aspects of CAN is how it handles collisions, which is through arbitration.</p>
 <p>CAN frames, in the form used by OpenLCB, consist of a 29-bit header followed by zero or more bytes of data. This is using the <em>extended frame format</em>, also know as CAN 2.0 B.</p>
-<p><img src="images/can_bits.jpg" alt="CAN Format" /></p>
+<p><img src="01-intro/../images/can_bits.jpg" alt="CAN Format" /></p>
 <h3 id="arbitration"><a class="header" href="#arbitration">Arbitration</a></h3>
 <p>Arbitration is the process used to ensure that only one message is being transmitted at one time. If two nodes are trying to transmit different messages at the same time, one of those two will pass through the bus unharmed, while the other node will realize it lost the arbitration and attempt to re-transmit right after the first message is completed. This allows nearly 100% utilization of the bandwidth, because the node(s) that lost the arbitration will immediately stop, thereby not corrupting the frame that is being transmitted by the winner of the arbitration. This guarantees forward progress. In contrast, old style Ethernet (and LocoNet, btw.) uses a more complex scheme, where a collision destroys the frame, then nodes have to back off, wait a random period, then attempt to transmit again, thus wasting bandwidth.</p>
 <p>The arbitration phase relies on drivers only pulling the bus low. If two nodes attempt to put different bit values on the bus at the same time, the 0 will always win. Here is a chart that shows how this works:</p>
@@ -431,79 +482,64 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 <p><strong>Note</strong>: Future chapters will show you how to create your own nodes with real button inputs and LED outputs on an ESP32 microcontroller.</p>
 </blockquote>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="getting-started"><a class="header" href="#getting-started">Getting Started</a></h1>
-<p>In the previous chapter, you learned about OpenLCB concepts: nodes, transport layers, startup sequences, and the producer/consumer event model. Now it's time to build something real.</p>
-<p>This chapter will guide you through the choices we've made for this book and prepare you for hands-on work in the next chapter.</p>
+<p>In the previous chapter, you learned about OpenLCB concepts: nodes, transport layers, startup sequences, and the producer/consumer event model. Now it's time to plan your first OpenLCB node.</p>
+<p>This chapter walks you through the key decisions we'll make for building your node and explains the <strong>why</strong> behind each choice so you understand the trade-offs and can adapt to your own needs. (Actual implementation begins in the next chapter.)</p>
 <h2 id="what-were-building"><a class="header" href="#what-were-building">What We're Building</a></h2>
-<p>We're going to build a simple but complete OpenLCB node that demonstrates the core concepts:</p>
-<p><strong>Hardware</strong>: An ESP32 microcontroller with:</p>
+<p>The goal of this book is to help you create an <strong>OpenLCB node</strong>—a device that can produce and consume events on an LCC network. Your node will:</p>
 <ul>
-<li>A push button (input) - produces an OpenLCB event when pressed</li>
-<li>An LED (output) - consumes OpenLCB events to turn on/off</li>
-<li>WiFi connectivity - connects to your home network</li>
+<li><strong>Sense inputs</strong> (buttons, switches, sensors) and produce OpenLCB events</li>
+<li><strong>Control outputs</strong> (LEDs, relays, motors) by consuming OpenLCB events</li>
+<li><strong>Connect to a network</strong> so other nodes can respond to your events</li>
+<li><strong>Be monitored and configured</strong> via standard tools like JMRI</li>
 </ul>
-<p><strong>Software</strong>: </p>
+<p>We'll start with a simple example and scale to more complex scenarios in later chapters. The key concept is <strong>the pattern</strong>: once you understand how to produce and consume a single event, scaling to many inputs/outputs and adding complex logic becomes straightforward.</p>
+<h3 id="progression-tcp-then-can-then-full-openmrn"><a class="header" href="#progression-tcp-then-can-then-full-openmrn">Progression: TCP, Then CAN, Then Full OpenMRN</a></h3>
+<p>We use three key technologies across this book, introduced progressively:</p>
+<p><strong>Phase 1: TCP/WiFi (Quick Start)</strong></p>
 <ul>
-<li>OpenMRNLite library - provides the complete OpenLCB protocol stack</li>
-<li>Arduino framework - familiar development environment</li>
-<li>PlatformIO - modern build system and IDE integration</li>
+<li>Use <strong>WiFi/TCP transport</strong> with <strong>Arduino framework</strong> and <strong>OpenMRN-Lite</strong> library to get your first node running in minutes</li>
+<li>Focus on OpenLCB fundamentals (events, producers, consumers, CDI) without hardware barriers</li>
+<li>No CAN transceiver required—just an ESP32 and JMRI for monitoring</li>
+<li>Once you understand the protocol, adding CAN is straightforward</li>
 </ul>
-<p><strong>Network Integration</strong>:</p>
+<p><strong>Phase 2: CAN Transport (Main Focus)</strong></p>
 <ul>
-<li>JMRI monitoring tool - see OpenLCB messages in real-time</li>
-<li>TCP/GridConnect protocol - network-based communication</li>
-<li>Multi-node capable - your node can interact with other OpenLCB devices</li>
+<li>Add a <strong>CAN transceiver</strong> (~$5) and switch from <strong>WiFi/TCP to CAN</strong> transport</li>
+<li>Same <strong>Arduino framework</strong> and <strong>OpenMRN-Lite</strong> library as phase 1</li>
+<li>Explore inputs and outputs with the real transport layer used in most LCC installations</li>
+<li>Build multi-node systems that communicate over CAN</li>
+<li>Stay here if your needs fit this model (most hobby layouts do)</li>
 </ul>
-<p>This example is intentionally simple to focus on learning. Real layout nodes can have dozens of inputs/outputs, configuration systems, and specialized protocols—we'll cover those in future chapters.</p>
-<h2 id="why-wifitcp-first"><a class="header" href="#why-wifitcp-first">Why WiFi/TCP First?</a></h2>
-<p>As mentioned in Chapter 1, OpenLCB works over multiple physical transports. We're starting with WiFi and TCP for several practical reasons:</p>
-<p><strong>For Learning</strong>:</p>
+<p><strong>Phase 3: Full OpenMRN + FreeRTOS (Advanced)</strong></p>
 <ul>
-<li><strong>No special hardware required</strong> - ESP32 boards have WiFi built-in, no CAN transceivers needed</li>
-<li><strong>Easy monitoring</strong> - standard network tools and JMRI can capture all traffic</li>
-<li><strong>Faster iteration</strong> - wireless upload and debugging without physical bus connections</li>
-<li><strong>Lower barrier to entry</strong> - get started with just a microcontroller and breadboard</li>
+<li>Only if you need multi-threading, virtual nodes, or traction protocol</li>
+<li>Migrate from Arduino to <strong>ESP-IDF</strong> (Espressif's full RTOS environment)</li>
+<li>Use <strong>full OpenMRN</strong> library with FreeRTOS threading</li>
+<li>Handle complex, multi-threaded scenarios (bridges, command stations, etc.)</li>
 </ul>
-<p><strong>Same Protocols</strong>: The OpenLCB message formats, node startup, and event handling work identically over WiFi/TCP and CAN. Everything you learn here transfers directly to CAN-based implementations.</p>
-<p><strong>CAN Is Still Important</strong>: Traditional LCC installations use CAN bus, and for good reason:</p>
+<p>Each phase builds on the previous one. The OpenLCB knowledge transfers directly—what changes is the platform and threading model.</p>
+<h3 id="key-decisions"><a class="header" href="#key-decisions">Key Decisions</a></h3>
+<p>Building an OpenLCB node requires several key decisions, explained in the later sections of this chapter:</p>
+<ol>
+<li><strong>Which programming framework?</strong> — Arduino for phases 1–2, FreeRTOS only if phase 3 is needed</li>
+<li><strong>Which OpenLCB library?</strong> — OpenMRN-Lite (Arduino) for phases 1–2, full OpenMRN only for phase 3</li>
+<li><strong>Which platform?</strong> — ESP32 (recommended), STM32, or other microcontroller</li>
+<li><strong>Which IDE and build tools?</strong> — PlatformIO (recommended), Arduino IDE, or native ESP-IDF</li>
+<li><strong>Which transport?</strong> — TCP/WiFi for phase 1 (quick learning), CAN for phase 2 (main focus), both for phase 3</li>
+<li><strong>How do I monitor and verify?</strong> — JMRI monitoring tool, TCP hub architecture, CAN bus analysis</li>
+</ol>
+<p>By the end of this chapter, you'll understand the <strong>reasons</strong> behind each choice and why this progression makes sense for learning and building real LCC systems.</p>
+<h2 id="detailed-topic-coverage"><a class="header" href="#detailed-topic-coverage">Detailed Topic Coverage</a></h2>
 <ul>
-<li>Excellent noise immunity for layout environments</li>
-<li>Built-in collision handling and arbitration</li>
-<li>Two-wire bus with simple termination</li>
-<li>Industry-proven reliability</li>
+<li><a href="02-start/./arduino-and-migration.html">Arduino for Early Chapters (Migration Path)</a> — Why Arduino; how to migrate to FreeRTOS later</li>
+<li><a href="02-start/./openmrn-architecture.html">OpenMRN-Lite Architecture &amp; Capabilities</a> — Why OpenMRN-Lite for Arduino; capabilities and limitations</li>
+<li><a href="02-start/./platform-esp32.html">Platform: ESP32 &amp; SPIFFS</a> — Why ESP32; the importance of persistent storage</li>
+<li><a href="02-start/./development-environments.html">Development Environments &amp; Tooling</a> — IDE comparison (Arduino IDE, Maker Workshop, PlatformIO); personal recommendation with GitHub Copilot</li>
+<li><a href="02-start/./platform-and-transports.html">Transports: WiFi &amp; CAN</a> — Why WiFi first; when to add CAN</li>
+<li><a href="02-start/./monitoring-and-tools.html">Monitoring &amp; Verification</a> — JMRI, TCP hub, GridConnect protocol</li>
 </ul>
-<p>We'll cover adding CAN hardware in future chapters. For now, WiFi/TCP lets you focus on understanding OpenLCB without hardware complexity.</p>
-<h2 id="library-choice-openmrn-lite"><a class="header" href="#library-choice-openmrn-lite">Library Choice: OpenMRN-Lite</a></h2>
-<p>Before choosing a microcontroller, we need to choose an OpenLCB library. There are two main options:</p>
-<p><strong>Full OpenMRN</strong> uses FreeRTOS and POSIX threading, giving you access to advanced features like virtual nodes and traction protocol. But it requires Linux, macOS, Windows, or native ESP-IDF—a full real-time operating system environment. The learning curve is steep: you need to understand threading, mutexes, message queues, and how RTOS schedulers work <em>before</em> you can focus on OpenLCB itself.</p>
-<p><strong>OpenMRN-Lite</strong> is the Arduino version: single-threaded, no RTOS required, designed specifically for learning and hobby projects. It has everything you need for your first OpenLCB node (events, producers/consumers, CDI configuration, CAN/TCP support). Most importantly, it lets you focus on OpenLCB concepts without fighting with threading complexity.</p>
-<p><strong>We're choosing OpenMRN-Lite</strong> for this book because:</p>
-<ul>
-<li><strong>Lower learning curve</strong> - Arduino's simple <code>setup()</code>/<code>loop()</code> model is familiar to most hobbyists and embedded developers</li>
-<li><strong>Faster progress</strong> - You'll have working code and see results within hours, not days</li>
-<li><strong>Proven examples</strong> - OpenMRN-Lite has excellent examples (IOBoard, WifiCanBridge) that demonstrate real patterns</li>
-<li><strong>Future flexibility</strong> - Once you understand OpenLCB concepts, upgrading to full OpenMRN (with FreeRTOS) becomes a natural next step, not a barrier</li>
-</ul>
-<p>This is not a limitation—it's a pedagogical choice. You can absolutely build production OpenLCB nodes with OpenMRN-Lite. Chapter 2.5 goes deeper into what OpenMRN-Lite supports and when you might want to switch toolchains.</p>
-<h2 id="platform-choice-esp32"><a class="header" href="#platform-choice-esp32">Platform Choice: ESP32</a></h2>
-<p>We've chosen the ESP32 microcontroller platform for this book because it's one of the best-supported platforms for OpenMRN-Lite:</p>
-<p><strong>Why ESP32 for OpenMRN-Lite?</strong></p>
-<ul>
-<li><strong>Excellent Arduino support</strong> - Arduino framework is mature and stable on ESP32</li>
-<li><strong>WiFi built-in</strong> - Perfect match for our WiFi/TCP transport choice</li>
-<li><strong>CAN capable</strong> - Built-in CAN controller for adding CAN hardware in future chapters</li>
-<li><strong>Affordable</strong> - Development boards are $5-15 USD</li>
-<li><strong>Powerful</strong> - Dual-core processor, plenty of memory for OpenMRNLite applications</li>
-<li><strong>GPIO-rich</strong> - Enough pins for inputs, outputs, and expansion</li>
-</ul>
-<p><strong>Other Platforms with OpenMRN-Lite Support</strong>: OpenMRN-Lite works on other Arduino-compatible boards:</p>
-<ul>
-<li>STM32 family (Nucleo boards) via Arduino core</li>
-<li>Arduino variants (Mega, Due)</li>
-<li>Other ESP32 variants (ESP32-S3, ESP32-C3)</li>
-</ul>
-<p>If you have a different board available, you can likely adapt the examples. Chapter 2.5 has more details on platform trade-offs. For now, ESP32 is the best starting point: affordable, well-documented, and fully supported by the OpenMRN-Lite community.</p>
-<h2 id="prerequisites--assumptions"><a class="header" href="#prerequisites--assumptions">Prerequisites &amp; Assumptions</a></h2>
-<p>Before diving into the next chapter, make sure you have:</p>
+<h2 id="prerequisites"><a class="header" href="#prerequisites">Prerequisites</a></h2>
+<p>Before reading further, make sure you have:</p>
 <p><strong>Knowledge</strong>:</p>
 <ul>
 <li>Basic embedded programming (C/C++)</li>
@@ -511,138 +547,73 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 <li>Familiarity with breadboards and simple circuits</li>
 <li>Producer/consumer model understanding (from using LCC products)</li>
 </ul>
-<p><strong>Hardware</strong> (needed for Chapter 3):</p>
+<p><strong>Hardware</strong> (needed for Chapter 4):</p>
 <ul>
 <li>ESP32 development board (ESP32 DevKit v1 or similar)</li>
 <li>USB cable for programming</li>
-<li>Breadboard and jumper wires</li>
-<li>Push button (momentary, normally open)</li>
-<li>LED (any color)</li>
-<li>220Ω resistor (for LED current limiting)</li>
-<li>Computer with WiFi (for network connection)</li>
+<li>Computer with WiFi</li>
+<li>Optional: breadboard, jumper wires, push button, LED, resistor (for hardware integration in Chapter 5)</li>
 </ul>
-<p><strong>Software</strong> (installation covered in Chapter 3):</p>
+<p><strong>Software</strong> (installation covered in Chapter 4):</p>
 <ul>
 <li>VS Code or similar editor</li>
-<li>PlatformIO extension</li>
+<li>PlatformIO extension (or Arduino IDE / Maker Workshop)</li>
 <li>JMRI (for monitoring OpenLCB traffic)</li>
 </ul>
 <p>If you're missing any hardware, most items can be purchased as a kit from electronics suppliers (Adafruit, SparkFun, Amazon, AliExpress) for under $20 USD total.</p>
-<h2 id="development-environment-overview"><a class="header" href="#development-environment-overview">Development Environment Overview</a></h2>
-<p>We'll be using modern, cross-platform tools:</p>
-<p><strong>PlatformIO</strong>: A professional build system and IDE extension that handles:</p>
-<ul>
-<li>Automatic toolchain installation</li>
-<li>Library dependency management</li>
-<li>Serial monitoring and debugging</li>
-<li>Support for hundreds of boards and frameworks</li>
-</ul>
-<p><strong>Arduino Framework</strong>: Provides:</p>
-<ul>
-<li>Familiar <code>setup()</code> and <code>loop()</code> structure</li>
-<li>Standard GPIO functions (<code>pinMode</code>, <code>digitalWrite</code>, etc.)</li>
-<li>WiFi libraries for ESP32</li>
-<li>Large ecosystem of compatible libraries</li>
-</ul>
-<p><strong>OpenMRNLite Library</strong>: The core OpenLCB implementation:</p>
-<ul>
-<li>Complete protocol stack (startup, events, datagrams, streams)</li>
-<li>SimpleStack API for easy setup</li>
-<li>Event producers and consumers</li>
-<li>TCP and CAN transport support</li>
-<li>Memory-efficient design for microcontrollers</li>
-</ul>
-<p>Chapter 3 will walk through installation and configuration step-by-step. No prior PlatformIO experience required.</p>
-<h2 id="understanding-openmrn-lite"><a class="header" href="#understanding-openmrn-lite">Understanding OpenMRN-Lite</a></h2>
-<p>Before we dive into code, you might be wondering: <strong>What exactly is OpenMRN-Lite? Is it a cut-down version? Will I outgrow it?</strong></p>
-<p>Chapter 2.5 (&quot;OpenMRN-Lite Architecture &amp; Capabilities&quot;) answers these questions in detail. It explains:</p>
-<ul>
-<li>Why OpenMRN-Lite is the <em>only</em> OpenMRN version that runs on Arduino (not a limitation, just a fact)</li>
-<li>What features it supports (CDI, events, datagrams, CAN, and more)</li>
-<li>When you might want to switch toolchains entirely (and when you won't)</li>
-</ul>
-<p>For now, know this: <strong>OpenMRN-Lite is the right tool for learning OpenLCB on ESP32.</strong> It has everything you need to build real nodes, and understanding how it works sets you up perfectly for more advanced projects later.</p>
-<h2 id="monitoring-with-jmri-tcp"><a class="header" href="#monitoring-with-jmri-tcp">Monitoring with JMRI (TCP)</a></h2>
-<p>JMRI (Java Model Railroad Interface) is an essential tool for working with OpenLCB:</p>
-<p><strong>Why JMRI?</strong></p>
-<ul>
-<li><strong>Message decoder</strong> - Translates raw hex into readable OpenLCB messages</li>
-<li><strong>Network monitor</strong> - See all CID, RID, AMD, event messages in real-time</li>
-<li><strong>Testing tool</strong> - Send events to your node and verify responses</li>
-<li><strong>Layout integration</strong> - Connect your node to a larger LCC network</li>
-</ul>
-<p><strong>TCP/GridConnect Protocol</strong>: JMRI connects to your ESP32 node over WiFi using:</p>
-<ul>
-<li>TCP socket connection (default port 12021)</li>
-<li>GridConnect ASCII format: <code>:X&lt;header&gt;N&lt;data&gt;;</code></li>
-<li>Human-readable message traces</li>
-<li>Standard format used by many OpenLCB tools</li>
-</ul>
-<p><strong>What You'll See</strong>: When your node starts up, JMRI shows:</p>
-<ol>
-<li>Four CID frames (checking alias availability)</li>
-<li>RID frame (reserving alias)</li>
-<li>AMD frame (mapping Node ID to alias)</li>
-<li>Initialized message (node is online)</li>
-<li>Producer/Consumer Identified messages (node capabilities)</li>
-<li>Event reports (button presses, LED changes)</li>
-</ol>
-<p>Chapter 3 includes detailed JMRI setup and verification steps. You'll see your first OpenLCB messages within minutes of uploading code.</p>
-<h2 id="network-architecture-hubs-and-nodes"><a class="header" href="#network-architecture-hubs-and-nodes">Network Architecture: Hubs and Nodes</a></h2>
-<p>Now that we've introduced JMRI, it's important to understand the architecture that makes this all work. An OpenLCB network consists of two types of participants working together:</p>
-<p><strong>Nodes</strong> are devices that produce and consume events—like your ESP32 with a button and LED. Each node has a unique 6-byte identifier and announces itself when joining the network.</p>
-<p><strong>Hubs</strong> are central coordinators that route messages between nodes. In a WiFi/TCP network, the hub is a TCP server listening on port 12021. When JMRI or other tools connect to the hub, they can see all network traffic and send commands to any node.</p>
-<p>The clever part: your ESP32 can be <strong>both a node and a hub simultaneously</strong>. It runs the OpenLCB protocol stack (making it a node), and it also runs a TCP Hub service (making it a network coordinator). This is exactly what we'll do in Chapter 3—create a single device that acts as both.</p>
-<p>Here's how the architecture works:</p>
-<pre><code class="language-mermaid">graph TB
-    subgraph ESP32[&quot;ESP32 Device&quot;]
-        Node[&quot;OpenLCB Node&lt;br/&gt;(produces/consumes events)&quot;]
-        Hub[&quot;TCP Hub&lt;br/&gt;(port 12021)&quot;]
-        Node ---|message routing| Hub
-    end
-    
-    JMRI[&quot;JMRI Monitor&lt;br/&gt;(TCP Client)&quot;]
-    Node2[&quot;Other ESP32 Node&lt;br/&gt;(optional future)&quot;]
-    CAN[&quot;CAN Bus&lt;br/&gt;(optional future)&quot;]
-    
-    JMRI ---|TCP connection| Hub
-    Node2 ---|TCP connection| Hub
-    CAN -.-&gt;|CAN transceiver| Hub
-    
-    style ESP32 fill:#e1f5ff
-    style Node fill:#fff9c4
-    style Hub fill:#f3e5f5
-    style CAN fill:#eeeeee
-    style Node2 fill:#eeeeee
-</code></pre>
-<p><strong>What You See in This Architecture</strong>:</p>
-<ul>
-<li><strong>ESP32 Node</strong>: Produces events (button presses) and consumes events (LED changes). It announces itself to the network during startup with the CID/RID/AMD sequence.</li>
-<li><strong>TCP Hub</strong>: Listens on port 12021, accepts connections from JMRI and other TCP clients, and forwards all OpenLCB messages between connected participants.</li>
-<li><strong>JMRI Monitor</strong>: Connects as a TCP client to see all network traffic. Can send test events to your node and observe responses.</li>
-<li><strong>Future Expansion</strong>: You can add more ESP32 nodes (all connecting to the same hub), or add CAN hardware to bridge between TCP and CAN participants.</li>
-</ul>
-<p><strong>Why This Design?</strong> OpenMRNLite makes it easy to add a TCP Hub service to any node. The hub needs just a few lines of code—we'll see this in Chapter 3. This approach is perfect for learning because:</p>
-<ol>
-<li><strong>No extra hardware</strong> - The hub runs on the same ESP32 as your node</li>
-<li><strong>Scalable</strong> - Add more nodes just by connecting them to port 12021</li>
-<li><strong>Transport-agnostic</strong> - Whether using TCP, CAN, or both, the message format stays the same</li>
-<li><strong>Future-proof</strong> - Later chapters will add CAN hardware and integrate it seamlessly with the existing TCP hub</li>
-</ol>
-<p>We're starting with <strong>TCP because it requires no special hardware</strong>. In later chapters, we'll add CAN transceivers to support traditional LCC installations—but the hub concept remains identical.</p>
 <h2 id="whats-next"><a class="header" href="#whats-next">What's Next</a></h2>
-<p>Now that you understand the platform choices and tools, Chapter 3 will guide you through:</p>
-<ol>
-<li><strong>Installing PlatformIO</strong> - Step-by-step setup in VS Code</li>
-<li><strong>Installing OpenMRNLite</strong> - Adding the library to your project</li>
-<li><strong>Building async_blink_esp32</strong> - Complete walkthrough of the example code</li>
-<li><strong>Deploying to ESP32</strong> - Upload and run your first OpenLCB node</li>
-<li><strong>Verification with JMRI</strong> - See your node join the network and exchange events over WiFi</li>
-<li><strong>Troubleshooting</strong> - Common issues and solutions</li>
-</ol>
-<p>By the end of Chapter 3, you'll have a working OpenLCB node that you built yourself. You'll understand the code, see the messages, and be ready to create your own custom nodes.</p>
-<p>Chapter 4 will then cover adding physical buttons and LEDs to interact with the real world.</p>
-<p>Let's get started!</p>
+<p>You now have the big picture: a generic goal (inputs → events → outputs) plus the concrete stack for early chapters. Later sections in this chapter dive into each decision.</p>
+<p>Start with <strong><a href="02-start/./arduino-and-migration.html">Arduino for Early Chapters (Migration Path)</a></strong>. Each section builds on the previous one, culminating in a clear understanding of our toolchain and ready-to-implement design.</p>
+<p>By the end of this chapter, you'll be prepared to move forward with the example implementation.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="arduino-for-phases-12-migration-path-for-phase-3"><a class="header" href="#arduino-for-phases-12-migration-path-for-phase-3">Arduino for Phases 1–2 (Migration Path for Phase 3)</a></h1>
+<p>The first decision in building an OpenLCB node is: <strong>which platform and framework?</strong> For phases 1–2, we use Arduino because it's the most accessible starting point for learning and offers excellent real-world functionality. Phase 3 introduces the migration path to full FreeRTOS-based solutions only if you need advanced features.</p>
+<h2 id="why-arduino-first"><a class="header" href="#why-arduino-first">Why Arduino First?</a></h2>
+<p>Arduino provides a dramatically lower learning curve and barrier to entry compared to FreeRTOS or ESP-IDF:</p>
+<ul>
+<li><strong>Minimal setup time</strong>: You can have working code running in minutes without complex build systems or operating system knowledge</li>
+<li><strong>Large ecosystem</strong>: Thousands of tutorials, libraries, and community examples</li>
+<li><strong>Rapid iteration</strong>: Fast compile/upload cycle (with PlatformIO)</li>
+<li><strong>Breadboard-friendly</strong>: Ideal for learning with hobby microcontrollers</li>
+<li><strong>No RTOS complexity</strong>: Single-threaded execution; no threading, mutexes, or scheduler concepts needed</li>
+</ul>
+<p>When learning OpenLCB, you want to focus on <strong>understanding the protocol and building real I/O functionality</strong>—not spending weeks learning RTOS concepts and debugging multi-threaded interactions. Arduino (with OpenMRN-Lite) lets you get working nodes immediately.</p>
+<h2 id="arduino--openmrn-lite-phases-12"><a class="header" href="#arduino--openmrn-lite-phases-12">Arduino + OpenMRN-Lite: Phases 1–2</a></h2>
+<p>For phases 1–2 (TCP quick-start and CAN-based I/O), you use <strong>OpenMRN-Lite</strong>, the Arduino version of OpenMRN.</p>
+<p>OpenMRN-Lite is <strong>production-quality and fully functional</strong>. It supports:</p>
+<ul>
+<li><strong>CDI configuration</strong> - Configure nodes without recompiling</li>
+<li><strong>CAN bus</strong> - Full CAN transport with proper arbitration</li>
+<li><strong>Event producers/consumers</strong> - The core OpenLCB pattern</li>
+<li><strong>Persistent storage</strong> - SPIFFS/SD card for configuration</li>
+<li><strong>Real-time monitoring</strong> - JMRI integration via TCP or CAN</li>
+</ul>
+<p><strong>This is not a compromise.</strong> Most hobby and DIY LCC installations use OpenMRN-Lite for years. You're not learning a dead-end; you're choosing the right tool for real-world I/O projects.</p>
+<h2 id="do-you-need-phase-3"><a class="header" href="#do-you-need-phase-3">Do You Need Phase 3?</a></h2>
+<p>Most projects stay in phases 1–2. Phase 3 (FreeRTOS + Full OpenMRN) is only for advanced scenarios:</p>
+<ul>
+<li><strong>Command stations and bridges</strong> — Complex routing between multiple transports</li>
+<li><strong>Virtual nodes</strong> — Multiple logical nodes on one device</li>
+<li><strong>Traction protocol</strong> — Locomotive decoder features</li>
+<li><strong>Multi-threaded hubs</strong> — Complex systems requiring background threads and advanced concurrency</li>
+</ul>
+<p>If you're building sensors, I/O controllers, or simple nodes for a layout, phases 1–2 have everything you need. Most hobby and model railroad installations never require phase 3.</p>
+<h2 id="if-you-need-phase-3-later"><a class="header" href="#if-you-need-phase-3-later">If You Need Phase 3 Later</a></h2>
+<p>If you eventually need phase 3 features, the foundation you built in phases 1–2 makes the path forward straightforward:</p>
+<ul>
+<li>Your OpenLCB <strong>protocol knowledge transfers directly</strong> — message formats, event semantics, CDI structures all stay the same</li>
+<li>You'll switch from Arduino to <strong>ESP-IDF</strong> (Espressif's full RTOS environment) and use full <strong>OpenMRN</strong> library instead of OpenMRN-Lite</li>
+<li>You'll add FreeRTOS-aware code (threading, message queues, etc.)</li>
+<li>The core OpenLCB concepts you've mastered (producers/consumers, startup sequence, events) remain unchanged—you're adding threading sophistication on top of a solid foundation</li>
+</ul>
+<h2 id="for-phases-12"><a class="header" href="#for-phases-12">For Phases 1–2</a></h2>
+<p>We'll use <strong>Arduino + OpenMRN-Lite</strong>. This combination gives you:</p>
+<ul>
+<li>A working TCP node in minutes (phase 1)</li>
+<li>A fully-featured CAN node for real layouts (phase 2)</li>
+<li>Time to focus on OpenLCB concepts instead of RTOS complexity</li>
+<li>A solid foundation for phase 3 if you ever need it</li>
+</ul>
+<p>Let's get started with simplicity, solid fundamentals, and the knowledge that you can expand whenever you need to.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="openmrn-lite-architecture--capabilities"><a class="header" href="#openmrn-lite-architecture--capabilities">OpenMRN-Lite Architecture &amp; Capabilities</a></h1>
 <p>You've learned the concepts behind OpenLCB. Now, before we write code, let's understand the software library we'll be using: OpenMRN-Lite. This chapter clarifies what it is, why it's the right choice for ESP32, and what it can (and can't) do.</p>
 <h2 id="what-is-openmrn-lite"><a class="header" href="#what-is-openmrn-lite">What is OpenMRN-Lite?</a></h2>
@@ -730,6 +701,245 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 <h2 id="looking-ahead"><a class="header" href="#looking-ahead">Looking Ahead</a></h2>
 <p>In Chapter 3, you'll see how OpenMRN-Lite integrates into a real ESP32 project using Arduino and PlatformIO. The library handles all the protocol details—your job is just to define events, read inputs, and write outputs.</p>
 <p>And if you ever do need features that OpenMRN-Lite doesn't support, that's okay. You'll understand the OpenLCB concepts deeply enough to appreciate why those features exist and how they work in more complex systems. The goal of this book is to build that foundation.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="platform-esp32--spiffs"><a class="header" href="#platform-esp32--spiffs">Platform: ESP32 &amp; SPIFFS</a></h1>
+<p>Now that we've committed to Arduino and OpenMRN-Lite, the next decision is: <strong>which microcontroller platform?</strong> We've chosen <strong>ESP32</strong> for this book. Here's why.</p>
+<h2 id="why-esp32"><a class="header" href="#why-esp32">Why ESP32?</a></h2>
+<p>The ESP32 platform is one of the best-supported microcontrollers for OpenMRN-Lite:</p>
+<p><strong>Essential Features</strong>:</p>
+<ul>
+<li><strong>Excellent Arduino support</strong> - Arduino framework is mature and stable on ESP32</li>
+<li><strong>WiFi built-in</strong> - Perfect match for our WiFi/TCP transport choice (no separate shield needed)</li>
+<li><strong>CAN capable</strong> - Built-in CAN controller for adding CAN hardware in future chapters</li>
+<li><strong>Persistent storage (SPIFFS)</strong> - Critical for OpenMRN configuration management (more on this below)</li>
+</ul>
+<p><strong>Practical Advantages</strong>:</p>
+<ul>
+<li><strong>Affordable</strong> - Development boards are $5–15 USD</li>
+<li><strong>Powerful</strong> - Dual-core processor, plenty of memory for OpenMRNLite applications</li>
+<li><strong>GPIO-rich</strong> - Enough pins for inputs, outputs, and future expansion</li>
+</ul>
+<h2 id="spiffs-why-it-matters"><a class="header" href="#spiffs-why-it-matters">SPIFFS: Why It Matters</a></h2>
+<p>OpenMRN-Lite requires a <strong>persistent filesystem</strong> to store configuration data. When your node starts, it reads a configuration file that contains:</p>
+<ul>
+<li>Node identity (SNIP data: device name and description)</li>
+<li>Configuration schema definition (CDI)</li>
+<li>User settings (to be added in later chapters)</li>
+</ul>
+<p><strong>SPIFFS</strong> (SPI Flash File System) is ESP32's built-in filesystem. It allows OpenMRN to:</p>
+<ol>
+<li>Store a configuration file on the device's flash memory</li>
+<li>Read and update configuration without needing a separate EEPROM chip</li>
+<li>Persist settings across power cycles</li>
+</ol>
+<p>This means:</p>
+<ul>
+<li>No external hardware required (everything is on-chip)</li>
+<li>You can change node name and description via JMRI without recompiling firmware</li>
+<li>Future configuration parameters (WiFi settings, event mappings, etc.) can be edited live</li>
+</ul>
+<p>Other platforms (Arduino Mega, STM32 Nucleo boards) either lack SPIFFS or require external EEPROM components, adding complexity. ESP32 has it built-in.</p>
+<h2 id="other-platforms-with-openmrn-lite-support"><a class="header" href="#other-platforms-with-openmrn-lite-support">Other Platforms with OpenMRN-Lite Support</a></h2>
+<p>OpenMRN-Lite works on other Arduino-compatible boards:</p>
+<ul>
+<li><strong>STM32 family</strong> (Nucleo boards) via Arduino core - good option but requires external EEPROM for storage</li>
+<li><strong>Arduino Mega</strong> - more memory than Uno, but no WiFi; requires WiFi shield</li>
+<li><strong>Other ESP32 variants</strong> (ESP32-S3, ESP32-C3) - similar capabilities, also good choices</li>
+</ul>
+<p>If you have a different board available, you can likely adapt the examples. Chapter 3 has more details on platform trade-offs. For now, <strong>ESP32 DevKit v1</strong> is the best starting point: affordable, well-documented, and fully supported by the OpenMRN-Lite community.</p>
+<h2 id="next-choosing-your-development-environment"><a class="header" href="#next-choosing-your-development-environment">Next: Choosing Your Development Environment</a></h2>
+<p>With platform and toolchain locked in (Arduino + OpenMRN-Lite + ESP32), the next step is choosing an IDE and build system. That's covered in the next section.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="development-environments--tooling"><a class="header" href="#development-environments--tooling">Development Environments &amp; Tooling</a></h1>
+<p>Now that you've decided on Arduino + OpenMRN-Lite + ESP32, you need tools to write, build, and upload code. There are three main options for Arduino development. This section compares them so you can choose what works best for you.</p>
+<h2 id="three-options-for-arduino-development"><a class="header" href="#three-options-for-arduino-development">Three Options for Arduino Development</a></h2>
+<h3 id="1-arduino-ide"><a class="header" href="#1-arduino-ide">1. Arduino IDE</a></h3>
+<p><strong>What it is</strong>: The official Arduino development environment. A simple editor with integrated build and upload tools.</p>
+<p><strong>Pros</strong>:</p>
+<ul>
+<li>Official and most well-documented</li>
+<li>Simplest setup for beginners</li>
+<li>Latest Arduino library support (sometimes ahead of other tools)</li>
+</ul>
+<p><strong>Cons</strong>:</p>
+<ul>
+<li>Limited editing features compared to professional IDEs</li>
+<li>No advanced debugging tools</li>
+<li>Library management can be tedious for complex projects</li>
+<li>Slower builds for large projects</li>
+<li>Limited integration with external tools (like GitHub Copilot)</li>
+</ul>
+<h3 id="2-vs-code-options--recommended"><a class="header" href="#2-vs-code-options--recommended">2. VS Code Options — <strong>Recommended</strong></a></h3>
+<p>Visual Studio Code is a powerful, modern code editor that supports Arduino development through extensions. Unlike the Arduino IDE, VS Code gives you professional editing features, integrations, and an extensive ecosystem of tools—all in one environment. This significantly improves your development experience.</p>
+<p><strong>Benefits of VS Code for Arduino Development</strong>:</p>
+<ul>
+<li><strong>Professional editor experience</strong> - syntax highlighting, code formatting, IntelliSense, and multi-file navigation</li>
+<li><strong>GitHub Copilot integration</strong> - AI-assisted code completion, documentation generation, and debugging suggestions</li>
+<li><strong>Extensible ecosystem</strong> - seamless access to Git, terminal, testing tools, debugging, and thousands of extensions</li>
+<li><strong>Faster development workflow</strong> - superior editing and navigation compared to Arduino IDE</li>
+</ul>
+<p>There are two main extensions available for Arduino development in VS Code:</p>
+<h4 id="2a-arduino-maker-workshop-vs-code-extension"><a class="header" href="#2a-arduino-maker-workshop-vs-code-extension">2A. Arduino Maker Workshop (VS Code Extension)</a></h4>
+<p><strong>What it is</strong>: An extension that brings the Arduino CLI directly into VS Code, giving you the same capabilities as the official Arduino IDE.</p>
+<p><strong>Pros</strong>:</p>
+<ul>
+<li><strong>Full Arduino CLI capability</strong> - identical board and library support as the official Arduino IDE; no loss of functionality</li>
+<li><strong>Good library management</strong> - same library ecosystem as Arduino IDE</li>
+</ul>
+<p><strong>Cons</strong>:</p>
+<ul>
+<li>Smaller community than PlatformIO</li>
+<li>May have minor library update lag compared to official Arduino IDE (rarely an issue in practice)</li>
+</ul>
+<h4 id="2b-platformio-vs-code-extension"><a class="header" href="#2b-platformio-vs-code-extension">2B. PlatformIO (VS Code Extension)</a></h4>
+<p><strong>What it is</strong>: A professional-grade build system and IDE extension specifically designed for embedded development across multiple platforms.</p>
+<p><strong>Pros</strong>:</p>
+<ul>
+<li><strong>Fastest builds</strong> - significantly faster than Arduino IDE or Maker Workshop</li>
+<li><strong>Professional features</strong> - library version pinning, dependency resolution, build system profiling</li>
+<li><strong>Strong community</strong> - large ecosystem of libraries and examples</li>
+<li><strong>Non-Arduino platform support</strong> - extends beyond Arduino boards to ESP-IDF, FreeRTOS, STM32, and hundreds of other embedded platforms; supports phase 3 migration to full OpenMRN</li>
+</ul>
+<p><strong>Cons</strong>:</p>
+<ul>
+<li>Latest Arduino library versions sometimes lag by 1–2 releases (minor issue in practice)</li>
+<li>Slightly steeper learning curve than Arduino IDE</li>
+<li>More configuration options (which is a pro for power users)</li>
+</ul>
+<h2 id="personal-recommendation-platformio--vs-code--github-copilot"><a class="header" href="#personal-recommendation-platformio--vs-code--github-copilot">Personal Recommendation: PlatformIO + VS Code + GitHub Copilot</a></h2>
+<p>I personally use <strong>PlatformIO in VS Code</strong> with <strong>GitHub Copilot (paid subscription)</strong> enabled. Here's why:</p>
+<ol>
+<li><strong>Professional environment</strong> - PlatformIO's build system is industrial-strength; you're learning with real tools you'd use in production.</li>
+<li><strong>GitHub Copilot</strong> - The entry-level paid subscription (~$10/month) is exceptional value. Copilot goes way beyond auto-completion; I use it to write and edit actual code. This dramatically lowers the barrier to entry and makes you far more productive:
+<ul>
+<li>Writing functions and complex logic from natural language descriptions</li>
+<li>Refactoring and improving existing code</li>
+<li>Generating unit tests and helper functions</li>
+<li>Explaining unfamiliar code and OpenMRN APIs</li>
+</ul>
+</li>
+<li><strong>Fast iteration</strong> - PlatformIO's build speed means less waiting between code changes and testing.</li>
+<li><strong>Future flexibility</strong> - If you later migrate to full OpenMRN, PlatformIO supports it seamlessly.</li>
+</ol>
+<p>The Copilot subscription is worth the investment if you're doing this seriously. It's not a necessity—you can learn OpenLCB without it—but it significantly improves the learning experience and accessibility for hobbyists.</p>
+<h2 id="choosing-your-own-path"><a class="header" href="#choosing-your-own-path">Choosing Your Own Path</a></h2>
+<p>Each option is valid:</p>
+<ul>
+<li><strong>Lowest barrier to entry?</strong> → Arduino IDE</li>
+<li><strong>VS Code + Arduino CLI?</strong> → Arduino Maker Workshop</li>
+<li><strong>Professional, fastest, future-proof?</strong> → PlatformIO</li>
+</ul>
+<p>This book includes detailed setup instructions for <strong>PlatformIO</strong> (Chapter 3). If you prefer a different option, the concepts apply equally; you'll just follow that tool's documentation for the build and upload steps.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="transports-wifitcp-and-can"><a class="header" href="#transports-wifitcp-and-can">Transports: WiFi/TCP and CAN</a></h1>
+<p>OpenLCB is designed to work over different physical transports. We use two main options across this book: <strong>WiFi/TCP</strong> (for rapid learning) and <strong>CAN</strong> (for real-world deployments).</p>
+<h2 id="phase-1-wifitcp-transport-quick-start"><a class="header" href="#phase-1-wifitcp-transport-quick-start">Phase 1: WiFi/TCP Transport (Quick Start)</a></h2>
+<p>We begin with <strong>WiFi and TCP</strong> to get your first OpenLCB node running in minutes:</p>
+<p><strong>For Rapid Learning</strong>:</p>
+<ul>
+<li><strong>No special hardware required</strong> - ESP32 boards have WiFi built-in; no CAN transceivers needed</li>
+<li><strong>Easy monitoring</strong> - Standard network tools and JMRI can capture all traffic</li>
+<li><strong>Faster iteration</strong> - Wireless upload and debugging without physical bus connections</li>
+<li><strong>Focus on protocol</strong> - Understand events, producers, and consumers without hardware distractions</li>
+</ul>
+<p><strong>Key Insight</strong>: The OpenLCB message formats, node startup, and event handling work <strong>identically</strong> over WiFi/TCP and CAN. Everything you learn in phase 1 transfers directly to CAN-based implementations in phase 2. TCP is a deliberate stepping stone, not a dead-end.</p>
+<h2 id="phase-2-can-bus-transport-main-focus"><a class="header" href="#phase-2-can-bus-transport-main-focus">Phase 2: CAN Bus Transport (Main Focus)</a></h2>
+<p><strong>CAN (Controller Area Network)</strong> is the traditional transport for OpenLCB and is used in the vast majority of commercial LCC products. After mastering the protocol over TCP, you'll add CAN hardware and use it as your primary transport.</p>
+<p><strong>Why CAN is the Real-World Standard</strong>:</p>
+<ul>
+<li><strong>Excellent noise immunity</strong> - designed for harsh environments (layout with motors, lights, switching supplies)</li>
+<li><strong>Built-in collision handling</strong> - arbitration is hardware-enforced, not software-managed</li>
+<li><strong>Two-wire bus</strong> - simple termination (120Ω at both ends)</li>
+<li><strong>Industry-proven</strong> - decades of use in automotive and industrial settings</li>
+<li><strong>Multi-device scalability</strong> - hundreds of nodes can share the same two-wire bus</li>
+<li><strong>Compatibility</strong> - interoperability with commercial LCC products and installations</li>
+</ul>
+<p><strong>What You'll Add</strong>:</p>
+<ul>
+<li>A CAN transceiver board (~$5)</li>
+<li>Proper bus termination (two 120Ω resistors)</li>
+<li>A two-wire connection to other nodes</li>
+</ul>
+<p><strong>When Phase 2 Starts</strong>: Chapters on inputs and outputs focus on CAN. You'll explore multi-node systems, real-world layouts, and the patterns used in most model railroad installations.</p>
+<h2 id="phase-3-multi-transport-integration-advanced"><a class="header" href="#phase-3-multi-transport-integration-advanced">Phase 3: Multi-Transport Integration (Advanced)</a></h2>
+<p>Once you've mastered CAN-based I/O, you may eventually need to:</p>
+<ul>
+<li>Bridge TCP and CAN on the same device</li>
+<li>Implement virtual nodes</li>
+<li>Use the traction protocol for command stations</li>
+</ul>
+<p>These advanced features require full OpenMRN with FreeRTOS threading, covered in later chapters.</p>
+<h2 id="the-progression"><a class="header" href="#the-progression">The Progression</a></h2>
+<p>This is one of OpenLCB's strengths: the <strong>protocol is transport-agnostic</strong>. You can:</p>
+<ol>
+<li><strong>Start with WiFi/TCP</strong> on your workbench (phase 1—no special hardware)</li>
+<li><strong>Learn OpenLCB fundamentals</strong> (events, producers, consumers, CDI)</li>
+<li><strong>Add CAN hardware</strong> and switch to phase 2 (same code patterns; now using the real transport)</li>
+<li><strong>Integrate both transports</strong> if needed (phase 3, only when necessary)</li>
+</ol>
+<p>The key insight: learning with TCP doesn't waste your time. It's a deliberate stepping stone that lets you focus on protocol before worrying about hardware. When you move to CAN, the only change is the physical connection and a few hardware initialization lines—your OpenLCB knowledge applies perfectly.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="monitoring--verification"><a class="header" href="#monitoring--verification">Monitoring &amp; Verification</a></h1>
+<p>Building an OpenLCB node is only half the battle. You also need <strong>visibility</strong> into what your node is doing. This section introduces the monitoring tools and how to verify your node is working correctly.</p>
+<h2 id="jmri-the-essential-monitoring-tool"><a class="header" href="#jmri-the-essential-monitoring-tool">JMRI: The Essential Monitoring Tool</a></h2>
+<p><strong>JMRI</strong> (Java Model Railroad Interface) is a free, open-source tool for model railroad control and monitoring. It's essential for OpenLCB development:</p>
+<p><strong>Why JMRI?</strong></p>
+<ul>
+<li><strong>Message decoder</strong> - Translates raw hex into readable OpenLCB messages</li>
+<li><strong>Network monitor</strong> - See all CID, RID, AMD, event messages in real-time</li>
+<li><strong>Testing tool</strong> - Send events to your node and verify responses</li>
+<li><strong>Layout integration</strong> - Connect your node to a larger LCC network</li>
+<li><strong>Configuration editor</strong> - Edit node settings (via CDI) without recompiling firmware</li>
+</ul>
+<p>For OpenLCB development, JMRI is <strong>invaluable</strong> for seeing what's happening on the network.</p>
+<h2 id="tcpgridconnect-protocol"><a class="header" href="#tcpgridconnect-protocol">TCP/GridConnect Protocol</a></h2>
+<p>When your ESP32 node runs a TCP server (on port 12021 by default), JMRI connects as a TCP client. The communication uses <strong>GridConnect ASCII format</strong>, which is human-readable:</p>
+<pre><code>:X18AD4000N;
+:X19B84000N;
+:X1CED4000N;
+:X1080C000N;
+</code></pre>
+<p>Each line is an OpenLCB message. The format is:</p>
+<ul>
+<li><code>:X</code> - GridConnect header</li>
+<li><code>18AD4000</code> - OpenLCB header and data (hex)</li>
+<li><code>N</code> - Indicates normal message (not error)</li>
+<li><code>;</code> - Message terminator</li>
+</ul>
+<p><strong>What You'll See</strong>: When your node starts up, JMRI shows:</p>
+<ol>
+<li><strong>Four CID frames</strong> (checking alias availability)</li>
+<li><strong>RID frame</strong> (reserving an alias)</li>
+<li><strong>AMD frame</strong> (mapping Node ID to alias)</li>
+<li><strong>Initialized message</strong> (node is online and ready)</li>
+<li><strong>Producer/Consumer Identified messages</strong> (node capabilities)</li>
+<li><strong>Event reports</strong> (button presses, LED changes, etc.)</li>
+</ol>
+<p>This startup sequence takes a few milliseconds and happens automatically.</p>
+<h2 id="running-a-local-tcp-hub"><a class="header" href="#running-a-local-tcp-hub">Running a Local TCP Hub</a></h2>
+<p>Your ESP32 node runs <strong>both</strong> a node (producing/consuming events) <strong>and</strong> a hub (routing messages) simultaneously. The hub is a simple TCP server:</p>
+<ul>
+<li>Listens on port 12021 by default</li>
+<li>Accepts connections from JMRI, other nodes, and monitoring tools</li>
+<li>Forwards all OpenLCB messages between participants</li>
+<li>Requires just a few lines of OpenMRN-Lite code to set up</li>
+</ul>
+<p>This is a key design pattern: a single device can be both a node and a hub, which is perfect for development and small layouts.</p>
+<h2 id="quick-verification-steps"><a class="header" href="#quick-verification-steps">Quick Verification Steps</a></h2>
+<p>When your node is running:</p>
+<ol>
+<li><strong>Serial monitor</strong> - See startup messages and debug output</li>
+<li><strong>JMRI connection</strong> - Connect JMRI to <code>localhost:12021</code> (or your ESP32's IP address)</li>
+<li><strong>Message trace</strong> - Watch the four startup frames (CID/RID/AMD/Init)</li>
+<li><strong>Event test</strong> - Produce and consume a test event; watch it appear in JMRI</li>
+<li><strong>Node properties</strong> - View your node's name and description (from SNIP data)</li>
+</ol>
+<p>Chapter 4 includes detailed screenshots and step-by-step JMRI configuration instructions.</p>
+<h2 id="whats-next-1"><a class="header" href="#whats-next-1">What's Next</a></h2>
+<p>With monitoring tools in place, you're ready to:</p>
+<ol>
+<li>Install PlatformIO (Chapter 3)</li>
+<li>Build and deploy the async_blink example</li>
+<li>Verify it with JMRI</li>
+<li>Start understanding the code</li>
+</ol>
+<p>Let's get hands-on in the next chapter.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="esp32-with-arduino--platformio"><a class="header" href="#esp32-with-arduino--platformio">ESP32 with Arduino &amp; PlatformIO</a></h1>
 <p>This chapter covers everything needed to build and deploy an OpenLCB node on an ESP32 microcontroller using Arduino and PlatformIO. We'll create a working example that you can modify for your own applications.</p>
 <h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
@@ -1747,15 +1957,16 @@ Produced event: 0x0502010202000001 (state: 1)
 <h3 id="configuring-the-lcc-connection"><a class="header" href="#configuring-the-lcc-connection">Configuring the LCC Connection</a></h3>
 <p>JMRI needs to know how to connect to your ESP32's TCP Hub on port 12021. Let's configure that connection.</p>
 <ol>
-<li>
-<p><strong>Launch LccPro</strong>:</p>
+<li><strong>Launch LccPro</strong>:
 <ul>
 <li>In JMRI, go to <strong>ESP32 LCC → LccPro</strong></li>
 <li>If this is the <strong>first time</strong> you're running LccPro and you have <strong>no other connections</strong>, the LccPro Wizard appears automatically (see first image below)</li>
 <li>If you <strong>already have at least one connection</strong> from DecoderPro or PanelPro, continue to step 2</li>
 </ul>
-<p><img src="images/LccPro_FirstConnection.png" alt="LccPro Wizard on first launch (no existing connections)" /></p>
 </li>
+</ol>
+<p><img src="03-esp32-arduino/../images/LccPro_FirstConnection.png" alt="LccPro Wizard on first launch (no existing connections)" /></p>
+<ol start="2">
 <li>
 <p><strong>Configure the connection settings</strong>:</p>
 <p><strong>If using the Wizard</strong> (first-time launch):</p>
@@ -1769,8 +1980,10 @@ Produced event: 0x0502010202000001 (state: 1)
 <li>Click the <strong>Connections</strong> tab (in the left sidebar)</li>
 <li>Click the <strong>+</strong> button (bottom left) to add a new connection</li>
 </ul>
-<p><img src="images/JMRI_Preferences.png" alt="JMRI Preferences dialog with Connections tab" /></p>
 </li>
+</ol>
+<p><img src="03-esp32-arduino/../images/JMRI_Preferences.png" alt="JMRI Preferences dialog with Connections tab" /></p>
+<ol start="3">
 <li>
 <p><strong>Enter the connection settings</strong>:</p>
 <ul>
@@ -1807,9 +2020,9 @@ Produced event: 0x0502010202000001 (state: 1)
 <li>You should see alternating event reports appearing every second</li>
 <li>Each event corresponds to the events your ESP32 is producing</li>
 </ul>
-<p><img src="images/Traffic_Monitor.png" alt="LCC Traffic Monitor showing alternating events" /></p>
 </li>
 </ol>
+<p><img src="03-esp32-arduino/../images/Traffic_Monitor.png" alt="LCC Traffic Monitor showing alternating events" /></p>
 <h3 id="viewing-node-properties-snip-information"><a class="header" href="#viewing-node-properties-snip-information">Viewing Node Properties (SNIP Information)</a></h3>
 <p>You can verify that JMRI recognizes your ESP32 as a node on the network and view its SNIP (Simple Node Information Protocol) details using LccPro:</p>
 <ol>
@@ -1836,12 +2049,12 @@ Produced event: 0x0502010202000001 (state: 1)
 </li>
 <li>This confirms the node initialized successfully with correct identity information</li>
 </ul>
-<p><img src="images/LccProNodes.png" alt="LccPro node list showing the async_blink node" /></p>
+</li>
+</ol>
+<p><img src="03-esp32-arduino/../images/LccProNodes.png" alt="LccPro node list showing the async_blink node" /></p>
 <blockquote>
 <p><strong>Note</strong>: The <strong>Configure</strong> button in LccPro is for editing the node's configuration. We'll explore that in Chapter 5.</p>
 </blockquote>
-</li>
-</ol>
 <h3 id="understanding-snip-vs-acdi-important"><a class="header" href="#understanding-snip-vs-acdi-important">Understanding SNIP vs ACDI (Important!)</a></h3>
 <p>Now is a good time to understand the distinction between two types of node information in OpenLCB:</p>
 <p><strong>SNIP (Simple Node Information Protocol)</strong>:</p>
@@ -1927,9 +2140,9 @@ Produced event: 0x0502010202000001 (state: 1)
 </ul>
 </li>
 </ul>
-<p><img src="images/Sensors.png" alt="LCC Sensors showing alternating ACTIVE states" /></p>
 </li>
 </ol>
+<p><img src="03-esp32-arduino/../images/Sensors.png" alt="LCC Sensors showing alternating ACTIVE states" /></p>
 <p>This demonstrates the bidirectional nature of LCC - your JMRI sensors are consuming events produced by your ESP32!</p>
 <h3 id="configuration--jmri-cdi-discovery"><a class="header" href="#configuration--jmri-cdi-discovery">Configuration &amp; JMRI: CDI Discovery</a></h3>
 <p>When JMRI first connects to your ESP32, it automatically discovers what configuration options are available by requesting the <strong>CDI (Configuration Description Information)</strong> file. This file (generated in <code>init_openlcb_stack()</code> as <code>/spiffs/cdi.xml</code>) describes:</p>
@@ -2004,7 +2217,7 @@ Produced event: 0x0502010202000001 (state: 1)
 <li>Check that ESP32 and JMRI are on the same network</li>
 <li>Verify the TCP server address and port in ESP32 code</li>
 </ul>
-<h2 id="whats-next-1"><a class="header" href="#whats-next-1">What's Next</a></h2>
+<h2 id="whats-next-2"><a class="header" href="#whats-next-2">What's Next</a></h2>
 <p>You've now built your first OpenLCB node with WiFi transport! </p>
 <p><strong>In the next chapter</strong>, we'll explore:</p>
 <ul>
@@ -2193,7 +2406,7 @@ void loop() {
 <li>The serial monitor will print messages showing button state changes</li>
 </ul>
 <p>If this test works, your hardware connections are correct!</p>
-<h2 id="whats-next-2"><a class="header" href="#whats-next-2">What's Next</a></h2>
+<h2 id="whats-next-3"><a class="header" href="#whats-next-3">What's Next</a></h2>
 <p>Once you've verified the hardware is working, the next step is to integrate this with the OpenLCB code from Chapter 3:</p>
 <ul>
 <li>Modify the code to detect button presses and produce OpenLCB events</li>

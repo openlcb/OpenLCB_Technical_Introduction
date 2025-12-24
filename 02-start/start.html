@@ -1,0 +1,282 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Getting Started - OpenLCB Programmer&#x27;s Guide</title>
+                
+
+        <!-- Custom HTML head -->
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+                <link rel="icon" href="../favicon.svg">
+                        <link rel="shortcut icon" href="../favicon.png">
+                <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+                <link rel="stylesheet" href="../css/print.css" media="print">
+        
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+                <link rel="stylesheet" href="../fonts/fonts.css">
+        
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+            </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../title-page.html">OpenLCB Programmer's Guide</a></li><li class="chapter-item expanded "><a href="../01-intro/intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../01-intro/node_architecture.html"><strong aria-hidden="true">1.1.</strong> Node</a></li><li class="chapter-item expanded "><a href="../01-intro/intro_can.html"><strong aria-hidden="true">1.2.</strong> CAN</a></li><li class="chapter-item expanded "><a href="../01-intro/intro_async_blink.html"><strong aria-hidden="true">1.3.</strong> Node Startup Sequence</a></li><li class="chapter-item expanded "><a href="../01-intro/intro_ab_events.html"><strong aria-hidden="true">1.4.</strong> Events and Run Mode</a></li></ol></li><li class="chapter-item expanded "><a href="../02-start/start.html" class="active"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../02-start/arduino-and-migration.html"><strong aria-hidden="true">2.1.</strong> Arduino for Early Chapters (Migration Path)</a></li><li class="chapter-item expanded "><a href="../02-start/openmrn-architecture.html"><strong aria-hidden="true">2.2.</strong> OpenMRN-Lite Architecture &amp; Capabilities</a></li><li class="chapter-item expanded "><a href="../02-start/platform-esp32.html"><strong aria-hidden="true">2.3.</strong> Platform: ESP32 &amp; SPIFFS</a></li><li class="chapter-item expanded "><a href="../02-start/development-environments.html"><strong aria-hidden="true">2.4.</strong> Development Environments &amp; Tooling</a></li><li class="chapter-item expanded "><a href="../02-start/platform-and-transports.html"><strong aria-hidden="true">2.5.</strong> Transports: WiFi &amp; CAN</a></li><li class="chapter-item expanded "><a href="../02-start/monitoring-and-tools.html"><strong aria-hidden="true">2.6.</strong> Monitoring &amp; Verification</a></li></ol></li><li class="chapter-item expanded "><a href="../03-esp32-arduino/esp32-arduino.html"><strong aria-hidden="true">3.</strong> ESP32 with Arduino &amp; PlatformIO</a></li><li class="chapter-item expanded "><a href="../04-gpio/gpio-hardware.html"><strong aria-hidden="true">4.</strong> Physical I/O with GPIO</a></li></ol>            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                                                <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                                            </div>
+
+                    <h1 class="menu-title">OpenLCB Programmer&#x27;s Guide</h1>
+
+                    <div class="right-buttons">
+                                                <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                                                                        
+                    </div>
+                </div>
+
+                                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="getting-started"><a class="header" href="#getting-started">Getting Started</a></h1>
+<p>In the previous chapter, you learned about OpenLCB concepts: nodes, transport layers, startup sequences, and the producer/consumer event model. Now it's time to plan your first OpenLCB node.</p>
+<p>This chapter walks you through the key decisions we'll make for building your node and explains the <strong>why</strong> behind each choice so you understand the trade-offs and can adapt to your own needs. (Actual implementation begins in the next chapter.)</p>
+<h2 id="what-were-building"><a class="header" href="#what-were-building">What We're Building</a></h2>
+<p>The goal of this book is to help you create an <strong>OpenLCB node</strong>—a device that can produce and consume events on an LCC network. Your node will:</p>
+<ul>
+<li><strong>Sense inputs</strong> (buttons, switches, sensors) and produce OpenLCB events</li>
+<li><strong>Control outputs</strong> (LEDs, relays, motors) by consuming OpenLCB events</li>
+<li><strong>Connect to a network</strong> so other nodes can respond to your events</li>
+<li><strong>Be monitored and configured</strong> via standard tools like JMRI</li>
+</ul>
+<p>We'll start with a simple example and scale to more complex scenarios in later chapters. The key concept is <strong>the pattern</strong>: once you understand how to produce and consume a single event, scaling to many inputs/outputs and adding complex logic becomes straightforward.</p>
+<h3 id="progression-tcp-then-can-then-full-openmrn"><a class="header" href="#progression-tcp-then-can-then-full-openmrn">Progression: TCP, Then CAN, Then Full OpenMRN</a></h3>
+<p>We use three key technologies across this book, introduced progressively:</p>
+<p><strong>Phase 1: TCP/WiFi (Quick Start)</strong></p>
+<ul>
+<li>Use <strong>WiFi/TCP transport</strong> with <strong>Arduino framework</strong> and <strong>OpenMRN-Lite</strong> library to get your first node running in minutes</li>
+<li>Focus on OpenLCB fundamentals (events, producers, consumers, CDI) without hardware barriers</li>
+<li>No CAN transceiver required—just an ESP32 and JMRI for monitoring</li>
+<li>Once you understand the protocol, adding CAN is straightforward</li>
+</ul>
+<p><strong>Phase 2: CAN Transport (Main Focus)</strong></p>
+<ul>
+<li>Add a <strong>CAN transceiver</strong> (~$5) and switch from <strong>WiFi/TCP to CAN</strong> transport</li>
+<li>Same <strong>Arduino framework</strong> and <strong>OpenMRN-Lite</strong> library as phase 1</li>
+<li>Explore inputs and outputs with the real transport layer used in most LCC installations</li>
+<li>Build multi-node systems that communicate over CAN</li>
+<li>Stay here if your needs fit this model (most hobby layouts do)</li>
+</ul>
+<p><strong>Phase 3: Full OpenMRN + FreeRTOS (Advanced)</strong></p>
+<ul>
+<li>Only if you need multi-threading, virtual nodes, or traction protocol</li>
+<li>Migrate from Arduino to <strong>ESP-IDF</strong> (Espressif's full RTOS environment)</li>
+<li>Use <strong>full OpenMRN</strong> library with FreeRTOS threading</li>
+<li>Handle complex, multi-threaded scenarios (bridges, command stations, etc.)</li>
+</ul>
+<p>Each phase builds on the previous one. The OpenLCB knowledge transfers directly—what changes is the platform and threading model.</p>
+<h3 id="key-decisions"><a class="header" href="#key-decisions">Key Decisions</a></h3>
+<p>Building an OpenLCB node requires several key decisions, explained in the later sections of this chapter:</p>
+<ol>
+<li><strong>Which programming framework?</strong> — Arduino for phases 1–2, FreeRTOS only if phase 3 is needed</li>
+<li><strong>Which OpenLCB library?</strong> — OpenMRN-Lite (Arduino) for phases 1–2, full OpenMRN only for phase 3</li>
+<li><strong>Which platform?</strong> — ESP32 (recommended), STM32, or other microcontroller</li>
+<li><strong>Which IDE and build tools?</strong> — PlatformIO (recommended), Arduino IDE, or native ESP-IDF</li>
+<li><strong>Which transport?</strong> — TCP/WiFi for phase 1 (quick learning), CAN for phase 2 (main focus), both for phase 3</li>
+<li><strong>How do I monitor and verify?</strong> — JMRI monitoring tool, TCP hub architecture, CAN bus analysis</li>
+</ol>
+<p>By the end of this chapter, you'll understand the <strong>reasons</strong> behind each choice and why this progression makes sense for learning and building real LCC systems.</p>
+<h2 id="detailed-topic-coverage"><a class="header" href="#detailed-topic-coverage">Detailed Topic Coverage</a></h2>
+<ul>
+<li><a href="./arduino-and-migration.html">Arduino for Early Chapters (Migration Path)</a> — Why Arduino; how to migrate to FreeRTOS later</li>
+<li><a href="./openmrn-architecture.html">OpenMRN-Lite Architecture &amp; Capabilities</a> — Why OpenMRN-Lite for Arduino; capabilities and limitations</li>
+<li><a href="./platform-esp32.html">Platform: ESP32 &amp; SPIFFS</a> — Why ESP32; the importance of persistent storage</li>
+<li><a href="./development-environments.html">Development Environments &amp; Tooling</a> — IDE comparison (Arduino IDE, Maker Workshop, PlatformIO); personal recommendation with GitHub Copilot</li>
+<li><a href="./platform-and-transports.html">Transports: WiFi &amp; CAN</a> — Why WiFi first; when to add CAN</li>
+<li><a href="./monitoring-and-tools.html">Monitoring &amp; Verification</a> — JMRI, TCP hub, GridConnect protocol</li>
+</ul>
+<h2 id="prerequisites"><a class="header" href="#prerequisites">Prerequisites</a></h2>
+<p>Before reading further, make sure you have:</p>
+<p><strong>Knowledge</strong>:</p>
+<ul>
+<li>Basic embedded programming (C/C++)</li>
+<li>Microcontroller I/O concepts (GPIO, digital read/write)</li>
+<li>Familiarity with breadboards and simple circuits</li>
+<li>Producer/consumer model understanding (from using LCC products)</li>
+</ul>
+<p><strong>Hardware</strong> (needed for Chapter 4):</p>
+<ul>
+<li>ESP32 development board (ESP32 DevKit v1 or similar)</li>
+<li>USB cable for programming</li>
+<li>Computer with WiFi</li>
+<li>Optional: breadboard, jumper wires, push button, LED, resistor (for hardware integration in Chapter 5)</li>
+</ul>
+<p><strong>Software</strong> (installation covered in Chapter 4):</p>
+<ul>
+<li>VS Code or similar editor</li>
+<li>PlatformIO extension (or Arduino IDE / Maker Workshop)</li>
+<li>JMRI (for monitoring OpenLCB traffic)</li>
+</ul>
+<p>If you're missing any hardware, most items can be purchased as a kit from electronics suppliers (Adafruit, SparkFun, Amazon, AliExpress) for under $20 USD total.</p>
+<h2 id="whats-next"><a class="header" href="#whats-next">What's Next</a></h2>
+<p>You now have the big picture: a generic goal (inputs → events → outputs) plus the concrete stack for early chapters. Later sections in this chapter dive into each decision.</p>
+<p>Start with <strong><a href="./arduino-and-migration.html">Arduino for Early Chapters (Migration Path)</a></strong>. Each section builds on the previous one, culminating in a clear understanding of our toolchain and ready-to-implement design.</p>
+<p>By the end of this chapter, you'll be prepared to move forward with the example implementation.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                                                    <a rel="prev" href="../01-intro/intro_ab_events.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+                                                    <a rel="next" href="../02-start/arduino-and-migration.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                                    <a rel="prev" href="../01-intro/intro_ab_events.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+                                    <a rel="next" href="../02-start/arduino-and-migration.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                            </nav>
+
+        </div>
+
+        
+        
+        
+                <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+        
+                <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+                <script type="text/javascript" src="../mermaid.min.js"></script>
+                <script type="text/javascript" src="../mermaid-init.js"></script>
+        
+        
+    </body>
+</html>
