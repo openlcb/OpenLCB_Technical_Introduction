@@ -20,8 +20,8 @@
 **Correct Strategic Decision**:
 - Keep OpenMRN-Lite (the only choice for Arduino/ESP32)
 - Enable CDI in async_blink_esp32 (library supports it, we just need to configure it)
-- Hardcoded approach in v0.1 (same as before)
-- CDI-based configuration in Chapter 5 (same as planned)
+ - Hardcoded approach in v0.1 (same as before)
+ - CDI-based configuration in Chapter 4 (planned)
 
 **Impact on Planning**:
 - T2.0.1 is now enhancement, not migration (no library changes needed)
@@ -89,9 +89,9 @@ None - Phase 1 complete, ready for Phase 2.
   - Test on ESP32 hardware, verify JMRI sees events and CDI ✅
 - **T2.1** ✅ COMPLETED (OpenMRNLite) → ✅ UPDATED (via T2.0.1)
 - **T2.2** ✅ COMPLETED (OpenMRNLite) → ✅ UPDATED (via T2.0.1)
-- **T2.3** ✅ COMPLETED: Physical I/O Content deferred to Chapter 4
+- **T2.3** ✅ COMPLETED: Physical I/O Content deferred to Chapter 6
 - **T2.4** ✅ COMPLETED: JMRI TCP setup guide (no changes needed)
-- **T2.5** 📋 DEFERRED: Make WiFi Configuration & Event IDs Configurable (Chapter 5)
+- **T2.5** 📋 DEFERRED: Make WiFi Configuration & Event IDs Configurable (Chapter 4)
 - **T2.6** ✅ COMPLETED (2025-12-21): Updated Chapter 3 Documentation for OpenMRN-Lite CDI
   - Updated config.h code block with SNIP_NODE_NAME, SNIP_NODE_DESC, Acdi, UserInfoSegment ✅
   - Updated main.cpp with refactored helper functions ✅

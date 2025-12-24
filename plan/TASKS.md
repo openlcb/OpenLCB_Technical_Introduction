@@ -1,5 +1,7 @@
 # Work Tasks - ESP32 WiFi Foundation
 
+> Canonical backlog: `TASKS.md` records completed, in-progress, and planned work. Use `plan/QUICK_START.md` for short session-focused checklists.
+
 ## Phase 0: Conceptual Restructuring (NEW)
 
 ### T0.1 - Restructure intro.md for High-Level Overview
@@ -148,7 +150,7 @@
 - **Description**:
   - **Original work (2025-12-20)**: WiFi setup, OpenMRN-Lite TCP transport, event production loop, tested on hardware ✅
   - **Enhancement**: Enable CDI in config.h (T2.0.1 handles this), re-test to verify identical behavior
-  - **Note**: Physical GPIO deferred to Chapter 4 (WiFi-only async_blink for v0.1)
+  - **Note**: Physical GPIO deferred to Chapter 6 (WiFi-only async_blink for v0.1)
 - **Owner**: Completed 2025-12-20 (OpenMRN-Lite), Enhancing via T2.0.1
 - **Depends On**: T2.0.1 (CDI-enabled code working)
 - **Blocks**: T2.3, T4.1
@@ -169,7 +171,7 @@
 - **Depends On**: T2.0.1
 - **Blocks**: Chapter 3 documentation
 
-### T2.3 - Move Physical I/O Content to Chapter 4 (gpio-hardware.md)
+### T2.3 - Move Physical I/O Content to Chapter 6 (gpio-hardware.md)
 - **Status**: ⏳ PENDING
 - **Priority**: MEDIUM (defers hardware to v0.2, refocuses Chapter 3 on WiFi-only)
 - **Effort**: 30 minutes
@@ -178,11 +180,11 @@
     - GPIO Pin Assignment (GPIO 12 button, GPIO 13 LED) → Move to gpio-hardware.md
     - Bill of Materials (breadboard, button, LED, resistor, jumpers) → Move to gpio-hardware.md
   - Update gpio-hardware.md with moved content
-  - Modify esp32-arduino.md 'What's Next' section to reference Chapter 4 for hardware integration
+  - Modify esp32-arduino.md 'What's Next' section to reference Chapter 6 for hardware integration
   - **Result**: Chapter 3 focused purely on WiFi async blink (no hardware setup needed)
 - **Owner**: After T2.0.1 verified working
 - **Depends On**: T2.0.1 (code working on hardware)
-- **Blocks**: Chapter 4 completion
+- **Blocks**: Chapter 6 completion
 
 ### T2.4 - Create Detailed JMRI TCP Setup Guide (NO CHANGES NEEDED)
 - **Status**: ✅ COMPLETED

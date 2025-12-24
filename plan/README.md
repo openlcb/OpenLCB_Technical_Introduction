@@ -1,5 +1,16 @@
 # LCC Technical Introduction Book - Planning Guide
 
+## Start Here — Next Session
+
+- **Quick session playbook**: plan/QUICK_START.md — use this to begin the immediate session
+- **Canonical backlog**: plan/TASKS.md — completed, in-progress, and planned work
+- **Project snapshot**: plan/PROJECT_STATUS.md — phase, blockers, and key findings
+- **Chapter index**: plan/CHAPTERS.md — outline and per-chapter status
+- **Research & findings**: plan/RESEARCH.md — technical notes and discoveries
+- **Sub-agent templates**: plan/SUB_AGENT_GUIDE.md — research delegation templates
+- **Style guide**: plan/STYLE_GUIDE.md — writing, tone, and formatting rules for contributors
+- **Archived planning files**: plan/archive/ (00_OVERVIEW.md moved)
+
 ## Project Vision
 
 Create an online book that helps embedded C++ developers understand and implement OpenLCB (Low-Cost Control Bus) on microcontrollers, starting with practical, hands-on examples on ESP32 running Arduino/PlatformIO, progressing to advanced topics like CAN hardware transport.
@@ -98,6 +109,7 @@ src/
 - **TCP before CAN** - Intentional sequencing to reduce initial setup complexity
 - **JMRI monitoring required** - Users need a way to observe startup messages and events
 - **Breadboard realistic** - Real-world I/O pattern; prepares for actual use cases
+- **Chapter overview files**: The first `.md` file in a chapter (e.g., `03-esp32-arduino/esp32-arduino.md`) should contain only the overview/introduction. Don't add explicit links to child topics—mdBook auto-generates the left sidebar table-of-contents from `SUMMARY.md`, so readers navigate via the sidebar, not inline links.
 
 ---
 

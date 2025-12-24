@@ -15,157 +15,89 @@ This file tracks all forward references in the book to future chapters that don'
 | Location | Current Text | Target Chapter | Status | Notes |
 |----------|--------------|-----------------|--------|-------|
 | Transport Layers section | "Future chapters will cover adding CAN hardware" | Adding CAN Hardware (future) | ⏳ Not yet written | Migrating from WiFi/TCP to CAN bus transport |
+***Forward References & Link Updates***
 
-### start.md (Chapter 2)
+## Purpose
 
-| Location | Current Text | Target Chapter | Status | Notes |
-|----------|--------------|-----------------|--------|-------|
-| "Understanding OpenMRN-Lite" section | "See Chapter 3 for deeper dive" | OpenMRN-Lite Architecture & Capabilities | ✅ COMPLETED | Forward reference to Chapter 3, added 2025-12-21 |
+Track forward references in the book that point to chapters not yet written. When a target chapter exists, update the source file to link to the new chapter and mark the reference DONE.
 
-### intro_async_blink.md (Node Startup Sequence)
-
-| Location | Current Text | Target Chapter | Status | Notes |
-|----------|--------------|-----------------|--------|-------|
-| End note | "Future chapters will dive deeper into how the alias generation algorithm works and how to handle collisions in your code" | Understanding Startup Sequence (future) | ⏳ Not yet written | Detailed CID/RID/AMD collision detection and timeout mechanisms |
-
-### intro_ab_events.md (Events and Run Mode)
-
-| Location | Current Text | Target Chapter | Status | Notes |
-|----------|--------------|-----------------|--------|-------|
-| End note | "Future chapters will show you how to create your own nodes with real button inputs and LED outputs on an ESP32 microcontroller" | ESP32 with Arduino & PlatformIO | ✅ Chapter exists! | Can be converted to link when esp32-arduino.md content is complete (T2.x tasks) |
-
-### esp32-arduino.md (Chapter 3)
-
-| Location | Current Text | Target Chapter | Status | Notes |
-|----------|--------------|-----------------|--------|-------|
-| Overview section | "See Chapter 3 for deeper dive into architecture" | OpenMRN-Lite Architecture & Capabilities | ✅ COMPLETED | Forward reference to Chapter 3, added 2025-12-21 |
-| What's Next section | "Future chapters will explore: Adding CAN hardware, Advanced events, Memory config, SNIP, Train control" | Various future chapters | ⏳ Not yet written | Multiple forward refs to post-v0.1 content |
+**Row format used below**: `[Location]` | `[Forward Reference Text]` | `[Target Chapter Title]` | `[Status]` | `[Notes]`
 
 ---
 
-## Hierarchical Chapter Structure (For Reference)
+## Current Forward References to Update
 
-This shows the conceptual flow and dependencies to help understand when to add links:
+### intro.md
 
-```
-Chapter 1: Introduction
-├─ High-level overview: Nodes, transport (CAN/TCP), startup
-├─ → Forward ref to: Chapter X: Understanding Startup Sequence (details)
-├─ → Forward ref to: Chapter X: Node Configuration
-└─ → Forward ref to: Chapter X: Advanced Events
+| Location | Current Text | Target Chapter Title | Status | Notes |
+|----------|--------------|----------------------|--------|-------|
+| Transport Layers section | "Future chapters will cover adding CAN hardware" | Switching to CAN | ⏳ Not yet written | Migrate WiFi/TCP discussion to CAN chapter when written |
 
-Chapter 2: Getting Started
-├─ Overview of what we're building
-├─ Monitoring with JMRI (TCP)
-└─ → Forward ref to: Chapter X: Hardware Setup
+### start.md
 
-Chapter 4: ESP32 with Arduino & PlatformIO
-├─ PlatformIO, library installation, GPIO basics
-├─ → Forward ref to: Chapter X: Adding CAN Hardware
-├─ → Forward ref to: Chapter X: SNIP and Configuration
-└─ → Forward ref to: Chapter X: Advanced Features
+| Location | Current Text | Target Chapter Title | Status | Notes |
+|----------|--------------|----------------------|--------|-------|
+| "Understanding OpenMRN-Lite" section | "See Chapter 3 for deeper dive" | OpenMRN-Lite Architecture & Capabilities | ✅ Linked | Reference resolved to `src/03-esp32-arduino/esp32-arduino.md` |
 
-Chapter 5: Understanding Startup Sequence (FUTURE)
-├─ Detailed CID/RID/AMD negotiation
-├─ Multi-node startup behavior
-├─ What other nodes do during startup
-└─ Timeout and collision detection
+### intro_async_blink.md (Node Startup Sequence)
 
-Chapter 6: Adding CAN Hardware (FUTURE)
-├─ Transceiver selection (SN65HVD230 vs MCP2551)
-├─ GPIO wiring and pin assignments
-├─ Bus termination and power considerations
-└─ Adapting async_blink_esp32 for CAN
+| Location | Current Text | Target Chapter Title | Status | Notes |
+|----------|--------------|----------------------|--------|-------|
+| End note | "Future chapters will dive deeper into alias negotiation and collision handling" | Understanding Startup Sequence (detailed) | ⏳ Not yet written | Deep CID/RID/AMD negotiation details belong here |
 
-Chapter 7: Node Configuration & SNIP (FUTURE)
-├─ Simple Node Information Protocol
-├─ CDI (Configuration Description Information)
-├─ Making nodes discoverable and configurable
-└─ Examples: manufacturer, model, version info
+### intro_ab_events.md (Events and Run Mode)
 
-Chapter 8: Advanced Events (FUTURE)
-├─ Custom event ID generation and allocation
-├─ Producer/consumer patterns
-├─ Event filtering and routing
-└─ Event data payload handling
+| Location | Current Text | Target Chapter Title | Status | Notes |
+|----------|--------------|----------------------|--------|-------|
+| End note | "Future chapters will show node examples with button inputs and LED outputs" | ESP32 with Arduino & PlatformIO | ✅ Linked | Content exists in `src/03-esp32-arduino/esp32-arduino.md` |
 
-Chapter 9: Advanced Features (FUTURE)
-├─ Train Control (Traction Protocol)
-├─ Broadcast Time
-├─ Fast Clock
-└─ Other OpenLCB services
+### esp32-arduino.md (What's Next / End notes)
 
-Appendix A: Archived Content (FUTURE)
-└─ STM32 Nucleo setup and examples (legacy)
-```
+| Location | Current Text | Target Chapter Title | Status | Notes |
+|----------|--------------|----------------------|--------|-------|
+| What's Next section | "Future chapters will explore: Adding CAN hardware, Advanced events, Memory config, SNIP, Train control" | Various planned chapters (see Planned Future Chapters below) | ⏳ Not yet written | Break into separate planned chapters and add links when available |
+
+---
+
+## Planned Future Chapters (for link targets)
+
+- Configuration & Persistence — `configuration-persistence.md`
+- Switching to CAN — `switching-to-can.md`
+- Physical I/O / GPIO hardware — `gpio-hardware.md`
+- Understanding Startup Sequence (detailed)
+- Advanced Events, Node Configuration, Memory Configuration, etc.
 
 ---
 
 ## Link Update Workflow
 
-### When a New Chapter is Created
+When a new chapter is created:
+1. Find forward references in this file that target the chapter
+2. Update source files replacing placeholder text with markdown links to the new chapter
+3. Update this file's Status column to `✅ Linked`
 
-1. **Find all forward references** pointing to that chapter in this file
-2. **Update the links** in the source .md files from placeholder text to actual markdown links
-3. **Mark as DONE** in the Status column below
-4. **Example change**:
-   ```markdown
-   OLD: "See Chapter X: Understanding Alias Negotiation for details"
-   NEW: "See [Understanding Alias Negotiation](../alias-negotiation.md) for details"
-   ```
-
-### Current Status Summary
-
-- ⏳ **Not Yet Written**: 10 forward references across 4 source files
-- ✅ **Linked**: 2 (Chapter 3 references from Chapter 2 and Chapter 4)
-- 🔄 **In Progress**: 0
-
----
-
-## Notes on Content Structure
-
-### High-Level vs. Detail Approach
-
-**v0.1 (Current)**:
-- Introduction focuses on: nodes, transports (CAN/TCP), startup (what happens, not how)
-- Getting started focuses on: practical ESP32 setup and simple example
-- Later chapters will provide: deep dives into mechanisms, advanced patterns
-
-**Key Principle**: 
-> "Here's what happens during startup. See Chapter X for how the alias negotiation collision detection works."
-
-NOT:
-> "Here's the detailed CID frame structure, then RID timeout calculation, then AMD..."
-
-### Multi-Node Participation in Startup
-
-The introduction should mention:
-- When one node starts up, other existing nodes may respond with their information
-- This is part of the "bus discovery" behavior
-- Details on how other nodes participate (listening for CID, responding appropriately) will be in "Chapter X: Understanding Startup Sequence"
-
----
-
-## Template for Adding New Forward References
-
-When you identify a place where a forward reference should be added:
-
+Example:
 ```markdown
-| [file.md - Line X or Section Y] | "See Chapter X: [Title] for [what it covers]" | [Target Chapter Title] (future) | ⏳ Not yet written | [Brief description of content] |
+OLD: "See Chapter X: Understanding Alias Negotiation for details"
+NEW: "See [Understanding Alias Negotiation](../understanding-startup-sequence.md) for details"
 ```
+
+---
+
+## Current Status Summary
+
+- ⏳ Not Yet Written: references targeting planned chapters (see table above)
+- ✅ Linked: references already resolved to existing chapters
 
 ---
 
 ## Future Review Points
 
-- [ ] Check intro.md for any other places where details could be elevated to overview level
-- [ ] Review async_blink_esp32.md (when created) for forward references to future chapters
-- [ ] Ensure every forward reference has a clear target chapter in the hierarchy
-- [ ] Verify that "Chapter X" placeholders get replaced when chapters are actually written
-- [ ] Add links to standards references where appropriate (e.g., "See S-9.7.3-MessageNetwork for...")
+- After creating a new chapter, run a pass to replace placeholder references and mark them linked here
+- Keep this file minimal and focused on mapping placeholders → target chapter titles (avoid numeric chapter IDs)
 
 ---
 
-**Last Updated**: 2025-12-19  
-**Created For**: Tracking forward references to future chapters  
-**Review Frequency**: After each new chapter is written; update links at that time
+**Last Updated**: 2025-12-24
+**Purpose**: Keep forward references manageable and unambiguous; prefer chapter titles/paths over numeric IDs
+

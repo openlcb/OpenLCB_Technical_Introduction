@@ -1,5 +1,7 @@
 # Quick Start: Next Session Workflow
 
+> NOTE: This file is the immediate session playbook — a short, actionable subset of the canonical backlog in `plan/TASKS.md`.
+
 **Last Updated**: 2025-12-21  
 **Current Phase**: Phase 2 In Progress - OpenMRN-Lite CDI Enhancement
 

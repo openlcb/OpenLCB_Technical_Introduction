@@ -6,16 +6,9 @@
 ## Current Table of Contents (from SUMMARY.md)
 
 ```
-- Chapter 1: "Introduction" (intro.md) ✅ RESTRUCTURED
-  - Node
-  - CAN
-  - Node Startup Sequence (with Mermaid diagram)
-  - Events and Run Mode (with Mermaid diagram)
-- Chapter 2: "Getting Started" (start.md) ✅ REWRITTEN
-- Chapter 3: "OpenMRN-Lite Architecture & Capabilities" (openmrn-architecture.md) ✅ COMPLETED
-  - What is OpenMRN-Lite (it IS the Arduino version)
-  - Why it's the correct choice for ESP32 learning
-- Chapter 4: "ESP32 with Arduino & PlatformIO" (esp32-arduino.md) 🔄 IN PROGRESS (T2.0.1 - CDI Enhancement)
+- Chapter 1: "Introduction" (src/intro.md)
+- Chapter 2: "Getting Started" (src/02-start/start.md)
+- Chapter 3: "ESP32 with Arduino & PlatformIO" (src/03-esp32-arduino/esp32-arduino.md)
 ```
 
 ## Archived Content
@@ -24,42 +17,26 @@
 
 ---
 
-## Proposed v0.1 Table of Contents
+## Planned Future Chapters (unordered)
 
-```
-- Chapter 1: "Introduction" (intro.md) [UPDATED]
-  - Node
-  - CAN
-  - Async Blink Initialization
-  - Async Blink Events
-  └─ Includes: Mermaid startup sequence + event state machine diagrams
+- Configuration & Persistence (configuration-persistence.md)
+  - CDI and ACDI explanation (SNIP vs ACDI)
+  - Configuration storage (SPIFFS, factory_reset), `apply_configuration()` pattern
+  - How JMRI discovers and edits configuration (LccPro vs DecoderPro notes)
 
-- Chapter 2: "Getting Started" (start.md) [UPDATED]
-  - Overview of what we're building
-  - Add: "Monitoring with JMRI (TCP)" section
-  - Target audience and prerequisites
+- Switching to CAN (switching-to-can.md)
+  - Transport differences (WiFi/TCP vs CAN)
+  - CAN transceiver choices, wiring, termination, platform flags
+  - Migration notes for async_blink example
 
-- Chapter 3: "OpenMRN-Lite Architecture & Capabilities" (openmrn-architecture.md) [NEW - COMPLETED ✅]
-  - What is OpenMRN-Lite (it IS the Arduino version, single-threaded, no RTOS required)
-  - Why it's the correct choice for embedded learning on ESP32
-  - Capabilities: CDI, events, datagrams, SNIP, CAN, TCP Hub
-  - Limitations: Virtual nodes, traction protocol, multi-transport bridging (require FreeRTOS)
-  - When to use OpenMRN-Lite for Arduino vs full OpenMRN with ESP-IDF (different toolchain)
-  - Learning implications: CDI enables JMRI configuration without recompilation
+- Physical I/O / GPIO hardware (gpio-hardware.md)
+  - Breadboard wiring, BOM, pin assignments
+  - Breadboard schematic and recommended pins for common ESP32 boards
 
-- Chapter 4: "ESP32 with Arduino & PlatformIO" (esp32-arduino.md) [UPDATED]
-  - PlatformIO Installation & Setup
-  - ESP32 Board Selection & Configuration
-  - **OpenMRN Library Installation** (OpenMRN-Lite: Arduino version with CDI support)
-  - Hardware Setup (breadboard, button, LED, wiring diagram)
-  - **Building async_blink_esp32** (uses OpenMRN-Lite with CDI infrastructure; hardcoded for v0.1)
-  - Deploying to ESP32
-  - Verification & Troubleshooting (JMRI connection, GPIO issues, etc.)
-  - What's Next (preview of future topics)
+- Understanding Startup Sequence (detailed)
+  - CID/RID/AMD negotiation, collision handling, timeouts
 
-- (Optional) Appendix: "Archived Content" or link to archive/openmrn-stm32.md
-  - STM32 Nucleo setup (preserved for reference, not recommended for new users)
-```
+- Advanced topics: Node Configuration, Advanced Events, CAN integration, etc.
 
 ---
 
@@ -109,7 +86,7 @@ The introduction has been restructured from implementation-focused to concept-fo
 
 **v0.1 Approach: ARCHITECTURAL CLARITY BEFORE IMPLEMENTATION** (COMPLETED 2025-12-21)
 
-This chapter clarifies the relationship between OpenMRN (full version) and OpenMRN-Lite (Arduino version), answering common questions before readers dive into Chapter 4 code.
+This chapter clarifies the relationship between OpenMRN (full version) and OpenMRN-Lite (Arduino version), answering common questions before readers dive into the ESP32 chapter (now Chapter 6).
 
 **Completed Content**:
 
@@ -126,10 +103,10 @@ This chapter clarifies the relationship between OpenMRN (full version) and OpenM
 
 **Cross-References**:
 - Referenced from Chapter 2 (Getting Started) - new section "Understanding OpenMRN-Lite"
-- Referenced from Chapter 4 (ESP32 Arduino) - Overview section mentions "Chapter 3 for deeper dive"
+- Referenced from Chapter 6 (ESP32 Arduino) - Overview section mentions "Chapter 3 for deeper dive"
 - Tracked in FORWARD_REFERENCES.md
 
-### Chapter 4: ESP32 with Arduino & PlatformIO (esp32-arduino.md) — 🔄 95% COMPLETE (WiFi-Only Focus)
+### Chapter 6: ESP32 with Arduino & PlatformIO (esp32-arduino.md) — 🔄 95% COMPLETE (WiFi-Only Focus)
 
 | Section | Current Status | v0.1 Target | Notes |
 |---|---|---|---|
@@ -142,11 +119,11 @@ This chapter clarifies the relationship between OpenMRN (full version) and OpenM
 | Building & Uploading | ✅ Complete | ✅ Done | PlatformIO build and firmware upload steps |
 | Serial Monitor Verification | ✅ Complete | ✅ Done | Expected output, verification steps, troubleshooting |
 | JMRI Configuration | ✅ Complete | ✅ Done | TCP connection setup, message monitoring, traffic interpretation |
-| Physical Hardware Section | ⏳ Moving to Ch4 | 🔄 Deferred | Moving to gpio-hardware.md (Chapter 4, future release) |
+| Physical Hardware Section | ⏳ Moving to Ch6 | 🔄 Deferred | Moving to gpio-hardware.md (Chapter 6, future release) |
 | Troubleshooting | ✅ Complete | ✅ Done | Library, USB detection, WiFi, JMRI issues |
-| What's Next | ✅ Complete | ✅ Done | References Chapter 4 (Physical I/O) for future hardware integration |
+| What's Next | ✅ Complete | ✅ Done | References Chapter 6 (Physical I/O) for future hardware integration |
 
-**Status Summary**: Chapter 4 is now focused purely on WiFi async blink (Sections 1-9). Only remaining task is T2.3: move incomplete "Physical Hardware (Optional)" section to Chapter 5 (gpio-hardware.md).
+**Status Summary**: Chapter 6 is now focused purely on WiFi async blink (Sections 1-9). Only remaining task is T2.3: move incomplete "Physical Hardware (Optional)" section to Chapter 6 (gpio-hardware.md).
 
 ---
 
@@ -204,7 +181,7 @@ Chapter 3 (ESP32 Arduino)
 
 These topics are NOT included in v0.1 but are listed for future planning:
 
-- **Chapter 4: Adding CAN Hardware** - MCP2551/SN65HVD23x transceivers, wiring, configuration
+ - **Adding CAN Hardware** - MCP2551/SN65HVD23x transceivers, wiring, configuration
 - **Chapter 5: Understanding Events in Depth** - Event ID generation, producer/consumer patterns, CDI
 - **Chapter 6: Node Configuration & SNIP** - Simple Node Information Protocol
 - **Chapter 7: Memory Configuration** - Configuration space, reading/writing parameters

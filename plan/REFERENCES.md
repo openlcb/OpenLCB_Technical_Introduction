@@ -71,23 +71,23 @@ Used for: Node ID generation, uniqueness requirements, 6-byte identifier format,
 
 ---
 
-## By Chapter
+## By Chapter (current and future)
 
-### Chapter 1: Introduction
+### Introduction
 - **Node section**: [S-9.7.0.3](#unique-identifiers)
 - **Node Startup Sequence section**: [S-9.7.2.1](#can-frame-transfer), [TN-9.7.2.1](#can-frame-transfer)
 - **Events and Run Mode section**: [S-9.7.3](#message-network)
 
-### Chapter 2: Getting Started
+### Getting Started
 - (No specific standards referenced yet; general concepts)
 
-### Chapter 3: OpenMRN-Lite Architecture & Capabilities
+### OpenMRN-Lite Architecture & Capabilities
 - (References may be added when covering feature comparisons)
 
-### Chapter 4: ESP32 with Arduino & PlatformIO
+### ESP32 with Arduino & PlatformIO (current example chapter)
 - (References may be added when covering WiFi/TCP mapping)
 
-### Chapter 5: Physical I/O with GPIO
+### Physical I/O with GPIO (future / hardware)
 - (Future content - will reference CAN standards if needed)
 
 ---
