@@ -23,3 +23,8 @@
   - [Code Walkthrough](./03-esp32-arduino/code-walkthrough.md)
   - [Build and Upload](./03-esp32-arduino/build-and-upload.md)
   - [JMRI Monitoring](./03-esp32-arduino/jmri-monitoring.md)
+- [Configuration & Persistence](./04-configuration/overview.md)
+  - [Storage Model](./04-configuration/storage-model.md)
+  - [Editing in JMRI](./04-configuration/editing-in-jmri.md)
+  - [Factory Reset Behavior](./04-configuration/factory-reset.md)
+  - [Understanding Persistence](./04-configuration/persistence-details.md)
