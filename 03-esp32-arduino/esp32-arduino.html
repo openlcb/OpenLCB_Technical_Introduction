@@ -1,50 +1,63 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sidebar-visible no-js light">
+<html lang="en" class="light sidebar-visible" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
         <title>ESP32 with Arduino &amp; PlatformIO - OpenLCB Programmer&#x27;s Guide</title>
-                
+
 
         <!-- Custom HTML head -->
-        
 
-        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="theme-color" content="#ffffff" />
+        <meta name="theme-color" content="#ffffff">
 
-                <link rel="icon" href="../favicon.svg">
-                        <link rel="shortcut icon" href="../favicon.png">
-                <link rel="stylesheet" href="../css/variables.css">
-        <link rel="stylesheet" href="../css/general.css">
-        <link rel="stylesheet" href="../css/chrome.css">
-                <link rel="stylesheet" href="../css/print.css" media="print">
-        
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-2459343d.css">
+        <link rel="stylesheet" href="../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+
         <!-- Fonts -->
-        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
-                <link rel="stylesheet" href="../fonts/fonts.css">
-        
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="../highlight.css">
-        <link rel="stylesheet" href="../tomorrow-night.css">
-        <link rel="stylesheet" href="../ayu-highlight.css">
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        
-            </head>
-    <body>
-        <!-- Provide site root to javascript -->
-        <script type="text/javascript">
-            var path_to_root = "../";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
-        </script>
 
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex-efb0aae6.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc-2a0494c8.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
-        <script type="text/javascript">
+        <script>
             try {
-                var theme = localStorage.getItem('mdbook-theme');
-                var sidebar = localStorage.getItem('mdbook-sidebar');
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -57,110 +70,128 @@
         </script>
 
         <!-- Set the theme before any content is loaded, prevents flash -->
-        <script type="text/javascript">
-            var theme;
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
-            var html = document.querySelector('html');
-            html.classList.remove('no-js')
+            const html = document.documentElement;
             html.classList.remove('light')
             html.classList.add(theme);
-            html.classList.add('js');
+            html.classList.add("js");
         </script>
 
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
         <!-- Hide / unhide sidebar before it is displayed -->
-        <script type="text/javascript">
-            var html = document.querySelector('html');
-            var sidebar = 'hidden';
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
             }
-            html.classList.remove('sidebar-visible');
-            html.classList.add("sidebar-" + sidebar);
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
         </script>
 
-        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../title-page.html">OpenLCB Programmer's Guide</a></li><li class="chapter-item expanded "><a href="../01-intro/intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../01-intro/node_architecture.html"><strong aria-hidden="true">1.1.</strong> Node</a></li><li class="chapter-item expanded "><a href="../01-intro/intro_can.html"><strong aria-hidden="true">1.2.</strong> CAN</a></li><li class="chapter-item expanded "><a href="../01-intro/intro_async_blink.html"><strong aria-hidden="true">1.3.</strong> Node Startup Sequence</a></li><li class="chapter-item expanded "><a href="../01-intro/intro_ab_events.html"><strong aria-hidden="true">1.4.</strong> Events and Run Mode</a></li></ol></li><li class="chapter-item expanded "><a href="../02-start/start.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../02-start/arduino-and-migration.html"><strong aria-hidden="true">2.1.</strong> Arduino for Early Chapters (Migration Path)</a></li><li class="chapter-item expanded "><a href="../02-start/openmrn-architecture.html"><strong aria-hidden="true">2.2.</strong> OpenMRN-Lite Architecture &amp; Capabilities</a></li><li class="chapter-item expanded "><a href="../02-start/platform-esp32.html"><strong aria-hidden="true">2.3.</strong> Platform: ESP32 &amp; SPIFFS</a></li><li class="chapter-item expanded "><a href="../02-start/development-environments.html"><strong aria-hidden="true">2.4.</strong> Development Environments &amp; Tooling</a></li><li class="chapter-item expanded "><a href="../02-start/platform-and-transports.html"><strong aria-hidden="true">2.5.</strong> Transports: WiFi &amp; CAN</a></li><li class="chapter-item expanded "><a href="../02-start/monitoring-and-tools.html"><strong aria-hidden="true">2.6.</strong> Monitoring &amp; Verification</a></li></ol></li><li class="chapter-item expanded "><a href="../03-esp32-arduino/esp32-arduino.html" class="active"><strong aria-hidden="true">3.</strong> ESP32 with Arduino &amp; PlatformIO</a></li><li class="chapter-item expanded "><a href="../04-gpio/gpio-hardware.html"><strong aria-hidden="true">4.</strong> Physical I/O with GPIO</a></li></ol>            </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
         </nav>
 
-        <div id="page-wrapper" class="page-wrapper">
+        <div id="mdbook-page-wrapper" class="page-wrapper">
 
             <div class="page">
-                
-                <div id="menu-bar-hover-placeholder"></div>
-                <div id="menu-bar" class="menu-bar sticky bordered">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
-                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
-                            <i class="fa fa-bars"></i>
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
                         </button>
-                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
-                            <i class="fa fa-paint-brush"></i>
-                        </button>
-                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
                         </ul>
-                                                <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
-                            <i class="fa fa-search"></i>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
                         </button>
-                                            </div>
+                    </div>
 
                     <h1 class="menu-title">OpenLCB Programmer&#x27;s Guide</h1>
 
                     <div class="right-buttons">
-                                                <a href="../print.html" title="Print this book" aria-label="Print this book">
-                            <i id="print-button" class="fa fa-print"></i>
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
                         </a>
-                                                                        
+
                     </div>
                 </div>
 
-                                <div id="search-wrapper" class="hidden">
-                    <form id="searchbar-outer" class="searchbar-outer">
-                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
                     </form>
-                    <div id="searchresults-outer" class="searchresults-outer hidden">
-                        <div id="searchresults-header" class="searchresults-header"></div>
-                        <ul id="searchresults">
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
                         </ul>
                     </div>
                 </div>
-                
+
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
-                <script type="text/javascript">
-                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
-                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
-                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
                         link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
                     });
                 </script>
 
-                <div id="content" class="content">
+                <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="esp32-with-arduino--platformio"><a class="header" href="#esp32-with-arduino--platformio">ESP32 with Arduino &amp; PlatformIO</a></h1>
-<p>This chapter covers everything needed to build and deploy an OpenLCB node on an ESP32 microcontroller using Arduino and PlatformIO. We'll create a working example that you can modify for your own applications.</p>
+<p>This chapter covers everything needed to build and deploy an OpenLCB node on an ESP32 microcontroller using Arduino and PlatformIO. We’ll create a working example that you can modify for your own applications.</p>
 <h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
-<p>The ESP32 is a powerful, affordable microcontroller with built-in WiFi connectivity, making it ideal for learning OpenLCB concepts. In this chapter, we'll build a complete OpenLCB node that simultaneously runs the node protocol stack and hosts a TCP Hub—allowing JMRI to monitor and control your node over WiFi.</p>
-<p>As described in the &quot;Network Architecture&quot; section of Chapter 2, your ESP32 will act as both:</p>
+<p>The ESP32 is a powerful, affordable microcontroller with built-in WiFi connectivity, making it ideal for learning OpenLCB concepts. In this chapter, we’ll build a complete OpenLCB node that simultaneously runs the node protocol stack and hosts a TCP Hub—allowing JMRI to monitor and control your node over WiFi.</p>
+<p>As described in the “Network Architecture” section of Chapter 2, your ESP32 will act as both:</p>
 <ul>
 <li>An <strong>OpenLCB node</strong> that produces and consumes events</li>
 <li>A <strong>TCP Hub</strong> listening on port 12021 for JMRI connections</li>
 </ul>
-<p>We'll be using the <strong>OpenMRN-Lite library</strong>, which is the Arduino version of OpenMRN. If you're curious about why OpenMRN-Lite specifically, or what it can (and can't) do, see Chapter 2.5 (&quot;OpenMRN-Lite Architecture &amp; Capabilities&quot;) for a deeper dive. For now, know that it's the right tool for the job and it has everything we need to build real, functional OpenLCB nodes.</p>
-<p>We'll build this in two phases:</p>
+<p>We’ll be using the <strong>OpenMRN-Lite library</strong>, which is the Arduino version of OpenMRN. If you’re curious about why OpenMRN-Lite specifically, or what it can (and can’t) do, see Chapter 2.5 (“OpenMRN-Lite Architecture &amp; Capabilities”) for a deeper dive. For now, know that it’s the right tool for the job and it has everything we need to build real, functional OpenLCB nodes.</p>
+<p>We’ll build this in two phases:</p>
 <ol>
 <li><strong>Software-only</strong>: Create a node that produces and consumes events via JMRI (no physical hardware needed yet)</li>
 <li><strong>Hardware integration</strong> (optional): Add a physical button and LED to your breadboard</li>
 </ol>
 <p>This approach lets you start learning immediately while waiting for breadboard components to arrive.</p>
 <h2 id="esp32-board-selection"><a class="header" href="#esp32-board-selection">ESP32 Board Selection</a></h2>
-<p>Before installing software, you'll want to order an ESP32 development board. This section helps you choose the right board for this tutorial.</p>
+<p>Before installing software, you’ll want to order an ESP32 development board. This section helps you choose the right board for this tutorial.</p>
 <p>The ESP32 family includes many board variants. For this tutorial, we recommend boards with sufficient GPIO pins, USB programming support, and built-in CAN capability for future chapters.</p>
 <h3 id="recommended-board-esp32-devkit-v1"><a class="header" href="#recommended-board-esp32-devkit-v1">Recommended Board: ESP32 DevKit V1</a></h3>
 <p><strong>ESP32 DevKit V1 / ESP32-WROOM-32</strong> (Xtensa architecture)</p>
@@ -174,7 +205,7 @@
 <li>Available from multiple manufacturers (Espressif, DOIT, etc.)</li>
 <li>Cost: $5-10 USD</li>
 </ul>
-<p>This is the board we'll use throughout the tutorial.</p>
+<p>This is the board we’ll use throughout the tutorial.</p>
 <h3 id="alternative-boards"><a class="header" href="#alternative-boards">Alternative Boards</a></h3>
 <p><strong>ESP32-DevKitC</strong></p>
 <ul>
@@ -214,7 +245,7 @@
 <h3 id="purchasing"><a class="header" href="#purchasing">Purchasing</a></h3>
 <p>ESP32 boards are available from:</p>
 <ul>
-<li><strong>Amazon</strong> / <strong>eBay</strong>: Search &quot;ESP32 DevKit&quot; (verify reviews)</li>
+<li><strong>Amazon</strong> / <strong>eBay</strong>: Search “ESP32 DevKit” (verify reviews)</li>
 <li><strong>AliExpress</strong> / <strong>Banggood</strong>: Direct from manufacturers (longer shipping)</li>
 <li><strong>Adafruit</strong> / <strong>SparkFun</strong>: Higher quality, better support, higher cost</li>
 <li><strong>DigiKey</strong> / <strong>Mouser</strong>: For bulk or commercial projects</li>
@@ -223,7 +254,7 @@
 <h2 id="platformio-installation--setup"><a class="header" href="#platformio-installation--setup">PlatformIO Installation &amp; Setup</a></h2>
 <p>PlatformIO is a professional embedded development platform that provides a unified build system, library management, and debugging tools. It integrates with VS Code to create a powerful development environment.</p>
 <h3 id="installing-vs-code"><a class="header" href="#installing-vs-code">Installing VS Code</a></h3>
-<p>If you don't already have Visual Studio Code installed:</p>
+<p>If you don’t already have Visual Studio Code installed:</p>
 <ol>
 <li>Download VS Code from <a href="https://code.visualstudio.com/">code.visualstudio.com</a></li>
 <li>Run the installer for your operating system (Windows, macOS, or Linux)</li>
@@ -234,8 +265,8 @@
 <ol>
 <li>Open VS Code</li>
 <li>Click the Extensions icon in the left sidebar (or press <code>Ctrl+Shift+X</code> / <code>Cmd+Shift+X</code>)</li>
-<li>Search for &quot;PlatformIO IDE&quot;</li>
-<li>Click <strong>Install</strong> on the &quot;PlatformIO IDE&quot; extension by PlatformIO</li>
+<li>Search for “PlatformIO IDE”</li>
+<li>Click <strong>Install</strong> on the “PlatformIO IDE” extension by PlatformIO</li>
 <li>Wait for the installation to complete (this may take several minutes as it downloads toolchains)</li>
 <li>Restart VS Code when prompted</li>
 </ol>
@@ -244,7 +275,7 @@
 <p><strong>Note</strong>: The ESP32 platform and toolchain will be installed automatically when you create your first project. PlatformIO handles all the toolchain downloads and configuration for you.</p>
 </blockquote>
 <h2 id="creating-your-first-project-async_blink_esp32"><a class="header" href="#creating-your-first-project-async_blink_esp32">Creating Your First Project: async_blink_esp32</a></h2>
-<p>Now we'll create the actual project we'll be working with throughout this chapter. Instead of creating a throwaway test project, we'll jump straight into building our OpenLCB node.</p>
+<p>Now we’ll create the actual project we’ll be working with throughout this chapter. Instead of creating a throwaway test project, we’ll jump straight into building our OpenLCB node.</p>
 <h3 id="create-the-project"><a class="header" href="#create-the-project">Create the Project</a></h3>
 <ol>
 <li>Click the PlatformIO icon in the left sidebar</li>
@@ -262,7 +293,7 @@
 <li>Create a basic <code>src/main.cpp</code> file</li>
 </ul>
 <h3 id="understanding-the-project-structure"><a class="header" href="#understanding-the-project-structure">Understanding the Project Structure</a></h3>
-<p>After creation, you'll see this structure:</p>
+<p>After creation, you’ll see this structure:</p>
 <pre><code>async_blink_esp32/
 ├── platformio.ini     # Project configuration
 ├── src/
@@ -290,26 +321,26 @@ framework = arduino
 lib_deps = openmrn/OpenMRNLite@2.0.0
 monitor_speed = 115200
 </code></pre>
-<p>Save the file. That's it! PlatformIO will automatically download OpenMRNLite from the registry when you build the project.</p>
-<p><strong>About monitor_speed</strong>: This setting ensures the serial monitor uses 115200 baud, matching the <code>Serial.begin(115200)</code> call in our code. Without this, you'll see garbled output instead of readable text.</p>
+<p>Save the file. That’s it! PlatformIO will automatically download OpenMRNLite from the registry when you build the project.</p>
+<p><strong>About monitor_speed</strong>: This setting ensures the serial monitor uses 115200 baud, matching the <code>Serial.begin(115200)</code> call in our code. Without this, you’ll see garbled output instead of readable text.</p>
 <p><strong>Why version 2.0.0?</strong></p>
 <ul>
-<li>Version 2.0.0 is fully compatible with PlatformIO's current ESP32 platform</li>
+<li>Version 2.0.0 is fully compatible with PlatformIO’s current ESP32 platform</li>
 <li>Later versions (2.2.x+) require newer ESP-IDF features not yet available in PlatformIO</li>
 <li>All core OpenLCB functionality is present in v2.0.0</li>
 </ul>
 <blockquote>
 <p><strong>About PlatformIO and Arduino-ESP32 versions</strong></p>
-<p>You may notice that PlatformIO uses Arduino-ESP32 v2.0.17 while the Arduino IDE can install v3.x. This isn't a bug — it's intentional:</p>
+<p>You may notice that PlatformIO uses Arduino-ESP32 v2.0.17 while the Arduino IDE can install v3.x. This isn’t a bug — it’s intentional:</p>
 <ul>
 <li><strong>PlatformIO prioritizes stability</strong> over bleeding-edge features. They thoroughly test each framework version across hundreds of boards, toolchains, and debuggers before releasing.</li>
 <li><strong>Arduino-ESP32 3.x introduced major breaking changes</strong> in the build system, partition handling, WiFi stack, and more. PlatformIO waits for these to stabilize before adoption.</li>
 <li><strong>Small team, massive ecosystem</strong>: PlatformIO maintains ESP32, STM32, RP2040, AVR, and many other platforms with a much smaller team than Espressif has for Arduino-ESP32 alone.</li>
 </ul>
-<p>This is why we use OpenMRNLite v2.0.0 — it's designed for the stable Arduino-ESP32 2.x that PlatformIO provides. You're trading cutting-edge features for rock-solid reliability, which is perfect for learning OpenLCB fundamentals.</p>
+<p>This is why we use OpenMRNLite v2.0.0 — it’s designed for the stable Arduino-ESP32 2.x that PlatformIO provides. You’re trading cutting-edge features for rock-solid reliability, which is perfect for learning OpenLCB fundamentals.</p>
 </blockquote>
 <h3 id="verification"><a class="header" href="#verification">Verification</a></h3>
-<p>Let's verify everything is working by building the project:</p>
+<p>Let’s verify everything is working by building the project:</p>
 <ol>
 <li>
 <p>In VS Code, click the PlatformIO icon in the left sidebar</p>
@@ -332,33 +363,33 @@ monitor_speed = 115200
 <blockquote>
 <p><strong>Note</strong>: The first build will take longer as PlatformIO downloads the library and compiles it. Subsequent builds are much faster.</p>
 </blockquote>
-<p>If the build succeeds, OpenMRNLite is installed correctly and you're ready to write code!</p>
+<p>If the build succeeds, OpenMRNLite is installed correctly and you’re ready to write code!</p>
 <h2 id="writing-the-async_blink_esp32-code"><a class="header" href="#writing-the-async_blink_esp32-code">Writing the async_blink_esp32 Code</a></h2>
-<p>Now we'll create the actual OpenLCB node that produces alternating events. This demonstrates the core OpenLCB protocol behavior you learned in Chapter 1 (node initialization and event production) without requiring physical hardware.</p>
+<p>Now we’ll create the actual OpenLCB node that produces alternating events. This demonstrates the core OpenLCB protocol behavior you learned in Chapter 1 (node initialization and event production) without requiring physical hardware.</p>
 <h3 id="creating-the-configuration-header"><a class="header" href="#creating-the-configuration-header">Creating the Configuration Header</a></h3>
-<p>OpenMRNLite requires a configuration structure (CDI - Configuration Description Information) even for simple nodes. We'll create a minimal config.h file.</p>
+<p>OpenMRNLite requires a configuration structure (CDI - Configuration Description Information) even for simple nodes. We’ll create a minimal config.h file.</p>
 <p>Create the file <code>include/config.h</code> with this content:</p>
 <pre><code class="language-cpp">#ifndef _ASYNC_BLINK_CONFIG_H_
 #define _ASYNC_BLINK_CONFIG_H_
 
-#include &quot;openlcb/ConfigRepresentation.hxx&quot;
-#include &quot;openlcb/MemoryConfig.hxx&quot;
+#include "openlcb/ConfigRepresentation.hxx"
+#include "openlcb/MemoryConfig.hxx"
 
 namespace openlcb {
 
 /// SNIP Static Data - Manufacturer information (read-only, compiled into firmware)
 extern const SimpleNodeStaticValues SNIP_STATIC_DATA = {
     4,               // Version
-    &quot;OpenMRN&quot;,       // Manufacturer
-    &quot;async_blink&quot;,   // Model
-    &quot;ESP32&quot;,         // Hardware version
-    &quot;1.00&quot;           // Software version
+    "OpenMRN",       // Manufacturer
+    "async_blink",   // Model
+    "ESP32",         // Hardware version
+    "1.00"           // Software version
 };
 
 /// SNIP Dynamic Data - User-editable node name and description
 /// These are stored in the config file and can be read/written via JMRI
-static const char SNIP_NODE_NAME[] = &quot;async_blink&quot;;
-static const char SNIP_NODE_DESC[] = &quot;ESP32 Blink demo&quot;;
+static const char SNIP_NODE_NAME[] = "async_blink";
+static const char SNIP_NODE_DESC[] = "ESP32 Blink demo";
 
 /// Version number for the configuration structure
 static constexpr uint16_t CANONICAL_VERSION = 0x0001;
@@ -372,8 +403,8 @@ CDI_GROUP_END();
 CDI_GROUP(ConfigDef, MainCdi());
 CDI_GROUP_ENTRY(ident, Identification);
 CDI_GROUP_ENTRY(acdi, Acdi);
-CDI_GROUP_ENTRY(userinfo, UserInfoSegment, Name(&quot;User Info&quot;));
-CDI_GROUP_ENTRY(seg, AsyncBlinkSegment, Name(&quot;Settings&quot;));
+CDI_GROUP_ENTRY(userinfo, UserInfoSegment, Name("User Info"));
+CDI_GROUP_ENTRY(seg, AsyncBlinkSegment, Name("Settings"));
 CDI_GROUP_END();
 
 } // namespace openlcb
@@ -388,7 +419,7 @@ CDI_GROUP_END();
 <li><strong>AsyncBlinkSegment</strong>: Internal configuration area for this node (currently minimal, but available for future expansion)</li>
 </ul>
 <blockquote>
-<p><strong>Configuration Storage</strong>: Configuration is saved to SPIFFS on first boot (via <code>factory_reset()</code>) and persists across restarts. In v0.1, the initial configuration is hardcoded in the constants above. In Chapter 5, we'll make configuration editable through JMRI and learn how to handle updates via <code>apply_configuration()</code>. See &quot;Configuration &amp; JMRI&quot; section below for more details.</p>
+<p><strong>Configuration Storage</strong>: Configuration is saved to SPIFFS on first boot (via <code>factory_reset()</code>) and persists across restarts. In v0.1, the initial configuration is hardcoded in the constants above. In Chapter 5, we’ll make configuration editable through JMRI and learn how to handle updates via <code>apply_configuration()</code>. See “Configuration &amp; JMRI” section below for more details.</p>
 </blockquote>
 <h3 id="the-complete-main-code"><a class="header" href="#the-complete-main-code">The Complete Main Code</a></h3>
 <p>Now replace the contents of <code>src/main.cpp</code> with the following code:</p>
@@ -410,13 +441,13 @@ CDI_GROUP_END();
 #include &lt;WiFi.h&gt;
 #include &lt;SPIFFS.h&gt;
 #include &lt;OpenMRNLite.h&gt;
-#include &quot;utils/GcTcpHub.hxx&quot;
+#include "utils/GcTcpHub.hxx"
 
-#include &quot;config.h&quot;
+#include "config.h"
 
 // WiFi credentials - CHANGE THESE to match your network
-const char* ssid = &quot;YourWiFiSSID&quot;;
-const char* password = &quot;YourWiFiPassword&quot;;
+const char* ssid = "YourWiFiSSID";
+const char* password = "YourWiFiPassword";
 
 // OpenLCB Node ID - must be unique on your network
 // This ID is in the reserved range for experimental use
@@ -439,13 +470,13 @@ static constexpr openlcb::ConfigDef cfg(0);
 // OpenLCB configuration - required by OpenMRNLite
 namespace openlcb {
   // Name of CDI.xml to generate dynamically
-  const char CDI_FILENAME[] = &quot;/spiffs/cdi.xml&quot;;
+  const char CDI_FILENAME[] = "/spiffs/cdi.xml";
   
   // This will stop openlcb from exporting the CDI memory space upon start
-  const char CDI_DATA[] = &quot;&quot;;
+  const char CDI_DATA[] = "";
   
   // Path to the config file and its size
-  const char* const CONFIG_FILENAME = &quot;/spiffs/openlcb_config&quot;;
+  const char* const CONFIG_FILENAME = "/spiffs/openlcb_config";
   const size_t CONFIG_FILE_SIZE = cfg.seg().size() + cfg.seg().offset();
   
   // SNIP (Simple Node Information Protocol) dynamic data storage
@@ -501,39 +532,39 @@ void init_serial() {
   Serial.begin(115200);
   delay(500);  // Give serial time to initialize
   
-  Serial.println(&quot;\n\n=== OpenLCB async_blink ESP32 Example ===&quot;);
-  Serial.printf(&quot;Node ID: 0x%012llX\n&quot;, NODE_ID);
-  Serial.printf(&quot;Event 0: 0x%016llX\n&quot;, EVENT_ID_0);
-  Serial.printf(&quot;Event 1: 0x%016llX\n&quot;, EVENT_ID_1);
+  Serial.println("\n\n=== OpenLCB async_blink ESP32 Example ===");
+  Serial.printf("Node ID: 0x%012llX\n", NODE_ID);
+  Serial.printf("Event 0: 0x%016llX\n", EVENT_ID_0);
+  Serial.printf("Event 1: 0x%016llX\n", EVENT_ID_1);
 }
 
 /**
  * Initialize SPIFFS filesystem for configuration storage.
  */
 void init_filesystem() {
-  Serial.println(&quot;\nInitializing SPIFFS...&quot;);
+  Serial.println("\nInitializing SPIFFS...");
   if (!SPIFFS.begin(true)) {  // true = format if mount fails
-    Serial.println(&quot;SPIFFS mount failed! Halting.&quot;);
+    Serial.println("SPIFFS mount failed! Halting.");
     while (1) { delay(1000); }  // Stop here if filesystem fails
   }
-  Serial.println(&quot;SPIFFS initialized successfully&quot;);
+  Serial.println("SPIFFS initialized successfully");
 }
 
 /**
  * Connect to WiFi network.
  */
 void init_network() {
-  Serial.printf(&quot;\nConnecting to WiFi SSID: %s\n&quot;, ssid);
+  Serial.printf("\nConnecting to WiFi SSID: %s\n", ssid);
   WiFi.begin(ssid, password);
   
   // Wait for WiFi connection
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
-    Serial.print(&quot;.&quot;);
+    Serial.print(".");
   }
   
-  Serial.println(&quot;\nWiFi connected!&quot;);
-  Serial.printf(&quot;IP Address: %s\n&quot;, WiFi.localIP().toString().c_str());
+  Serial.println("\nWiFi connected!");
+  Serial.printf("IP Address: %s\n", WiFi.localIP().toString().c_str());
 }
 
 /**
@@ -544,12 +575,12 @@ void init_network() {
 void init_openlcb_stack() {
   // Create the CDI.xml dynamically
   // CDI describes what configuration options are available
-  Serial.println(&quot;\nCreating CDI configuration descriptor...&quot;);
+  Serial.println("\nCreating CDI configuration descriptor...");
   openmrn.create_config_descriptor_xml(cfg, openlcb::CDI_FILENAME);
   
   // Create the config file if it doesn't exist
   // OpenMRNLite requires this even for simple nodes
-  Serial.println(&quot;Initializing OpenLCB configuration...&quot;);
+  Serial.println("Initializing OpenLCB configuration...");
   openmrn.stack()-&gt;create_config_file_if_needed(cfg.seg().internal_config(),
                                                   openlcb::CANONICAL_VERSION,
                                                   openlcb::CONFIG_FILE_SIZE);
@@ -560,12 +591,12 @@ void init_openlcb_stack() {
   // 2. Reserve ID (RID) - claims the Node ID
   // 3. Announce Membership (AMD) - announces node to network
   // 4. Initialization Complete - node enters normal operation
-  Serial.println(&quot;\nStarting OpenLCB stack...&quot;);
+  Serial.println("\nStarting OpenLCB stack...");
   openmrn.begin();
   
   // Start the executor thread for background processing
   // REQUIRED for TCP Hub to accept connections
-  Serial.println(&quot;Starting executor thread...&quot;);
+  Serial.println("Starting executor thread...");
   openmrn.start_executor_thread();
 }
 
@@ -573,12 +604,12 @@ void init_openlcb_stack() {
  * Initialize TCP Hub for JMRI connectivity.
  */
 void init_tcp_hub() {
-  Serial.println(&quot;Starting TCP Hub on port 12021...&quot;);
+  Serial.println("Starting TCP Hub on port 12021...");
   tcp_hub = new GcTcpHub(
     openmrn.stack()-&gt;can_hub(),  // Reference to the CAN hub
     12021                        // TCP port (standard for OpenLCB)
   );
-  Serial.println(&quot;TCP Hub listening. JMRI can connect to this device on port 12021&quot;);
+  Serial.println("TCP Hub listening. JMRI can connect to this device on port 12021");
 }
 
 /**
@@ -598,8 +629,8 @@ void setup() {
   init_openlcb_stack();
   init_tcp_hub();
   
-  Serial.println(&quot;OpenLCB node initialization complete!&quot;);
-  Serial.println(&quot;Entering run mode - will alternate events every 1 second\n&quot;);
+  Serial.println("OpenLCB node initialization complete!");
+  Serial.println("Entering run mode - will alternate events every 1 second\n");
   
   // Record start time for event production
   last_event_time = millis();
@@ -630,7 +661,7 @@ void loop() {
     }));
     
     // Print to serial monitor
-    Serial.printf(&quot;Produced event: 0x%016llX (state: %d)\n&quot;, 
+    Serial.printf("Produced event: 0x%016llX (state: %d)\n", 
                   event_to_send, event_state ? 1 : 0);
     
     // Update timing
@@ -645,17 +676,17 @@ void loop() {
 <li><strong>Initialization</strong> (setup function with helpers): WiFi, SPIFFS, OpenLCB stack, TCP Hub</li>
 <li><strong>Event production</strong> (loop function): Alternate between two events every second</li>
 </ol>
-<p>The code includes detailed comments explaining each section. We'll walk through the key concepts below.</p>
+<p>The code includes detailed comments explaining each section. We’ll walk through the key concepts below.</p>
 <h4 id="1-includes-and-wifi-configuration"><a class="header" href="#1-includes-and-wifi-configuration">1. Includes and WiFi Configuration</a></h4>
 <pre><code class="language-cpp">#include &lt;Arduino.h&gt;
 #include &lt;WiFi.h&gt;
 #include &lt;SPIFFS.h&gt;
 #include &lt;OpenMRNLite.h&gt;
 
-#include &quot;config.h&quot;
+#include "config.h"
 
-const char* ssid = &quot;YourWiFiSSID&quot;;
-const char* password = &quot;YourWiFiPassword&quot;;
+const char* ssid = "YourWiFiSSID";
+const char* password = "YourWiFiPassword";
 </code></pre>
 <p><strong>Required includes</strong>:</p>
 <ul>
@@ -683,9 +714,9 @@ static const uint64_t EVENT_ID_1 = 0x0502010202000001ULL;
 static constexpr openlcb::ConfigDef cfg(0);
 
 namespace openlcb {
-  const char CDI_FILENAME[] = &quot;/spiffs/cdi.xml&quot;;
-  const char CDI_DATA[] = &quot;&quot;;
-  const char* const CONFIG_FILENAME = &quot;/spiffs/openlcb_config&quot;;
+  const char CDI_FILENAME[] = "/spiffs/cdi.xml";
+  const char CDI_DATA[] = "";
+  const char* const CONFIG_FILENAME = "/spiffs/openlcb_config";
   const size_t CONFIG_FILE_SIZE = cfg.seg().size() + cfg.seg().offset();
   const char* const SNIP_DYNAMIC_FILENAME = CONFIG_FILENAME;
 }
@@ -719,7 +750,7 @@ public:
 } factory_reset_helper;
 </code></pre>
 <p>This class handles configuration lifecycle events:</p>
-<p><strong><code>factory_reset(int fd)</code></strong>: Called by OpenMRN automatically on first boot when the config file is created. It initializes the SNIP dynamic data using OpenMRN's built-in CDI framework:</p>
+<p><strong><code>factory_reset(int fd)</code></strong>: Called by OpenMRN automatically on first boot when the config file is created. It initializes the SNIP dynamic data using OpenMRN’s built-in CDI framework:</p>
 <ul>
 <li><code>cfg.userinfo().name().write()</code>: Writes the node name to the correct offset in the config file</li>
 <li><code>cfg.userinfo().description().write()</code>: Writes the node description to the correct offset</li>
@@ -737,34 +768,34 @@ public:
 <p><strong>SNIP data</strong>: The node name and description are displayed by JMRI in the node properties dialog, helping identify which ESP32 is which on your network.</p>
 <h4 id="5-wifi-connection"><a class="header" href="#5-wifi-connection">5. WiFi Connection</a></h4>
 <pre><code class="language-cpp">void init_network() {
-  Serial.printf(&quot;\nConnecting to WiFi SSID: %s\n&quot;, ssid);
+  Serial.printf("\nConnecting to WiFi SSID: %s\n", ssid);
   WiFi.begin(ssid, password);
   
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
-    Serial.print(&quot;.&quot;);
+    Serial.print(".");
   }
   
-  Serial.println(&quot;\nWiFi connected!&quot;);
-  Serial.printf(&quot;IP Address: %s\n&quot;, WiFi.localIP().toString().c_str());
+  Serial.println("\nWiFi connected!");
+  Serial.printf("IP Address: %s\n", WiFi.localIP().toString().c_str());
 }
 </code></pre>
-<p>This helper function establishes the WiFi connection before starting OpenLCB. The ESP32 won't be able to communicate on the OpenLCB network until WiFi is connected, so we wait here.</p>
+<p>This helper function establishes the WiFi connection before starting OpenLCB. The ESP32 won’t be able to communicate on the OpenLCB network until WiFi is connected, so we wait here.</p>
 <p>The dots printed to serial provide visual feedback during connection.</p>
 <h4 id="6-initialization-helper-functions-and-setup"><a class="header" href="#6-initialization-helper-functions-and-setup">6. Initialization Helper Functions and Setup</a></h4>
 <pre><code class="language-cpp">void init_openlcb_stack() {
-  Serial.println(&quot;\nCreating CDI configuration descriptor...&quot;);
+  Serial.println("\nCreating CDI configuration descriptor...");
   openmrn.create_config_descriptor_xml(cfg, openlcb::CDI_FILENAME);
   
-  Serial.println(&quot;Initializing OpenLCB configuration...&quot;);
+  Serial.println("Initializing OpenLCB configuration...");
   openmrn.stack()-&gt;create_config_file_if_needed(cfg.seg().internal_config(),
                                                   openlcb::CANONICAL_VERSION,
                                                   openlcb::CONFIG_FILE_SIZE);
 
-  Serial.println(&quot;\nStarting OpenLCB stack...&quot;);
+  Serial.println("\nStarting OpenLCB stack...");
   openmrn.begin();
   
-  Serial.println(&quot;Starting executor thread...&quot;);
+  Serial.println("Starting executor thread...");
   openmrn.start_executor_thread();
 }
 </code></pre>
@@ -777,7 +808,7 @@ public:
 <p><strong>Create config file if needed</strong>: <code>create_config_file_if_needed()</code> ensures the config file exists with proper structure. On first boot:</p>
 <ul>
 <li>File is created with space for internal config, SNIP data, and UserInfo</li>
-<li>FactoryResetHelper's <code>factory_reset()</code> is called automatically</li>
+<li>FactoryResetHelper’s <code>factory_reset()</code> is called automatically</li>
 <li>SNIP user data (name and description) is populated</li>
 </ul>
 </li>
@@ -790,20 +821,20 @@ public:
 </ol>
 <h4 id="7-tcp-hub-for-jmri-connectivity"><a class="header" href="#7-tcp-hub-for-jmri-connectivity">7. TCP Hub for JMRI Connectivity</a></h4>
 <pre><code class="language-cpp">void init_tcp_hub() {
-  Serial.println(&quot;Starting TCP Hub on port 12021...&quot;);
+  Serial.println("Starting TCP Hub on port 12021...");
   tcp_hub = new GcTcpHub(
     openmrn.stack()-&gt;can_hub(),
     12021
   );
-  Serial.println(&quot;TCP Hub listening. JMRI can connect to this device on port 12021&quot;);
+  Serial.println("TCP Hub listening. JMRI can connect to this device on port 12021");
 }
 </code></pre>
-<p>This helper function creates a TCP server on port 12021 using the GridConnect protocol (the ASCII format that JMRI expects). It's passed:</p>
+<p>This helper function creates a TCP server on port 12021 using the GridConnect protocol (the ASCII format that JMRI expects). It’s passed:</p>
 <ul>
 <li><code>openmrn.stack()-&gt;can_hub()</code>: Reference to the message router</li>
 <li><code>12021</code>: The TCP port to listen on (standard for OpenLCB TCP hubs)</li>
 </ul>
-<p>The TCP Hub allows JMRI and other TCP clients to connect and monitor your node's events in real-time. Multiple JMRI instances can connect simultaneously; messages are routed between all connected clients and the local node.</p>
+<p>The TCP Hub allows JMRI and other TCP clients to connect and monitor your node’s events in real-time. Multiple JMRI instances can connect simultaneously; messages are routed between all connected clients and the local node.</p>
 <h4 id="8-main-setup-function"><a class="header" href="#8-main-setup-function">8. Main Setup Function</a></h4>
 <pre><code class="language-cpp">void setup() {
   init_serial();
@@ -812,8 +843,8 @@ public:
   init_openlcb_stack();
   init_tcp_hub();
   
-  Serial.println(&quot;OpenLCB node initialization complete!&quot;);
-  Serial.println(&quot;Entering run mode - will alternate events every 1 second\n&quot;);
+  Serial.println("OpenLCB node initialization complete!");
+  Serial.println("Entering run mode - will alternate events every 1 second\n");
   
   last_event_time = millis();
 }
@@ -826,7 +857,7 @@ public:
 <li><strong><code>init_openlcb_stack()</code></strong>: Create CDI file, config file, initialize SNIP data via FactoryResetHelper, start OpenLCB protocol stack, start executor thread</li>
 <li><strong><code>init_tcp_hub()</code></strong>: Start TCP server for JMRI connectivity</li>
 </ol>
-<p><strong>Why break it down?</strong> Each helper function focuses on a single responsibility, making the code easier to understand and modify. If you need to add new initialization steps or change how the node starts up, it's clear where to make those changes.</p>
+<p><strong>Why break it down?</strong> Each helper function focuses on a single responsibility, making the code easier to understand and modify. If you need to add new initialization steps or change how the node starts up, it’s clear where to make those changes.</p>
 <h4 id="9-event-production-loop"><a class="header" href="#9-event-production-loop">9. Event Production Loop</a></h4>
 <pre><code class="language-cpp">void loop() {
   openmrn.loop();  // CRITICAL - processes all OpenLCB messages
@@ -840,7 +871,7 @@ public:
       openmrn.stack()-&gt;send_event(event_to_send);
     }));
     
-    Serial.printf(&quot;Produced event: 0x%016llX (state: %d)\n&quot;, 
+    Serial.printf("Produced event: 0x%016llX (state: %d)\n", 
                   event_to_send, event_state ? 1 : 0);
     
     last_event_time = current_time;
@@ -856,7 +887,7 @@ public:
 </ul>
 <p><strong>Event Production</strong>: Every 1000ms (1 second), we:</p>
 <ol>
-<li>Toggle <code>event_state</code> (false → true → false → ...)</li>
+<li>Toggle <code>event_state</code> (false → true → false → …)</li>
 <li>Select which event ID to send based on state</li>
 <li>Queue the event for transmission using the executor</li>
 <li>Print confirmation to serial monitor</li>
@@ -871,7 +902,7 @@ public:
 </ul>
 <p><strong>Event Production</strong>: Every 1000ms (1 second), we:</p>
 <ol>
-<li>Toggle <code>event_state</code> (false → true → false → ...)</li>
+<li>Toggle <code>event_state</code> (false → true → false → …)</li>
 <li>Select which event ID to send based on state</li>
 <li>Queue the event for transmission using the executor</li>
 <li>Print confirmation to serial monitor</li>
@@ -914,7 +945,7 @@ Produced event: 0x0502010202000001 (state: 1)
 E (523) SPIFFS: mount failed, -10025
 SPIFFS initialized successfully
 </code></pre>
-<p>This is <strong>normal and expected</strong>. On first boot, SPIFFS needs to format the filesystem, which takes approximately <strong>20 seconds</strong> on ESP32 DevKit. The error message appears because the filesystem doesn't exist yet, but the <code>SPIFFS.begin(true)</code> call automatically formats it. During this time, the ESP32 will appear to hang—just wait and don't interrupt it. Subsequent boots will skip this formatting step and proceed immediately.</p>
+<p>This is <strong>normal and expected</strong>. On first boot, SPIFFS needs to format the filesystem, which takes approximately <strong>20 seconds</strong> on ESP32 DevKit. The error message appears because the filesystem doesn’t exist yet, but the <code>SPIFFS.begin(true)</code> call automatically formats it. During this time, the ESP32 will appear to hang—just wait and don’t interrupt it. Subsequent boots will skip this formatting step and proceed immediately.</p>
 <p>This confirms:</p>
 <ul>
 <li>✅ SPIFFS filesystem initialized (formatted on first run if needed)</li>
@@ -924,9 +955,9 @@ SPIFFS initialized successfully
 <li>✅ Events are being produced alternately</li>
 </ul>
 <h3 id="before-you-build"><a class="header" href="#before-you-build">Before You Build</a></h3>
-<p><strong>Update WiFi credentials in the code!</strong> The build will succeed even with placeholder credentials, but the ESP32 won't connect to WiFi when you upload it.</p>
+<p><strong>Update WiFi credentials in the code!</strong> The build will succeed even with placeholder credentials, but the ESP32 won’t connect to WiFi when you upload it.</p>
 <h2 id="building-and-uploading-to-esp32"><a class="header" href="#building-and-uploading-to-esp32">Building and Uploading to ESP32</a></h2>
-<p>Now that you have the complete code, let's build it, upload it to your ESP32, and verify it works through the serial monitor.</p>
+<p>Now that you have the complete code, let’s build it, upload it to your ESP32, and verify it works through the serial monitor.</p>
 <h3 id="building-the-project"><a class="header" href="#building-the-project">Building the Project</a></h3>
 <ol>
 <li>
@@ -935,8 +966,8 @@ SPIFFS initialized successfully
 <li>
 <p><strong>Open the PlatformIO sidebar</strong>:</p>
 <ul>
-<li>Click the PlatformIO icon (alien head) in VS Code's left sidebar</li>
-<li>Or use the bottom toolbar's checkmark icon (Build)</li>
+<li>Click the PlatformIO icon (alien head) in VS Code’s left sidebar</li>
+<li>Or use the bottom toolbar’s checkmark icon (Build)</li>
 </ul>
 </li>
 <li>
@@ -984,7 +1015,7 @@ Building .pio/build/esp32doit-devkit-v1/firmware.bin
 </ul>
 </li>
 <li>
-<p><strong>If the port isn't detected</strong>, you may need to install a USB driver:</p>
+<p><strong>If the port isn’t detected</strong>, you may need to install a USB driver:</p>
 <ul>
 <li><strong>CP2102</strong>: Download from <a href="https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers">Silicon Labs</a></li>
 <li><strong>CH340</strong>: Download from <a href="http://www.wch-ic.com/downloads/CH341SER_EXE.html">WCH</a></li>
@@ -1024,8 +1055,8 @@ Hard resetting via RTS pin...
 </ol>
 <p><strong>If upload fails</strong>:</p>
 <ul>
-<li><strong>&quot;Serial port not found&quot;</strong>: Check USB cable connection, try different USB port</li>
-<li><strong>&quot;Failed to connect&quot;</strong>: Hold the BOOT button while clicking upload, release after &quot;Connecting...&quot; appears</li>
+<li><strong>“Serial port not found”</strong>: Check USB cable connection, try different USB port</li>
+<li><strong>“Failed to connect”</strong>: Hold the BOOT button while clicking upload, release after “Connecting…” appears</li>
 <li><strong>Permission denied (Linux)</strong>: Add your user to the <code>dialout</code> group: <code>sudo usermod -a -G dialout $USER</code>, then log out and back in</li>
 </ul>
 <h3 id="opening-the-serial-monitor"><a class="header" href="#opening-the-serial-monitor">Opening the Serial Monitor</a></h3>
@@ -1084,14 +1115,14 @@ Produced event: 0x0502010202000001 (state: 1)
 <h3 id="understanding-what-you-see"><a class="header" href="#understanding-what-you-see">Understanding What You See</a></h3>
 <p>This output confirms your ESP32 is:</p>
 <ol>
-<li><strong>Connected to WiFi</strong>: The IP address shows it's on your network</li>
+<li><strong>Connected to WiFi</strong>: The IP address shows it’s on your network</li>
 <li><strong>Running the OpenLCB stack</strong>: Node initialization completed successfully</li>
 <li><strong>Producing events</strong>: The alternating event IDs prove the event production logic works</li>
-<li><strong>Ready for network communication</strong>: The node is broadcasting these events on the OpenLCB network (you'll verify this with JMRI next)</li>
+<li><strong>Ready for network communication</strong>: The node is broadcasting these events on the OpenLCB network (you’ll verify this with JMRI next)</li>
 </ol>
-<p><strong>Congratulations!</strong> You have a working OpenLCB node. The events are being broadcast over WiFi/TCP, but you can't see them on the network yet - that's what JMRI will show you in the next section.</p>
+<p><strong>Congratulations!</strong> You have a working OpenLCB node. The events are being broadcast over WiFi/TCP, but you can’t see them on the network yet - that’s what JMRI will show you in the next section.</p>
 <h3 id="common-issues"><a class="header" href="#common-issues">Common Issues</a></h3>
-<p><strong>WiFi won't connect</strong> (stuck on dots):</p>
+<p><strong>WiFi won’t connect</strong> (stuck on dots):</p>
 <ul>
 <li>Verify WiFi credentials in code are correct</li>
 <li>Check ESP32 is within range of your access point</li>
@@ -1110,16 +1141,16 @@ Produced event: 0x0502010202000001 (state: 1)
 <li>If you already added it, stop and restart the serial monitor</li>
 <li>Bad USB cable or connection</li>
 </ul>
-<p><strong>&quot;Brownout detector triggered&quot; errors</strong>:</p>
+<p><strong>“Brownout detector triggered” errors</strong>:</p>
 <ul>
 <li>Insufficient power from USB port</li>
 <li>Try a different USB port or powered USB hub</li>
-<li>This usually doesn't prevent operation, just a warning</li>
+<li>This usually doesn’t prevent operation, just a warning</li>
 </ul>
 <h2 id="testing-with-jmri"><a class="header" href="#testing-with-jmri">Testing with JMRI</a></h2>
-<p>Now that your ESP32 is producing events, let's use JMRI (Java Model Railroad Interface) to monitor them on the network. JMRI acts as a &quot;traffic monitor&quot; that shows all OpenLCB messages, letting you verify your node is working correctly.</p>
+<p>Now that your ESP32 is producing events, let’s use JMRI (Java Model Railroad Interface) to monitor them on the network. JMRI acts as a “traffic monitor” that shows all OpenLCB messages, letting you verify your node is working correctly.</p>
 <h3 id="what-is-jmri"><a class="header" href="#what-is-jmri">What is JMRI?</a></h3>
-<p>JMRI is an open-source application suite for model railroading that includes comprehensive OpenLCB/LCC support. In JMRI 5.x, LccPro is the authoritative tool for LCC configuration and monitoring. For our purposes, we'll use JMRI to:</p>
+<p>JMRI is an open-source application suite for model railroading that includes comprehensive OpenLCB/LCC support. In JMRI 5.x, LccPro is the authoritative tool for LCC configuration and monitoring. For our purposes, we’ll use JMRI to:</p>
 <ul>
 <li>Monitor all OpenLCB messages on the network via <strong>LCC Monitor</strong></li>
 <li>See when nodes initialize (CID, RID, AMD messages)</li>
@@ -1127,7 +1158,7 @@ Produced event: 0x0502010202000001 (state: 1)
 <li>View and configure node information via <strong>LccPro</strong></li>
 <li>Verify your ESP32 is communicating correctly</li>
 </ul>
-<p>Think of it as a &quot;network packet sniffer&quot; for OpenLCB.</p>
+<p>Think of it as a “network packet sniffer” for OpenLCB.</p>
 <h3 id="installing-jmri"><a class="header" href="#installing-jmri">Installing JMRI</a></h3>
 <ol>
 <li>
@@ -1158,17 +1189,17 @@ Produced event: 0x0502010202000001 (state: 1)
 </li>
 </ol>
 <h3 id="configuring-the-lcc-connection"><a class="header" href="#configuring-the-lcc-connection">Configuring the LCC Connection</a></h3>
-<p>JMRI needs to know how to connect to your ESP32's TCP Hub on port 12021. Let's configure that connection.</p>
+<p>JMRI needs to know how to connect to your ESP32’s TCP Hub on port 12021. Let’s configure that connection.</p>
 <ol>
 <li><strong>Launch LccPro</strong>:
 <ul>
 <li>In JMRI, go to <strong>ESP32 LCC → LccPro</strong></li>
-<li>If this is the <strong>first time</strong> you're running LccPro and you have <strong>no other connections</strong>, the LccPro Wizard appears automatically (see first image below)</li>
+<li>If this is the <strong>first time</strong> you’re running LccPro and you have <strong>no other connections</strong>, the LccPro Wizard appears automatically (see first image below)</li>
 <li>If you <strong>already have at least one connection</strong> from DecoderPro or PanelPro, continue to step 2</li>
 </ul>
 </li>
 </ol>
-<p><img src="../images/LccPro_FirstConnection.png" alt="LccPro Wizard on first launch (no existing connections)" /></p>
+<p><img src="../images/LccPro_FirstConnection.png" alt="LccPro Wizard on first launch (no existing connections)"></p>
 <ol start="2">
 <li>
 <p><strong>Configure the connection settings</strong>:</p>
@@ -1185,7 +1216,7 @@ Produced event: 0x0502010202000001 (state: 1)
 </ul>
 </li>
 </ol>
-<p><img src="../images/JMRI_Preferences.png" alt="JMRI Preferences dialog with Connections tab" /></p>
+<p><img src="../images/JMRI_Preferences.png" alt="JMRI Preferences dialog with Connections tab"></p>
 <ol start="3">
 <li>
 <p><strong>Enter the connection settings</strong>:</p>
@@ -1193,7 +1224,7 @@ Produced event: 0x0502010202000001 (state: 1)
 <li><strong>System manufacturer</strong>: Select <code>LCC</code> (this is the OpenLCB standard system name in JMRI)</li>
 <li><strong>System connection</strong>: Select <code>CAN via GridConnect Network Interface</code></li>
 <li><strong>Connection name</strong>: Enter <code>ESP32 LCC</code> (or any descriptive name)</li>
-<li><strong>IP Address/Host Name</strong>: Enter the IP address displayed in your PlatformIO serial monitor window (look for the line &quot;IP Address: 192.168.x.x&quot; from your ESP32's startup output)</li>
+<li><strong>IP Address/Host Name</strong>: Enter the IP address displayed in your PlatformIO serial monitor window (look for the line “IP Address: 192.168.x.x” from your ESP32’s startup output)</li>
 <li><strong>TCP/UDP Port</strong>: Enter <code>12021</code></li>
 <li><strong>Connection Protocol</strong>: Select <code>OpenLCB</code></li>
 </ul>
@@ -1208,7 +1239,7 @@ Produced event: 0x0502010202000001 (state: 1)
 </li>
 </ol>
 <h3 id="monitoring-lcc-traffic"><a class="header" href="#monitoring-lcc-traffic">Monitoring LCC Traffic</a></h3>
-<p>After JMRI restarts, let's open the message monitor to see your ESP32's events.</p>
+<p>After JMRI restarts, let’s open the message monitor to see your ESP32’s events.</p>
 <ol>
 <li>
 <p><strong>Open the LCC Monitor</strong>:</p>
@@ -1225,7 +1256,7 @@ Produced event: 0x0502010202000001 (state: 1)
 </ul>
 </li>
 </ol>
-<p><img src="../images/Traffic_Monitor.png" alt="LCC Traffic Monitor showing alternating events" /></p>
+<p><img src="../images/Traffic_Monitor.png" alt="LCC Traffic Monitor showing alternating events"></p>
 <h3 id="viewing-node-properties-snip-information"><a class="header" href="#viewing-node-properties-snip-information">Viewing Node Properties (SNIP Information)</a></h3>
 <p>You can verify that JMRI recognizes your ESP32 as a node on the network and view its SNIP (Simple Node Information Protocol) details using LccPro:</p>
 <ol>
@@ -1243,7 +1274,7 @@ Produced event: 0x0502010202000001 (state: 1)
 <li>The node list displays the SNIP (Simple Node Information Protocol) data:
 <ul>
 <li><strong>Name</strong>: <code>async_blink</code> (your node name from <code>config.h</code>)</li>
-<li><strong>ID</strong>: <code>050201020200</code> (your node's unique OpenLCB identifier)</li>
+<li><strong>ID</strong>: <code>050201020200</code> (your node’s unique OpenLCB identifier)</li>
 <li><strong>Manufacturer</strong>: <code>OpenMRN</code></li>
 <li><strong>Model</strong>: <code>async_blink</code></li>
 <li><strong>Software</strong>: <code>1.00</code></li>
@@ -1254,9 +1285,9 @@ Produced event: 0x0502010202000001 (state: 1)
 </ul>
 </li>
 </ol>
-<p><img src="../images/LccProNodes.png" alt="LccPro node list showing the async_blink node" /></p>
+<p><img src="../images/LccProNodes.png" alt="LccPro node list showing the async_blink node"></p>
 <blockquote>
-<p><strong>Note</strong>: The <strong>Configure</strong> button in LccPro is for editing the node's configuration. We'll explore that in Chapter 5.</p>
+<p><strong>Note</strong>: The <strong>Configure</strong> button in LccPro is for editing the node’s configuration. We’ll explore that in Chapter 5.</p>
 </blockquote>
 <h3 id="understanding-snip-vs-acdi-important"><a class="header" href="#understanding-snip-vs-acdi-important">Understanding SNIP vs ACDI (Important!)</a></h3>
 <p>Now is a good time to understand the distinction between two types of node information in OpenLCB:</p>
@@ -1273,12 +1304,12 @@ Produced event: 0x0502010202000001 (state: 1)
 <li>Stores <strong>layout identity</strong> - how YOU refer to the node in your model railroad</li>
 <li><strong>Persistent in SPIFFS</strong> (can be modified via JMRI without recompiling)</li>
 <li>User-editable through <strong>LccPro</strong></li>
-<li>Includes fields like &quot;User Name&quot; (what you call the node) and &quot;Description&quot;</li>
+<li>Includes fields like “User Name” (what you call the node) and “Description”</li>
 <li>Examples: <code>Main Station Blinker</code>, <code>Yard Controller #3</code></li>
 </ul>
-<p>In this v0.1 example, both are initialized from <code>config.h</code> constants. In Chapter 5, you'll learn to make ACDI values editable through JMRI using the configuration interface.</p>
+<p>In this v0.1 example, both are initialized from <code>config.h</code> constants. In Chapter 5, you’ll learn to make ACDI values editable through JMRI using the configuration interface.</p>
 <h3 id="optional-view-events-as-sensors"><a class="header" href="#optional-view-events-as-sensors">Optional: View Events as Sensors</a></h3>
-<p>Want to see your ESP32's events visualized as sensor states? You can create sensors in <strong>PanelPro</strong> that correspond to your event IDs.</p>
+<p>Want to see your ESP32’s events visualized as sensor states? You can create sensors in <strong>PanelPro</strong> that correspond to your event IDs.</p>
 <p><strong>Important</strong>: For this section, you need to have <strong>PanelPro</strong> open. If you only have JMRI running:</p>
 <ul>
 <li>Select <strong>File → Open PanelPro</strong> to launch it</li>
@@ -1332,12 +1363,12 @@ Produced event: 0x0502010202000001 (state: 1)
 <li>As your ESP32 produces alternating events, observe the sensor behavior:
 <ul>
 <li><strong>Expected behavior</strong>: The sensors will flash ACTIVE for a brief moment, then return to INACTIVE</li>
-<li><strong>Why the brief flash?</strong>: JMRI uses an event timeout mechanism. When an event is received, the sensor becomes ACTIVE. If the same event isn't re-sent within the timeout window, the sensor automatically reverts to INACTIVE (a safety feature to prevent stale states if a node disappears from the network)</li>
+<li><strong>Why the brief flash?</strong>: JMRI uses an event timeout mechanism. When an event is received, the sensor becomes ACTIVE. If the same event isn’t re-sent within the timeout window, the sensor automatically reverts to INACTIVE (a safety feature to prevent stale states if a node disappears from the network)</li>
 <li><strong>Pattern</strong>: Since your ESP32 alternates between EVENT_ID_0 and EVENT_ID_1 every second, you should see:
 <ul>
 <li>Second 1: Sensor 0 flashes ACTIVE, Sensor 1 stays INACTIVE</li>
 <li>Second 2: Sensor 1 flashes ACTIVE, Sensor 0 stays INACTIVE</li>
-<li>Second 3: Sensor 0 flashes ACTIVE, and so on...</li>
+<li>Second 3: Sensor 0 flashes ACTIVE, and so on…</li>
 </ul>
 </li>
 </ul>
@@ -1345,7 +1376,7 @@ Produced event: 0x0502010202000001 (state: 1)
 </ul>
 </li>
 </ol>
-<p><img src="../images/Sensors.png" alt="LCC Sensors showing alternating ACTIVE states" /></p>
+<p><img src="../images/Sensors.png" alt="LCC Sensors showing alternating ACTIVE states"></p>
 <p>This demonstrates the bidirectional nature of LCC - your JMRI sensors are consuming events produced by your ESP32!</p>
 <h3 id="configuration--jmri-cdi-discovery"><a class="header" href="#configuration--jmri-cdi-discovery">Configuration &amp; JMRI: CDI Discovery</a></h3>
 <p>When JMRI first connects to your ESP32, it automatically discovers what configuration options are available by requesting the <strong>CDI (Configuration Description Information)</strong> file. This file (generated in <code>init_openlcb_stack()</code> as <code>/spiffs/cdi.xml</code>) describes:</p>
@@ -1358,42 +1389,42 @@ Produced event: 0x0502010202000001 (state: 1)
 <p>In v0.1, the CDI is generated automatically from the <code>ConfigDef</code> structure in <code>config.h</code>. Your node currently exposes:</p>
 <ul>
 <li><strong>SNIP Identification</strong>: Manufacturer, model, hardware/software versions (read-only)</li>
-<li><strong>ACDI User Info</strong>: Node name and description (editable, but changes aren't saved yet)</li>
+<li><strong>ACDI User Info</strong>: Node name and description (editable, but changes aren’t saved yet)</li>
 <li><strong>Internal Configuration</strong>: Reserved space for future parameters</li>
 </ul>
 <p>When you view node properties in <strong>LccPro → Configure</strong>, JMRI uses this CDI to render the appropriate dialog fields.</p>
-<p><strong>In Chapter 5</strong>, you'll:</p>
+<p><strong>In Chapter 5</strong>, you’ll:</p>
 <ul>
 <li>Add configurable parameters (like <code>EVENT_INTERVAL</code>) to the CDI</li>
 <li>Implement <code>apply_configuration()</code> to save user changes to SPIFFS</li>
 <li>Learn how to version your configuration schema for forward compatibility</li>
 <li>Test configuration updates through LccPro</li>
 </ul>
-<p>For now, understand that your node is already <strong>capable</strong> of being configured via JMRI - we're just not modifying the configuration yet. The CDI file ensures JMRI knows what configuration options your node supports.</p>
+<p>For now, understand that your node is already <strong>capable</strong> of being configured via JMRI - we’re just not modifying the configuration yet. The CDI file ensures JMRI knows what configuration options your node supports.</p>
 <h3 id="troubleshooting-jmri-connection"><a class="header" href="#troubleshooting-jmri-connection">Troubleshooting JMRI Connection</a></h3>
-<p><strong>JMRI shows &quot;Connection failed&quot; or &quot;No route to host&quot;</strong>:</p>
+<p><strong>JMRI shows “Connection failed” or “No route to host”</strong>:</p>
 <ul>
 <li>Verify the IP address matches what the ESP32 serial monitor showed</li>
 <li>Ensure your computer and ESP32 are on the same WiFi network</li>
 <li>Check firewall settings - allow Java/JMRI to access the network</li>
-<li>Try pinging the ESP32: <code>ping 192.168.1.100</code> (use your ESP32's IP)</li>
+<li>Try pinging the ESP32: <code>ping 192.168.1.100</code> (use your ESP32’s IP)</li>
 </ul>
 <p><strong>No messages appear in the monitor</strong>:</p>
 <ul>
 <li>Click <strong>Clear</strong> in the monitor to reset the display</li>
 <li>Press RESET on the ESP32 to trigger initialization messages</li>
-<li>Check the connection status at the bottom of the JMRI window (should show &quot;Connected&quot;)</li>
+<li>Check the connection status at the bottom of the JMRI window (should show “Connected”)</li>
 </ul>
-<p><strong>Messages appear but events don't match</strong>:</p>
+<p><strong>Messages appear but events don’t match</strong>:</p>
 <ul>
-<li>Verify the event IDs in your code match what you're looking for in JMRI</li>
-<li>Check that you didn't modify the EVENT_ID constants</li>
+<li>Verify the event IDs in your code match what you’re looking for in JMRI</li>
+<li>Check that you didn’t modify the EVENT_ID constants</li>
 </ul>
-<p><strong>&quot;Connection lost&quot; after working initially</strong>:</p>
+<p><strong>“Connection lost” after working initially</strong>:</p>
 <ul>
 <li>ESP32 may have rebooted or lost WiFi connection</li>
 <li>Check the serial monitor for errors or WiFi reconnection attempts</li>
-<li>ESP32's IP address may have changed if DHCP lease renewed</li>
+<li>ESP32’s IP address may have changed if DHCP lease renewed</li>
 </ul>
 <h2 id="troubleshooting"><a class="header" href="#troubleshooting">Troubleshooting</a></h2>
 <p><strong>Library not found during build:</strong></p>
@@ -1420,9 +1451,9 @@ Produced event: 0x0502010202000001 (state: 1)
 <li>Check that ESP32 and JMRI are on the same network</li>
 <li>Verify the TCP server address and port in ESP32 code</li>
 </ul>
-<h2 id="whats-next"><a class="header" href="#whats-next">What's Next</a></h2>
-<p>You've now built your first OpenLCB node with WiFi transport! </p>
-<p><strong>In the next chapter</strong>, we'll explore:</p>
+<h2 id="whats-next"><a class="header" href="#whats-next">What’s Next</a></h2>
+<p>You’ve now built your first OpenLCB node with WiFi transport!</p>
+<p><strong>In the next chapter</strong>, we’ll explore:</p>
 <ul>
 <li>Adding physical GPIO inputs (buttons) and outputs (LEDs) to your breadboard</li>
 <li>Modifying the code to respond to button presses and control LEDs</li>
@@ -1442,51 +1473,58 @@ Produced event: 0x0502010202000001 (state: 1)
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                                                    <a rel="prev" href="../02-start/monitoring-and-tools.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
-                                <i class="fa fa-angle-left"></i>
+                            <a rel="prev" href="../02-start/monitoring-and-tools.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
-                        
-                                                    <a rel="next" href="../04-gpio/gpio-hardware.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <i class="fa fa-angle-right"></i>
+
+                            <a rel="next prefetch" href="../04-gpio/gpio-hardware.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
-                        
+
                         <div style="clear: both"></div>
                     </nav>
                 </div>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                                    <a rel="prev" href="../02-start/monitoring-and-tools.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
-                        <i class="fa fa-angle-left"></i>
+                    <a rel="prev" href="../02-start/monitoring-and-tools.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
-                
-                                    <a rel="next" href="../04-gpio/gpio-hardware.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <i class="fa fa-angle-right"></i>
+
+                    <a rel="next prefetch" href="../04-gpio/gpio-hardware.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
-                            </nav>
+            </nav>
 
         </div>
 
-        
-        
-        
-                <script type="text/javascript">
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
             window.playground_copyable = true;
         </script>
-        
-        
-                <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
-        
-        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-c2a407aa.js"></script>
+
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-a0b12cfe.js"></script>
 
         <!-- Custom JS scripts -->
-                <script type="text/javascript" src="../mermaid.min.js"></script>
-                <script type="text/javascript" src="../mermaid-init.js"></script>
-        
-        
+        <script src="../mermaid-eefea253.min.js"></script>
+        <script src="../mermaid-init-ccf746f1.js"></script>
+
+
+
+    </div>
     </body>
 </html>

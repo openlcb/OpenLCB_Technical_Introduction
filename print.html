@@ -1,51 +1,64 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sidebar-visible no-js light">
+<html lang="en" class="light sidebar-visible" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
         <title>OpenLCB Programmer&#x27;s Guide</title>
-                <meta name="robots" content="noindex" />
-                
+        <meta name="robots" content="noindex">
+
 
         <!-- Custom HTML head -->
-        
 
-        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="theme-color" content="#ffffff" />
+        <meta name="theme-color" content="#ffffff">
 
-                <link rel="icon" href="favicon.svg">
-                        <link rel="shortcut icon" href="favicon.png">
-                <link rel="stylesheet" href="css/variables.css">
-        <link rel="stylesheet" href="css/general.css">
-        <link rel="stylesheet" href="css/chrome.css">
-                <link rel="stylesheet" href="css/print.css" media="print">
-        
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-2459343d.css">
+        <link rel="stylesheet" href="css/chrome-ae938929.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
         <!-- Fonts -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-                <link rel="stylesheet" href="fonts/fonts.css">
-        
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="highlight.css">
-        <link rel="stylesheet" href="tomorrow-night.css">
-        <link rel="stylesheet" href="ayu-highlight.css">
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        
-            </head>
-    <body>
-        <!-- Provide site root to javascript -->
-        <script type="text/javascript">
-            var path_to_root = "";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
-        </script>
 
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-efb0aae6.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-2a0494c8.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
-        <script type="text/javascript">
+        <script>
             try {
-                var theme = localStorage.getItem('mdbook-theme');
-                var sidebar = localStorage.getItem('mdbook-sidebar');
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -58,124 +71,144 @@
         </script>
 
         <!-- Set the theme before any content is loaded, prevents flash -->
-        <script type="text/javascript">
-            var theme;
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
-            var html = document.querySelector('html');
-            html.classList.remove('no-js')
+            const html = document.documentElement;
             html.classList.remove('light')
             html.classList.add(theme);
-            html.classList.add('js');
+            html.classList.add("js");
         </script>
 
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
         <!-- Hide / unhide sidebar before it is displayed -->
-        <script type="text/javascript">
-            var html = document.querySelector('html');
-            var sidebar = 'hidden';
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
             }
-            html.classList.remove('sidebar-visible');
-            html.classList.add("sidebar-" + sidebar);
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
         </script>
 
-        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="title-page.html">OpenLCB Programmer's Guide</a></li><li class="chapter-item expanded "><a href="01-intro/intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="01-intro/node_architecture.html"><strong aria-hidden="true">1.1.</strong> Node</a></li><li class="chapter-item expanded "><a href="01-intro/intro_can.html"><strong aria-hidden="true">1.2.</strong> CAN</a></li><li class="chapter-item expanded "><a href="01-intro/intro_async_blink.html"><strong aria-hidden="true">1.3.</strong> Node Startup Sequence</a></li><li class="chapter-item expanded "><a href="01-intro/intro_ab_events.html"><strong aria-hidden="true">1.4.</strong> Events and Run Mode</a></li></ol></li><li class="chapter-item expanded "><a href="02-start/start.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="02-start/arduino-and-migration.html"><strong aria-hidden="true">2.1.</strong> Arduino for Early Chapters (Migration Path)</a></li><li class="chapter-item expanded "><a href="02-start/openmrn-architecture.html"><strong aria-hidden="true">2.2.</strong> OpenMRN-Lite Architecture &amp; Capabilities</a></li><li class="chapter-item expanded "><a href="02-start/platform-esp32.html"><strong aria-hidden="true">2.3.</strong> Platform: ESP32 &amp; SPIFFS</a></li><li class="chapter-item expanded "><a href="02-start/development-environments.html"><strong aria-hidden="true">2.4.</strong> Development Environments &amp; Tooling</a></li><li class="chapter-item expanded "><a href="02-start/platform-and-transports.html"><strong aria-hidden="true">2.5.</strong> Transports: WiFi &amp; CAN</a></li><li class="chapter-item expanded "><a href="02-start/monitoring-and-tools.html"><strong aria-hidden="true">2.6.</strong> Monitoring &amp; Verification</a></li></ol></li><li class="chapter-item expanded "><a href="03-esp32-arduino/esp32-arduino.html"><strong aria-hidden="true">3.</strong> ESP32 with Arduino &amp; PlatformIO</a></li><li class="chapter-item expanded "><a href="04-gpio/gpio-hardware.html"><strong aria-hidden="true">4.</strong> Physical I/O with GPIO</a></li></ol>            </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
         </nav>
 
-        <div id="page-wrapper" class="page-wrapper">
+        <div id="mdbook-page-wrapper" class="page-wrapper">
 
             <div class="page">
-                
-                <div id="menu-bar-hover-placeholder"></div>
-                <div id="menu-bar" class="menu-bar sticky bordered">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
-                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
-                            <i class="fa fa-bars"></i>
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
                         </button>
-                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
-                            <i class="fa fa-paint-brush"></i>
-                        </button>
-                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
                         </ul>
-                                                <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
-                            <i class="fa fa-search"></i>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
                         </button>
-                                            </div>
+                    </div>
 
                     <h1 class="menu-title">OpenLCB Programmer&#x27;s Guide</h1>
 
                     <div class="right-buttons">
-                                                <a href="print.html" title="Print this book" aria-label="Print this book">
-                            <i id="print-button" class="fa fa-print"></i>
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
                         </a>
-                                                                        
+
                     </div>
                 </div>
 
-                                <div id="search-wrapper" class="hidden">
-                    <form id="searchbar-outer" class="searchbar-outer">
-                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
                     </form>
-                    <div id="searchresults-outer" class="searchresults-outer hidden">
-                        <div id="searchresults-header" class="searchresults-header"></div>
-                        <ul id="searchresults">
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
                         </ul>
                     </div>
                 </div>
-                
+
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
-                <script type="text/javascript">
-                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
-                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
-                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
                         link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
                     });
                 </script>
 
-                <div id="content" class="content">
+                <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="openlcb-programmers-guide"><a class="header" href="#openlcb-programmers-guide">OpenLCB Programmer's Guide</a></h1>
+                        <h1 id="openlcb-programmers-guide"><a class="header" href="#openlcb-programmers-guide">OpenLCB Programmer’s Guide</a></h1>
 <p><em>by John Socha‑Leialoha</em></p>
 <p>This edition is current as of 2025-12-23.</p>
 <p>I wrote this book to help developers get started with OpenLCB. I used GitHub Copilot to help draft the text; during writing Copilot was provided access to the OpenMRN and OpenMRN‑Lite source code, the NMRA LCC standards, and NMRA LCC technical notes to assist with examples and explanations.</p>
-<p>The source for this book is available at the project's GitHub repository: <a href="https://github.com/openlcb/OpenLCB_Technical_Introduction">openlcb/OpenLCB_Technical_Introduction</a>.</p>
-<p>Feedback and contributions are welcome — please open an issue or submit a pull request on the repository's issues page: <a href="https://github.com/openlcb/OpenLCB_Technical_Introduction/issues">openlcb/OpenLCB_Technical_Introduction issues</a>.</p>
+<p>The source for this book is available at the project’s GitHub repository: <a href="https://github.com/openlcb/OpenLCB_Technical_Introduction">openlcb/OpenLCB_Technical_Introduction</a>.</p>
+<p>Feedback and contributions are welcome — please open an issue or submit a pull request on the repository’s issues page: <a href="https://github.com/openlcb/OpenLCB_Technical_Introduction/issues">openlcb/OpenLCB_Technical_Introduction issues</a>.</p>
 <p>Documentation Copyright © 2025 John Socha‑Leialoha. See the repository for license details: <a href="https://github.com/openlcb/OpenLCB_Technical_Introduction/blob/master/LICENSE_DOCS.md">LICENSE_DOCS.md</a> and <a href="https://github.com/openlcb/OpenLCB_Technical_Introduction/blob/master/LICENSE">LICENSE</a>.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
 <h2 id="purpose"><a class="header" href="#purpose">Purpose</a></h2>
 <p>The purpose of this book is to help you get up to speed on OpenLCB so you can
-start creating LCC products. There are a lot of concepts and we'll go into
+start creating LCC products. There are a lot of concepts and we’ll go into
 just enough depth to get you going, without bogging you down with all the
 details and possibilites. The standards and the technical notes have a lot
 more details.</p>
 <h2 id="focus-of-this-book"><a class="header" href="#focus-of-this-book">Focus of this book</a></h2>
-<p>We're going to focus on how to create a device (node) that can be added to an
-OpenLCB network. To make learning easier, we'll start with WiFi/TCP transport,
+<p>We’re going to focus on how to create a device (node) that can be added to an
+OpenLCB network. To make learning easier, we’ll start with WiFi/TCP transport,
 which allows you to see network traffic easily and test without special hardware.
 Later chapters will cover adding CAN bus hardware for traditional LCC installations.</p>
 <h2 id="assumptions"><a class="header" href="#assumptions">Assumptions</a></h2>
-<p>We're assuming you've used LCC products, and therefore already understand
-concepts like the producer-consumer model. We also assume you've written
+<p>We’re assuming you’ve used LCC products, and therefore already understand
+concepts like the producer-consumer model. We also assume you’ve written
 code for microcontrollers and have worked with I/O pins.</p>
 <h2 id="about-names"><a class="header" href="#about-names">About Names</a></h2>
-<p>Let's start with what to some might be confusing—the names LCC vs OpenLCB.
+<p>Let’s start with what to some might be confusing—the names LCC vs OpenLCB.
 LCC is a brand name owned by the NMRA. It covers a set of standards that have
 been adopted by the NMRA for Layout Command Control (hence the LCC).</p>
 <p>OpenLCB is the name of the working group that created the standards approved by the NMRA and continues to create new standards. This is a group of dedicated volunteers who are working to fulfill the dream.</p>
-<p>You'll notice that the standards use the name OpenLCB everywhere except for the header at the top of the document. In this book, as in the standards, we'll use the term OpenLCB everywhere except this page.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="node"><a class="header" href="#node">Node</a></h1>
-<p>A <em>Node</em> is the basic building block of an OpenLCB network. It's a device that can send and receive OpenLCB messages. We'll describe these messages in more detail in a later chapter.</p>
-<p>Each node has a unique 6-byte ID that must be assigned by the manufacturer. We'll describe in a later chapter how you can get your own set of IDs to use in your products (or DIY boards).</p>
+<p>You’ll notice that the standards use the name OpenLCB everywhere except for the header at the top of the document. In this book, as in the standards, we’ll use the term OpenLCB everywhere except this page.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="node"><a class="header" href="#node">Node</a></h1>
+<p>A <em>Node</em> is the basic building block of an OpenLCB network. It’s a device that can send and receive OpenLCB messages. We’ll describe these messages in more detail in a later chapter.</p>
+<p>Each node has a unique 6-byte ID that must be assigned by the manufacturer. We’ll describe in a later chapter how you can get your own set of IDs to use in your products (or DIY boards).</p>
 <h2 id="transport-layers"><a class="header" href="#transport-layers">Transport Layers</a></h2>
 <p>OpenLCB is designed to work over different physical transport layers. The two main options are:</p>
 <p><strong>CAN (Controller Area Network)</strong>: The traditional transport for OpenLCB, used in most commercial LCC products. CAN uses a two-wire bus with excellent noise immunity and built-in arbitration, making it ideal for model railroad environments. It requires CAN transceiver hardware and proper bus termination.</p>
@@ -186,26 +219,26 @@ been adopted by the NMRA for Layout Command Control (hence the LCC).</p>
 <li>Can connect to JMRI and other tools over your home network</li>
 <li>Simplifies initial prototyping and testing</li>
 </ul>
-<p>In this book, we'll start with WiFi/TCP transport because it's more accessible for learning. Once you understand the core concepts, the principles transfer directly to CAN-based implementations. Future chapters will cover adding CAN hardware.</p>
+<p>In this book, we’ll start with WiFi/TCP transport because it’s more accessible for learning. Once you understand the core concepts, the principles transfer directly to CAN-based implementations. Future chapters will cover adding CAN hardware.</p>
 <p>Both transports use the same OpenLCB protocols and message formats—only the physical layer changes.</p>
 <h2 id="network-architecture"><a class="header" href="#network-architecture">Network Architecture</a></h2>
 <p>An OpenLCB network is made up of participants with different roles. The two primary roles are:</p>
 <p><strong>Nodes</strong> — devices that produce and consume events. Each node has a unique identifier and announces itself during startup.</p>
 <p><strong>Hubs</strong> — services that route and forward messages between participants. A hub may be implemented differently depending on the transport (for example, as a network server for TCP-based transports or as a bridge to a CAN bus). Hubs are optional in some deployments; on shared physical buses messages are exchanged directly between participants.</p>
 <p>A single device can implement both node and hub functions. Examples in later chapters show convenient development setups where one device acts in both roles, but the concepts below are transport-agnostic.</p>
-<p>Here's a conceptual architecture diagram:</p>
-<pre><code class="language-mermaid">graph TB
-	subgraph DeviceA[&quot;Device A&quot;]
-		NodeA[&quot;Node A&lt;br/&gt;(produces/consumes events)&quot;]
+<p>Here’s a conceptual architecture diagram:</p>
+<pre class="mermaid">graph TB
+	subgraph DeviceA["Device A"]
+		NodeA["Node A&lt;br/&gt;(produces/consumes events)"]
 	end
 
-	subgraph Hub[&quot;Hub (optional)&quot;]
-		Router[&quot;Message Router / Hub&quot;]
+	subgraph Hub["Hub (optional)"]
+		Router["Message Router / Hub"]
 	end
 
-	Monitor[&quot;Monitor / Tool&lt;br/&gt;(optional)&quot;]
-	DeviceB[&quot;Device B&lt;br/&gt;(other node)&quot;]
-	CAN[&quot;CAN Bus (optional)&quot;]
+	Monitor["Monitor / Tool&lt;br/&gt;(optional)"]
+	DeviceB["Device B&lt;br/&gt;(other node)"]
+	CAN["CAN Bus (optional)"]
 
 	DeviceA ---|messages| Router
 	DeviceB ---|messages| Router
@@ -217,7 +250,8 @@ been adopted by the NMRA for Layout Command Control (hence the LCC).</p>
 	style Hub fill:#f3e5f5
 	style CAN fill:#eeeeee
 	style DeviceB fill:#eeeeee
-</code></pre>
+</pre>
+
 <p>What this shows:</p>
 <ul>
 <li><strong>Node</strong>: Produces and consumes events and announces itself on the network during startup.</li>
@@ -232,33 +266,42 @@ been adopted by the NMRA for Layout Command Control (hence the LCC).</p>
 <li><strong>Flexible</strong>: Hubs can be implemented differently per transport, allowing the same protocol to work in embedded, wired, and networked environments.</li>
 </ul>
 <p>Platform and transport choices (for example, why this book uses ESP32 and WiFi/TCP for early examples) are discussed in Chapter 2 (Getting Started).</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="introduction-to-can"><a class="header" href="#introduction-to-can">Introduction to CAN</a></h1>
-<p>Controller Area Network (CAN) is a standard that was initially created in 1981 by Bosch, and has since been used for factory automation and communication networks in cars, to name just a few uses. Today there are hundreds of billions of devices using CAN bus in daily use. </p>
-<p>As a result, there are a number of relatively inexpensive ICs available that fully implement the CAN specifications out of the box. By using CAN controllers and drivers, you do not have to write highly time-sensitive code. Instead, you can focus on implementing support for the messages in the application layers, which is a &quot;relatively&quot; simple task compared with implementing a transport layer.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="introduction-to-can"><a class="header" href="#introduction-to-can">Introduction to CAN</a></h1>
+<p>Controller Area Network (CAN) is a standard that was initially created in 1981 by Bosch, and has since been used for factory automation and communication networks in cars, to name just a few uses. Today there are hundreds of billions of devices using CAN bus in daily use.</p>
+<p>As a result, there are a number of relatively inexpensive ICs available that fully implement the CAN specifications out of the box. By using CAN controllers and drivers, you do not have to write highly time-sensitive code. Instead, you can focus on implementing support for the messages in the application layers, which is a “relatively” simple task compared with implementing a transport layer.</p>
 <h2 id="can-messages"><a class="header" href="#can-messages">CAN Messages</a></h2>
 <p>CAN transmits messages, called <em>frames</em> on the bus. Every other device (node) on the bus can (and must) listen to all of the traffic on the bus. One of the interesting and useful aspects of CAN is how it handles collisions, which is through arbitration.</p>
 <p>CAN frames, in the form used by OpenLCB, consist of a 29-bit header followed by zero or more bytes of data. This is using the <em>extended frame format</em>, also know as CAN 2.0 B.</p>
-<p><img src="01-intro/../images/can_bits.jpg" alt="CAN Format" /></p>
+<p><img src="images/can_bits.jpg" alt="CAN Format"></p>
 <h3 id="arbitration"><a class="header" href="#arbitration">Arbitration</a></h3>
 <p>Arbitration is the process used to ensure that only one message is being transmitted at one time. If two nodes are trying to transmit different messages at the same time, one of those two will pass through the bus unharmed, while the other node will realize it lost the arbitration and attempt to re-transmit right after the first message is completed. This allows nearly 100% utilization of the bandwidth, because the node(s) that lost the arbitration will immediately stop, thereby not corrupting the frame that is being transmitted by the winner of the arbitration. This guarantees forward progress. In contrast, old style Ethernet (and LocoNet, btw.) uses a more complex scheme, where a collision destroys the frame, then nodes have to back off, wait a random period, then attempt to transmit again, thus wasting bandwidth.</p>
 <p>The arbitration phase relies on drivers only pulling the bus low. If two nodes attempt to put different bit values on the bus at the same time, the 0 will always win. Here is a chart that shows how this works:</p>
-<table><thead><tr><th>Node 1</th><th>Node 2</th><th>Bus Value</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Node 1</th><th>Node 2</th><th>Bus Value</th></tr>
+</thead>
+<tbody>
 <tr><td>0</td><td>0</td><td>0</td></tr>
 <tr><td>0</td><td>1</td><td>0</td></tr>
 <tr><td>1</td><td>0</td><td>0</td></tr>
 <tr><td>1</td><td>1</td><td>1</td></tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <blockquote>
-<p>Dominant and recessive are the normal terms used because a '1' bit (recessive) does NOT drive the bus. It allows the terminators to 'drive' the bus by pulling the two bus lines to a common voltage. (2.5V) On the other hand a '0' bit (dominant) drives the bus to both high and low. (CANH goes to 5V and CANL goes to 0V) The bus drivers can always over power the terminators, and that is how the zero bit always dominates over the one bit. It also explains why at least some termination is required. The termination values are also chosen to suppress cable reflections, but that is actually only an issue on long lines. Also note that this explains the complexity of our RR-CirKits terminators. You can attach a logic analyzer to one of our terminators because it creates a logic level image of the bus (to drive the activity LED). You cannot connect a logic analyzer directly to the CAN bus, because it does not contain a logic level signal on either line.</p>
-<p>Normally two nodes will happily send identical data until one node or the other transmits a zero bit during the other node's one bit. At that point the recessive node notices that it transmitted a one bit,but received a zero bit back from the bus. This tells the recessive node that it is in conflict and must immediately stop transmitting. No other nodes can observe that this happened. This requirement for an immediate (within a fraction of the bit time) response is what limits the CAN bus segment lengths.</p>
-<p>-- Dick Bronson, RR Cirkits</p>
+<p>Dominant and recessive are the normal terms used because a ‘1’ bit (recessive) does NOT drive the bus. It allows the terminators to ‘drive’ the bus by pulling the two bus lines to a common voltage. (2.5V) On the other hand a ‘0’ bit (dominant) drives the bus to both high and low. (CANH goes to 5V and CANL goes to 0V) The bus drivers can always over power the terminators, and that is how the zero bit always dominates over the one bit. It also explains why at least some termination is required. The termination values are also chosen to suppress cable reflections, but that is actually only an issue on long lines. Also note that this explains the complexity of our RR-CirKits terminators. You can attach a logic analyzer to one of our terminators because it creates a logic level image of the bus (to drive the activity LED). You cannot connect a logic analyzer directly to the CAN bus, because it does not contain a logic level signal on either line.</p>
+<p>Normally two nodes will happily send identical data until one node or the other transmits a zero bit during the other node’s one bit. At that point the recessive node notices that it transmitted a one bit,but received a zero bit back from the bus. This tells the recessive node that it is in conflict and must immediately stop transmitting. No other nodes can observe that this happened. This requirement for an immediate (within a fraction of the bit time) response is what limits the CAN bus segment lengths.</p>
+<p>– Dick Bronson, RR Cirkits</p>
 </blockquote>
 <p>Arbitration uses the 29-bit header value as a priority value to gain access to the bus, where lower values have higher priority. This mechanism provides very high utilization of the bus’ bandwidth because one node will always win a collision and keep transmitting. In contrast, Ethernet uses a more complex scheme where nodes have to back off, wait a random period, then attempt to transmit again, thus wasting bandwidth.</p>
 <p>For arbitration to work sucessfully, each message sent by a node needs to use a unique 29-bit ID. The details for this are handled by the OpenLCB specifications, and are different for different types of messages.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="node-startup-sequence"><a class="header" href="#node-startup-sequence">Node Startup Sequence</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="node-startup-sequence"><a class="header" href="#node-startup-sequence">Node Startup Sequence</a></h1>
 <p>When an OpenLCB node powers up or resets, it goes through a defined startup sequence to join the network. Understanding this sequence is essential to building your own nodes.</p>
 <blockquote>
-<p><strong>Note for Library Users</strong>: If you're using OpenMRNLite or other OpenLCB libraries, all of the mechanics described in this chapter are handled automatically for you. You don't need to implement alias reservation, collision detection, or recovery—the library does it all in the background. </p>
+<p><strong>Note for Library Users</strong>: If you’re using OpenMRNLite or other OpenLCB libraries, all of the mechanics described in this chapter are handled automatically for you. You don’t need to implement alias reservation, collision detection, or recovery—the library does it all in the background.</p>
 <p>This chapter exists to help you <strong>understand how it works</strong>, which is valuable knowledge when debugging network issues or designing advanced features. However, if you just want to build a working node with async_blink_esp32, you can skip straight to Chapter 3 without missing anything essential. The library takes care of it.</p>
 </blockquote>
 <h2 id="what-happens-during-startup"><a class="header" href="#what-happens-during-startup">What Happens During Startup</a></h2>
@@ -274,10 +317,10 @@ been adopted by the NMRA for Layout Command Control (hence the LCC).</p>
 <p><strong>Alias Map Definition (AMD)</strong>: The node announces the mapping between its full 6-byte Node ID and the 12-bit alias it just reserved.</p>
 </li>
 <li>
-<p><strong>Initialized (Init Complete)</strong>: The node sends an &quot;Initialized&quot; message telling the network it's now fully online and reachable.</p>
+<p><strong>Initialized (Init Complete)</strong>: The node sends an “Initialized” message telling the network it’s now fully online and reachable.</p>
 </li>
 </ol>
-<pre><code class="language-mermaid">sequenceDiagram
+<pre class="mermaid">sequenceDiagram
     participant Node as New Node
     participant Bus as OpenLCB Network
     participant Others as Other Nodes
@@ -299,14 +342,15 @@ been adopted by the NMRA for Layout Command Control (hence the LCC).</p>
     
     Node-&gt;&gt;Bus: Producer Identified (events)
     Node-&gt;&gt;Bus: Consumer Identified (events)
-</code></pre>
+</pre>
+
 <h2 id="why-use-aliases"><a class="header" href="#why-use-aliases">Why Use Aliases?</a></h2>
 <p>OpenLCB uses 6-byte Node IDs to ensure every device in the world has a unique identifier. However, CAN bus headers only have 29 bits available. To fit the sender information plus message type, OpenLCB uses temporary 12-bit aliases that represent the full Node ID during a session.</p>
-<p>This alias negotiation happens every time a node starts up. The aliases are not permanent—they're regenerated each time the node powers on.</p>
+<p>This alias negotiation happens every time a node starts up. The aliases are not permanent—they’re regenerated each time the node powers on.</p>
 <h2 id="node-participation"><a class="header" href="#node-participation">Node Participation</a></h2>
 <p>Other nodes on the network listen during this startup sequence. If another node is already using the alias the new node wants, it will send a conflict message, forcing the new node to pick a different alias. This ensures all active nodes have unique aliases.</p>
 <h2 id="multi-node-network-behavior"><a class="header" href="#multi-node-network-behavior">Multi-Node Network Behavior</a></h2>
-<p>The startup sequence isn't just about a single node announcing itself—it's a conversation with the entire network:</p>
+<p>The startup sequence isn’t just about a single node announcing itself—it’s a conversation with the entire network:</p>
 <p><strong>Other nodes participate by:</strong></p>
 <ul>
 <li><strong>Listening</strong> to all CID frames to check for alias conflicts</li>
@@ -317,11 +361,11 @@ been adopted by the NMRA for Layout Command Control (hence the LCC).</p>
 <p>This cooperative behavior ensures:</p>
 <ul>
 <li>No two nodes ever use the same alias simultaneously</li>
-<li>Nodes can discover each other's capabilities</li>
+<li>Nodes can discover each other’s capabilities</li>
 <li>Gateways and bridges can manage routing efficiently</li>
 <li>Network monitoring tools (like JMRI) can track all active nodes</li>
 </ul>
-<p>When your node starts up, it's not alone—the entire network is watching and ready to help it join successfully.</p>
+<p>When your node starts up, it’s not alone—the entire network is watching and ready to help it join successfully.</p>
 <h2 id="what-happens-when-things-go-wrong"><a class="header" href="#what-happens-when-things-go-wrong">What Happens When Things Go Wrong</a></h2>
 <p>The startup sequence above describes the happy path—when everything works perfectly on the first try. In practice, nodes must be prepared to handle conflicts and retries.</p>
 <h3 id="alias-collision-detection"><a class="header" href="#alias-collision-detection">Alias Collision Detection</a></h3>
@@ -336,11 +380,11 @@ been adopted by the NMRA for Layout Command Control (hence the LCC).</p>
 </ul>
 </li>
 <li>
-<p><strong>During the 200ms wait</strong>: If another node transmits any non-CID frame using your tentative alias, you know there's a collision and must restart.</p>
+<p><strong>During the 200ms wait</strong>: If another node transmits any non-CID frame using your tentative alias, you know there’s a collision and must restart.</p>
 </li>
 </ul>
-<p>Here's what the collision and recovery process looks like:</p>
-<pre><code class="language-mermaid">sequenceDiagram
+<p>Here’s what the collision and recovery process looks like:</p>
+<pre class="mermaid">sequenceDiagram
     participant Node as New Node
     participant Bus as OpenLCB Network
     participant Other as Node Already Online
@@ -366,10 +410,11 @@ been adopted by the NMRA for Layout Command Control (hence the LCC).</p>
     Node-&gt;&gt;Bus: Initialized Complete
     
     Note over Node: Now reachable with alias DEF
-</code></pre>
-<p>Your node's alias generation algorithm (described in section 6.3 of S-9.7.2.1) ensures that each collision produces a different alias candidate, so nodes won't get stuck in a loop trying the same alias repeatedly.</p>
+</pre>
+
+<p>Your node’s alias generation algorithm (described in section 6.3 of S-9.7.2.1) ensures that each collision produces a different alias candidate, so nodes won’t get stuck in a loop trying the same alias repeatedly.</p>
 <h3 id="amd-and-alias-validation"><a class="header" href="#amd-and-alias-validation">AMD and Alias Validation</a></h3>
-<p>Once you've successfully reserved an alias and sent your AMD (Alias Map Definition) frame, the alias mapping is established. However, your node must remain vigilant:</p>
+<p>Once you’ve successfully reserved an alias and sent your AMD (Alias Map Definition) frame, the alias mapping is established. However, your node must remain vigilant:</p>
 <ul>
 <li>
 <p><strong>Alias Mapping Enquiry (AME)</strong>: Other nodes can query your alias at any time using an AME frame. Your node is expected to respond with another AMD frame confirming the mapping.</p>
@@ -409,8 +454,9 @@ been adopted by the NMRA for Layout Command Control (hence the LCC).</p>
 <blockquote>
 <p><strong>Note</strong>: Future chapters will dive deeper into how the alias generation algorithm works and how to handle collisions in your code.</p>
 </blockquote>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="events-and-run-mode"><a class="header" href="#events-and-run-mode">Events and Run Mode</a></h1>
-<p>After a node completes its startup sequence, it enters &quot;run mode&quot; where it actively participates in the network by producing and consuming events.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="events-and-run-mode"><a class="header" href="#events-and-run-mode">Events and Run Mode</a></h1>
+<p>After a node completes its startup sequence, it enters “run mode” where it actively participates in the network by producing and consuming events.</p>
 <h2 id="what-is-run-mode"><a class="header" href="#what-is-run-mode">What is Run Mode?</a></h2>
 <p>Once a node is initialized and online, it:</p>
 <ul>
@@ -421,8 +467,8 @@ been adopted by the NMRA for Layout Command Control (hence the LCC).</p>
 </ul>
 <p>This is the normal operating state where your node does useful work on the layout.</p>
 <h2 id="event-flow-example"><a class="header" href="#event-flow-example">Event Flow Example</a></h2>
-<p>Here's a simple example of how events flow between nodes in run mode:</p>
-<pre><code class="language-mermaid">sequenceDiagram
+<p>Here’s a simple example of how events flow between nodes in run mode:</p>
+<pre class="mermaid">sequenceDiagram
     participant Button as Button Node
     participant Network as OpenLCB Network
     participant LED as LED Node
@@ -436,7 +482,8 @@ been adopted by the NMRA for Layout Command Control (hence the LCC).</p>
     Button-&gt;&gt;Network: Produce Event&lt;br/&gt;05.02.01.02.02.00.00.00
     Network-&gt;&gt;LED: Event received
     Note over LED: LED turns OFF
-</code></pre>
+</pre>
+
 <p>In this example:</p>
 <ol>
 <li>The button node monitors a physical button</li>
@@ -452,7 +499,7 @@ been adopted by the NMRA for Layout Command Control (hence the LCC).</p>
 <li><strong>Consumers</strong> listen for specific events and react to them (turn on LED, throw turnout, sound horn)</li>
 <li><strong>A single node can be both</strong> a producer and consumer of different (or even the same) events</li>
 </ul>
-<p>This decoupling is powerful: producers don't need to know who's listening, and consumers don't need to know where events come from. You can reconfigure your layout by just changing which nodes consume which events.</p>
+<p>This decoupling is powerful: producers don’t need to know who’s listening, and consumers don’t need to know where events come from. You can reconfigure your layout by just changing which nodes consume which events.</p>
 <h2 id="event-identification-messages"><a class="header" href="#event-identification-messages">Event Identification Messages</a></h2>
 <p>Part of the startup process includes announcing what events a node produces and consumes. The <code>async_blink</code> example sends these messages after completing initialization:</p>
 <pre><code>Producer Identified Valid:   Event 05.02.01.02.02.00.00.01
@@ -460,19 +507,19 @@ Producer Identified Valid:   Event 05.02.01.02.02.00.00.00
 Consumer Identified Valid:   Event 05.02.01.02.02.00.00.01
 Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 </code></pre>
-<p>This tells the network: &quot;I can produce these two events, and I can also consume the same two events.&quot;</p>
-<p>The &quot;Valid&quot; state means the node is actively configured to use these events. &quot;Invalid&quot; would mean the event is known but not currently in use.</p>
+<p>This tells the network: “I can produce these two events, and I can also consume the same two events.”</p>
+<p>The “Valid” state means the node is actively configured to use these events. “Invalid” would mean the event is known but not currently in use.</p>
 <h2 id="async-blink-events"><a class="header" href="#async-blink-events">Async Blink Events</a></h2>
-<p>Let's look at what the <code>async_blink</code> example does in run mode. It's intentionally simple to demonstrate the concepts:</p>
+<p>Let’s look at what the <code>async_blink</code> example does in run mode. It’s intentionally simple to demonstrate the concepts:</p>
 <p><strong>Every second, it alternates:</strong></p>
 <ol>
-<li>Produce event <code>05.02.01.02.02.00.00.01</code> (the &quot;1&quot; event)</li>
+<li>Produce event <code>05.02.01.02.02.00.00.01</code> (the “1” event)</li>
 <li>Because it also consumes this event, its own LED turns ON</li>
-<li>Produce event <code>05.02.01.02.02.00.00.00</code> (the &quot;0&quot; event)</li>
+<li>Produce event <code>05.02.01.02.02.00.00.00</code> (the “0” event)</li>
 <li>Because it consumes this event too, its own LED turns OFF</li>
 </ol>
 <p>This creates a blinking LED controlled entirely through OpenLCB events, demonstrating the producer/consumer model in a single node.</p>
-<p>In a real layout, you'd typically have separate nodes for inputs (buttons, sensors) and outputs (LEDs, turnouts), but the event flow works exactly the same way.</p>
+<p>In a real layout, you’d typically have separate nodes for inputs (buttons, sensors) and outputs (LEDs, turnouts), but the event flow works exactly the same way.</p>
 <p>For detailed event protocol specifications, see:</p>
 <ul>
 <li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/s-9.7.3.1-eventtransport-2016-02-06.pdf">S-9.7.3.1 Event Transport</a></li>
@@ -481,10 +528,11 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 <blockquote>
 <p><strong>Note</strong>: Future chapters will show you how to create your own nodes with real button inputs and LED outputs on an ESP32 microcontroller.</p>
 </blockquote>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="getting-started"><a class="header" href="#getting-started">Getting Started</a></h1>
-<p>In the previous chapter, you learned about OpenLCB concepts: nodes, transport layers, startup sequences, and the producer/consumer event model. Now it's time to plan your first OpenLCB node.</p>
-<p>This chapter walks you through the key decisions we'll make for building your node and explains the <strong>why</strong> behind each choice so you understand the trade-offs and can adapt to your own needs. (Actual implementation begins in the next chapter.)</p>
-<h2 id="what-were-building"><a class="header" href="#what-were-building">What We're Building</a></h2>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="getting-started"><a class="header" href="#getting-started">Getting Started</a></h1>
+<p>In the previous chapter, you learned about OpenLCB concepts: nodes, transport layers, startup sequences, and the producer/consumer event model. Now it’s time to plan your first OpenLCB node.</p>
+<p>This chapter walks you through the key decisions we’ll make for building your node and explains the <strong>why</strong> behind each choice so you understand the trade-offs and can adapt to your own needs. (Actual implementation begins in the next chapter.)</p>
+<h2 id="what-were-building"><a class="header" href="#what-were-building">What We’re Building</a></h2>
 <p>The goal of this book is to help you create an <strong>OpenLCB node</strong>—a device that can produce and consume events on an LCC network. Your node will:</p>
 <ul>
 <li><strong>Sense inputs</strong> (buttons, switches, sensors) and produce OpenLCB events</li>
@@ -492,7 +540,7 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 <li><strong>Connect to a network</strong> so other nodes can respond to your events</li>
 <li><strong>Be monitored and configured</strong> via standard tools like JMRI</li>
 </ul>
-<p>We'll start with a simple example and scale to more complex scenarios in later chapters. The key concept is <strong>the pattern</strong>: once you understand how to produce and consume a single event, scaling to many inputs/outputs and adding complex logic becomes straightforward.</p>
+<p>We’ll start with a simple example and scale to more complex scenarios in later chapters. The key concept is <strong>the pattern</strong>: once you understand how to produce and consume a single event, scaling to many inputs/outputs and adding complex logic becomes straightforward.</p>
 <h3 id="progression-tcp-then-can-then-full-openmrn"><a class="header" href="#progression-tcp-then-can-then-full-openmrn">Progression: TCP, Then CAN, Then Full OpenMRN</a></h3>
 <p>We use three key technologies across this book, introduced progressively:</p>
 <p><strong>Phase 1: TCP/WiFi (Quick Start)</strong></p>
@@ -513,7 +561,7 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 <p><strong>Phase 3: Full OpenMRN + FreeRTOS (Advanced)</strong></p>
 <ul>
 <li>Only if you need multi-threading, virtual nodes, or traction protocol</li>
-<li>Migrate from Arduino to <strong>ESP-IDF</strong> (Espressif's full RTOS environment)</li>
+<li>Migrate from Arduino to <strong>ESP-IDF</strong> (Espressif’s full RTOS environment)</li>
 <li>Use <strong>full OpenMRN</strong> library with FreeRTOS threading</li>
 <li>Handle complex, multi-threaded scenarios (bridges, command stations, etc.)</li>
 </ul>
@@ -528,15 +576,15 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 <li><strong>Which transport?</strong> — TCP/WiFi for phase 1 (quick learning), CAN for phase 2 (main focus), both for phase 3</li>
 <li><strong>How do I monitor and verify?</strong> — JMRI monitoring tool, TCP hub architecture, CAN bus analysis</li>
 </ol>
-<p>By the end of this chapter, you'll understand the <strong>reasons</strong> behind each choice and why this progression makes sense for learning and building real LCC systems.</p>
+<p>By the end of this chapter, you’ll understand the <strong>reasons</strong> behind each choice and why this progression makes sense for learning and building real LCC systems.</p>
 <h2 id="detailed-topic-coverage"><a class="header" href="#detailed-topic-coverage">Detailed Topic Coverage</a></h2>
 <ul>
-<li><a href="02-start/./arduino-and-migration.html">Arduino for Early Chapters (Migration Path)</a> — Why Arduino; how to migrate to FreeRTOS later</li>
-<li><a href="02-start/./openmrn-architecture.html">OpenMRN-Lite Architecture &amp; Capabilities</a> — Why OpenMRN-Lite for Arduino; capabilities and limitations</li>
-<li><a href="02-start/./platform-esp32.html">Platform: ESP32 &amp; SPIFFS</a> — Why ESP32; the importance of persistent storage</li>
-<li><a href="02-start/./development-environments.html">Development Environments &amp; Tooling</a> — IDE comparison (Arduino IDE, Maker Workshop, PlatformIO); personal recommendation with GitHub Copilot</li>
-<li><a href="02-start/./platform-and-transports.html">Transports: WiFi &amp; CAN</a> — Why WiFi first; when to add CAN</li>
-<li><a href="02-start/./monitoring-and-tools.html">Monitoring &amp; Verification</a> — JMRI, TCP hub, GridConnect protocol</li>
+<li><a href="#arduino-for-phases-12-migration-path-for-phase-3">Arduino for Early Chapters (Migration Path)</a> — Why Arduino; how to migrate to FreeRTOS later</li>
+<li><a href="#openmrn-lite-architecture--capabilities">OpenMRN-Lite Architecture &amp; Capabilities</a> — Why OpenMRN-Lite for Arduino; capabilities and limitations</li>
+<li><a href="#platform-esp32--spiffs">Platform: ESP32 &amp; SPIFFS</a> — Why ESP32; the importance of persistent storage</li>
+<li><a href="#development-environments--tooling">Development Environments &amp; Tooling</a> — IDE comparison (Arduino IDE, Maker Workshop, PlatformIO); personal recommendation with GitHub Copilot</li>
+<li><a href="#transports-wifitcp-and-can">Transports: WiFi &amp; CAN</a> — Why WiFi first; when to add CAN</li>
+<li><a href="#monitoring--verification">Monitoring &amp; Verification</a> — JMRI, TCP hub, GridConnect protocol</li>
 </ul>
 <h2 id="prerequisites"><a class="header" href="#prerequisites">Prerequisites</a></h2>
 <p>Before reading further, make sure you have:</p>
@@ -560,13 +608,14 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 <li>PlatformIO extension (or Arduino IDE / Maker Workshop)</li>
 <li>JMRI (for monitoring OpenLCB traffic)</li>
 </ul>
-<p>If you're missing any hardware, most items can be purchased as a kit from electronics suppliers (Adafruit, SparkFun, Amazon, AliExpress) for under $20 USD total.</p>
-<h2 id="whats-next"><a class="header" href="#whats-next">What's Next</a></h2>
+<p>If you’re missing any hardware, most items can be purchased as a kit from electronics suppliers (Adafruit, SparkFun, Amazon, AliExpress) for under $20 USD total.</p>
+<h2 id="whats-next"><a class="header" href="#whats-next">What’s Next</a></h2>
 <p>You now have the big picture: a generic goal (inputs → events → outputs) plus the concrete stack for early chapters. Later sections in this chapter dive into each decision.</p>
-<p>Start with <strong><a href="02-start/./arduino-and-migration.html">Arduino for Early Chapters (Migration Path)</a></strong>. Each section builds on the previous one, culminating in a clear understanding of our toolchain and ready-to-implement design.</p>
-<p>By the end of this chapter, you'll be prepared to move forward with the example implementation.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="arduino-for-phases-12-migration-path-for-phase-3"><a class="header" href="#arduino-for-phases-12-migration-path-for-phase-3">Arduino for Phases 1–2 (Migration Path for Phase 3)</a></h1>
-<p>The first decision in building an OpenLCB node is: <strong>which platform and framework?</strong> For phases 1–2, we use Arduino because it's the most accessible starting point for learning and offers excellent real-world functionality. Phase 3 introduces the migration path to full FreeRTOS-based solutions only if you need advanced features.</p>
+<p>Start with <strong><a href="#arduino-for-phases-12-migration-path-for-phase-3">Arduino for Early Chapters (Migration Path)</a></strong>. Each section builds on the previous one, culminating in a clear understanding of our toolchain and ready-to-implement design.</p>
+<p>By the end of this chapter, you’ll be prepared to move forward with the example implementation.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="arduino-for-phases-12-migration-path-for-phase-3"><a class="header" href="#arduino-for-phases-12-migration-path-for-phase-3">Arduino for Phases 1–2 (Migration Path for Phase 3)</a></h1>
+<p>The first decision in building an OpenLCB node is: <strong>which platform and framework?</strong> For phases 1–2, we use Arduino because it’s the most accessible starting point for learning and offers excellent real-world functionality. Phase 3 introduces the migration path to full FreeRTOS-based solutions only if you need advanced features.</p>
 <h2 id="why-arduino-first"><a class="header" href="#why-arduino-first">Why Arduino First?</a></h2>
 <p>Arduino provides a dramatically lower learning curve and barrier to entry compared to FreeRTOS or ESP-IDF:</p>
 <ul>
@@ -587,7 +636,7 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 <li><strong>Persistent storage</strong> - SPIFFS/SD card for configuration</li>
 <li><strong>Real-time monitoring</strong> - JMRI integration via TCP or CAN</li>
 </ul>
-<p><strong>This is not a compromise.</strong> Most hobby and DIY LCC installations use OpenMRN-Lite for years. You're not learning a dead-end; you're choosing the right tool for real-world I/O projects.</p>
+<p><strong>This is not a compromise.</strong> Most hobby and DIY LCC installations use OpenMRN-Lite for years. You’re not learning a dead-end; you’re choosing the right tool for real-world I/O projects.</p>
 <h2 id="do-you-need-phase-3"><a class="header" href="#do-you-need-phase-3">Do You Need Phase 3?</a></h2>
 <p>Most projects stay in phases 1–2. Phase 3 (FreeRTOS + Full OpenMRN) is only for advanced scenarios:</p>
 <ul>
@@ -596,54 +645,62 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 <li><strong>Traction protocol</strong> — Locomotive decoder features</li>
 <li><strong>Multi-threaded hubs</strong> — Complex systems requiring background threads and advanced concurrency</li>
 </ul>
-<p>If you're building sensors, I/O controllers, or simple nodes for a layout, phases 1–2 have everything you need. Most hobby and model railroad installations never require phase 3.</p>
+<p>If you’re building sensors, I/O controllers, or simple nodes for a layout, phases 1–2 have everything you need. Most hobby and model railroad installations never require phase 3.</p>
 <h2 id="if-you-need-phase-3-later"><a class="header" href="#if-you-need-phase-3-later">If You Need Phase 3 Later</a></h2>
 <p>If you eventually need phase 3 features, the foundation you built in phases 1–2 makes the path forward straightforward:</p>
 <ul>
 <li>Your OpenLCB <strong>protocol knowledge transfers directly</strong> — message formats, event semantics, CDI structures all stay the same</li>
-<li>You'll switch from Arduino to <strong>ESP-IDF</strong> (Espressif's full RTOS environment) and use full <strong>OpenMRN</strong> library instead of OpenMRN-Lite</li>
-<li>You'll add FreeRTOS-aware code (threading, message queues, etc.)</li>
-<li>The core OpenLCB concepts you've mastered (producers/consumers, startup sequence, events) remain unchanged—you're adding threading sophistication on top of a solid foundation</li>
+<li>You’ll switch from Arduino to <strong>ESP-IDF</strong> (Espressif’s full RTOS environment) and use full <strong>OpenMRN</strong> library instead of OpenMRN-Lite</li>
+<li>You’ll add FreeRTOS-aware code (threading, message queues, etc.)</li>
+<li>The core OpenLCB concepts you’ve mastered (producers/consumers, startup sequence, events) remain unchanged—you’re adding threading sophistication on top of a solid foundation</li>
 </ul>
 <h2 id="for-phases-12"><a class="header" href="#for-phases-12">For Phases 1–2</a></h2>
-<p>We'll use <strong>Arduino + OpenMRN-Lite</strong>. This combination gives you:</p>
+<p>We’ll use <strong>Arduino + OpenMRN-Lite</strong>. This combination gives you:</p>
 <ul>
 <li>A working TCP node in minutes (phase 1)</li>
 <li>A fully-featured CAN node for real layouts (phase 2)</li>
 <li>Time to focus on OpenLCB concepts instead of RTOS complexity</li>
 <li>A solid foundation for phase 3 if you ever need it</li>
 </ul>
-<p>Let's get started with simplicity, solid fundamentals, and the knowledge that you can expand whenever you need to.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="openmrn-lite-architecture--capabilities"><a class="header" href="#openmrn-lite-architecture--capabilities">OpenMRN-Lite Architecture &amp; Capabilities</a></h1>
-<p>You've learned the concepts behind OpenLCB. Now, before we write code, let's understand the software library we'll be using: OpenMRN-Lite. This chapter clarifies what it is, why it's the right choice for ESP32, and what it can (and can't) do.</p>
+<p>Let’s get started with simplicity, solid fundamentals, and the knowledge that you can expand whenever you need to.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="openmrn-lite-architecture--capabilities"><a class="header" href="#openmrn-lite-architecture--capabilities">OpenMRN-Lite Architecture &amp; Capabilities</a></h1>
+<p>You’ve learned the concepts behind OpenLCB. Now, before we write code, let’s understand the software library we’ll be using: OpenMRN-Lite. This chapter clarifies what it is, why it’s the right choice for ESP32, and what it can (and can’t) do.</p>
 <h2 id="what-is-openmrn-lite"><a class="header" href="#what-is-openmrn-lite">What is OpenMRN-Lite?</a></h2>
 <p><strong>OpenMRN-Lite is the Arduino version of OpenMRN.</strong></p>
-<p>This might sound like it's a cut-down or simplified version, but that would be misleading. Instead, think of it as a version optimized for single-threaded, resource-constrained environments like Arduino and ESP32.</p>
+<p>This might sound like it’s a cut-down or simplified version, but that would be misleading. Instead, think of it as a version optimized for single-threaded, resource-constrained environments like Arduino and ESP32.</p>
 <p>There are two ways to run OpenMRN code:</p>
-<table><thead><tr><th>Version</th><th>Threading Model</th><th>Best For</th><th>Platform</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Version</th><th>Threading Model</th><th>Best For</th><th>Platform</th></tr>
+</thead>
+<tbody>
 <tr><td><strong>Full OpenMRN</strong></td><td>Multi-threaded (FreeRTOS)</td><td>Complex systems, command stations, bridges</td><td>Linux, macOS, Windows, native ESP-IDF</td></tr>
 <tr><td><strong>OpenMRN-Lite</strong></td><td>Single-threaded executor</td><td>Learning, sensors, simple controllers</td><td>Arduino IDE, PlatformIO (Arduino framework) on ESP32, STM32</td></tr>
-</tbody></table>
-<p>The key insight: <strong>Arduino cannot run the multi-threaded version of OpenMRN.</strong> The Arduino runtime environment doesn't provide the POSIX threading APIs that full OpenMRN requires. Therefore, OpenMRN-Lite is not a &quot;lite&quot; compromise—it's the only OpenMRN version available for Arduino.</p>
+</tbody>
+</table>
+</div>
+<p>The key insight: <strong>Arduino cannot run the multi-threaded version of OpenMRN.</strong> The Arduino runtime environment doesn’t provide the POSIX threading APIs that full OpenMRN requires. Therefore, OpenMRN-Lite is not a “lite” compromise—it’s the only OpenMRN version available for Arduino.</p>
 <h2 id="why-openmrn-lite-is-the-right-choice-for-learning-openlcb"><a class="header" href="#why-openmrn-lite-is-the-right-choice-for-learning-openlcb">Why OpenMRN-Lite is the Right Choice for Learning OpenLCB</a></h2>
 <p>When building an OpenLCB node on ESP32 using Arduino, OpenMRN-Lite is the right tool for this learning path because of its simplicity and low barrier to entry.</p>
-<p><strong>The Alternative</strong>: You <em>could</em> use the full OpenMRN library with native ESP-IDF (Espressif's real-time operating system for ESP32). This gives you access to advanced features and the full power of FreeRTOS threading. But it also requires:</p>
+<p><strong>The Alternative</strong>: You <em>could</em> use the full OpenMRN library with native ESP-IDF (Espressif’s real-time operating system for ESP32). This gives you access to advanced features and the full power of FreeRTOS threading. But it also requires:</p>
 <ul>
 <li>Understanding real-time operating systems, threading, and synchronization primitives</li>
 <li>Managing POSIX APIs and FreeRTOS queues before you even write a single OpenLCB message</li>
 <li>Debugging complex multi-threaded interactions</li>
 <li>A completely different development environment and build system</li>
 </ul>
-<p>For learning OpenLCB concepts, that's like learning to drive by starting with a race car instead of a regular car.</p>
-<p><strong>Why OpenMRN-Lite Instead</strong>: </p>
+<p>For learning OpenLCB concepts, that’s like learning to drive by starting with a race car instead of a regular car.</p>
+<p><strong>Why OpenMRN-Lite Instead</strong>:</p>
 <ul>
-<li><strong>Familiar environment</strong> - Arduino's <code>setup()</code>/<code>loop()</code> model is straightforward and widely understood</li>
+<li><strong>Familiar environment</strong> - Arduino’s <code>setup()</code>/<code>loop()</code> model is straightforward and widely understood</li>
 <li><strong>Focus on OpenLCB</strong> - You can understand nodes, events, and producers/consumers without threading complexity</li>
-<li><strong>Fast results</strong> - You'll have working code sending real OpenLCB messages within hours</li>
+<li><strong>Fast results</strong> - You’ll have working code sending real OpenLCB messages within hours</li>
 <li><strong>Proven examples</strong> - The IOBoard example demonstrates CDI configuration, events, and hardware I/O patterns you can build on</li>
 <li><strong>Natural progression</strong> - Once you master OpenLCB concepts, you can migrate to ESP-IDF + full OpenMRN if needed</li>
 </ul>
-<p>This isn't a permanent limitation—it's a strategic choice that lets you learn faster and more effectively. Once you understand OpenLCB deeply, you'll be better equipped to understand why those advanced features (virtual nodes, traction protocol, multi-threading) exist and when you might need them.</p>
+<p>This isn’t a permanent limitation—it’s a strategic choice that lets you learn faster and more effectively. Once you understand OpenLCB deeply, you’ll be better equipped to understand why those advanced features (virtual nodes, traction protocol, multi-threading) exist and when you might need them.</p>
 <h2 id="what-openmrn-lite-does-support"><a class="header" href="#what-openmrn-lite-does-support">What OpenMRN-Lite DOES Support</a></h2>
 <p>OpenMRN-Lite has everything you need to build real, functional OpenLCB nodes:</p>
 <p><strong>Core Features</strong> ✅</p>
@@ -658,10 +715,10 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 <li><strong>Factory Reset Patterns</strong> - Reset to known states without recompilation</li>
 <li><strong>Persistent Configuration</strong> - Store settings in SPIFFS or SD card</li>
 </ul>
-<p>The IOBoard example (the most complete OpenMRN-Lite example) demonstrates all of these features in action: CDI-based configuration, event handling, hardware I/O, and network integration. It's exactly the pattern you'll use when building your own nodes.</p>
+<p>The IOBoard example (the most complete OpenMRN-Lite example) demonstrates all of these features in action: CDI-based configuration, event handling, hardware I/O, and network integration. It’s exactly the pattern you’ll use when building your own nodes.</p>
 <h2 id="what-openmrn-lite-does-not-support"><a class="header" href="#what-openmrn-lite-does-not-support">What OpenMRN-Lite Does NOT Support</a></h2>
 <p>There are some advanced features that require full OpenMRN with FreeRTOS threading:</p>
-<p><strong>What You Don't Get</strong> ❌</p>
+<p><strong>What You Don’t Get</strong> ❌</p>
 <ul>
 <li><strong>Virtual Nodes</strong> - Hosting multiple logical nodes on one microcontroller</li>
 <li><strong>Traction Protocol</strong> - Command station features (throttle control, trains)</li>
@@ -670,26 +727,33 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 <li><strong>Hub Services</strong> - Virtual topology management and advanced networking</li>
 <li><strong>Extensive Memory Configurations</strong> - Very large configuration systems</li>
 </ul>
-<p>These features aren't missing from OpenMRN-Lite because the developers cut corners. They're missing because they require the threading and memory management capabilities that FreeRTOS provides, which the Arduino framework doesn't offer.</p>
-<p><strong>This is not a limitation for learning OpenLCB.</strong> In fact, OpenMRN-Lite's simplicity makes it easier to understand how OpenLCB works without being buried in threading complexity.</p>
+<p>These features aren’t missing from OpenMRN-Lite because the developers cut corners. They’re missing because they require the threading and memory management capabilities that FreeRTOS provides, which the Arduino framework doesn’t offer.</p>
+<p><strong>This is not a limitation for learning OpenLCB.</strong> In fact, OpenMRN-Lite’s simplicity makes it easier to understand how OpenLCB works without being buried in threading complexity.</p>
 <h2 id="when-to-use-openmrn-lite-vs-full-openmrn"><a class="header" href="#when-to-use-openmrn-lite-vs-full-openmrn">When to Use OpenMRN-Lite vs Full OpenMRN</a></h2>
 <p>Use this decision matrix to understand which tool is right for your project:</p>
-<table><thead><tr><th>Your Need</th><th>Use</th><th>Why</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Your Need</th><th>Use</th><th>Why</th></tr>
+</thead>
+<tbody>
 <tr><td>Learning LCC on ESP32</td><td>OpenMRN-Lite</td><td>Single-threaded, Arduino-native, proven examples</td></tr>
 <tr><td>Building a sensor node (button, LED, turnout)</td><td>OpenMRN-Lite</td><td>Minimal code, small footprint, stable</td></tr>
 <tr><td>Fixed-function controller (no changes after deployment)</td><td>OpenMRN-Lite</td><td>No runtime configuration needed; extremely reliable</td></tr>
 <tr><td><strong>Hosting multiple nodes on one ESP32</strong></td><td>❌ Not possible with Arduino</td><td>Requires FreeRTOS; switch to native ESP-IDF + full OpenMRN</td></tr>
 <tr><td><strong>Building a command station</strong></td><td>❌ Not possible with Arduino</td><td>Requires traction protocol + FreeRTOS; use Linux or dedicated hardware</td></tr>
 <tr><td><strong>Bridging CAN and TCP automatically</strong></td><td>❌ Not possible with Arduino</td><td>Requires multi-threading; use Linux</td></tr>
-</tbody></table>
-<p>The key takeaway: <strong>If you're using Arduino/PlatformIO on ESP32, OpenMRN-Lite is the only OpenMRN version available.</strong> There is no &quot;upgrade path&quot; to full OpenMRN while staying in the Arduino ecosystem. If you need full OpenMRN features, you switch toolchains entirely (to native ESP-IDF + FreeRTOS), which requires rewriting in a different style.</p>
+</tbody>
+</table>
+</div>
+<p>The key takeaway: <strong>If you’re using Arduino/PlatformIO on ESP32, OpenMRN-Lite is the only OpenMRN version available.</strong> There is no “upgrade path” to full OpenMRN while staying in the Arduino ecosystem. If you need full OpenMRN features, you switch toolchains entirely (to native ESP-IDF + FreeRTOS), which requires rewriting in a different style.</p>
 <h2 id="configuration--learning-implications"><a class="header" href="#configuration--learning-implications">Configuration &amp; Learning Implications</a></h2>
 <p>One important capability worth highlighting: <strong>OpenMRN-Lite fully supports CDI</strong>, the configuration system. This means you can:</p>
 <ol>
 <li><strong>Define configuration options</strong> in your code (node name, GPIO pins, event IDs, etc.)</li>
 <li><strong>Connect to JMRI</strong> and see those options in a graphical interface</li>
 <li><strong>Change configuration</strong> without recompiling or uploading new firmware</li>
-<li><strong>Persist changes</strong> to the ESP32's filesystem (SPIFFS)</li>
+<li><strong>Persist changes</strong> to the ESP32’s filesystem (SPIFFS)</li>
 </ol>
 <p>This is powerful for learning because:</p>
 <ul>
@@ -697,12 +761,13 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 <li>You understand how real OpenLCB nodes work (configuration happens at runtime)</li>
 <li>JMRI becomes a tool for monitoring <em>and</em> controlling your node</li>
 </ul>
-<p>In this book's v0.1, we'll start with hardcoded configuration for simplicity. In later chapters (Chapter 5), we'll enhance the example to use CDI configuration, showing you the pattern for building production nodes.</p>
+<p>In this book’s v0.1, we’ll start with hardcoded configuration for simplicity. In later chapters (Chapter 5), we’ll enhance the example to use CDI configuration, showing you the pattern for building production nodes.</p>
 <h2 id="looking-ahead"><a class="header" href="#looking-ahead">Looking Ahead</a></h2>
-<p>In Chapter 3, you'll see how OpenMRN-Lite integrates into a real ESP32 project using Arduino and PlatformIO. The library handles all the protocol details—your job is just to define events, read inputs, and write outputs.</p>
-<p>And if you ever do need features that OpenMRN-Lite doesn't support, that's okay. You'll understand the OpenLCB concepts deeply enough to appreciate why those features exist and how they work in more complex systems. The goal of this book is to build that foundation.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="platform-esp32--spiffs"><a class="header" href="#platform-esp32--spiffs">Platform: ESP32 &amp; SPIFFS</a></h1>
-<p>Now that we've committed to Arduino and OpenMRN-Lite, the next decision is: <strong>which microcontroller platform?</strong> We've chosen <strong>ESP32</strong> for this book. Here's why.</p>
+<p>In Chapter 3, you’ll see how OpenMRN-Lite integrates into a real ESP32 project using Arduino and PlatformIO. The library handles all the protocol details—your job is just to define events, read inputs, and write outputs.</p>
+<p>And if you ever do need features that OpenMRN-Lite doesn’t support, that’s okay. You’ll understand the OpenLCB concepts deeply enough to appreciate why those features exist and how they work in more complex systems. The goal of this book is to build that foundation.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="platform-esp32--spiffs"><a class="header" href="#platform-esp32--spiffs">Platform: ESP32 &amp; SPIFFS</a></h1>
+<p>Now that we’ve committed to Arduino and OpenMRN-Lite, the next decision is: <strong>which microcontroller platform?</strong> We’ve chosen <strong>ESP32</strong> for this book. Here’s why.</p>
 <h2 id="why-esp32"><a class="header" href="#why-esp32">Why ESP32?</a></h2>
 <p>The ESP32 platform is one of the best-supported microcontrollers for OpenMRN-Lite:</p>
 <p><strong>Essential Features</strong>:</p>
@@ -725,9 +790,9 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 <li>Configuration schema definition (CDI)</li>
 <li>User settings (to be added in later chapters)</li>
 </ul>
-<p><strong>SPIFFS</strong> (SPI Flash File System) is ESP32's built-in filesystem. It allows OpenMRN to:</p>
+<p><strong>SPIFFS</strong> (SPI Flash File System) is ESP32’s built-in filesystem. It allows OpenMRN to:</p>
 <ol>
-<li>Store a configuration file on the device's flash memory</li>
+<li>Store a configuration file on the device’s flash memory</li>
 <li>Read and update configuration without needing a separate EEPROM chip</li>
 <li>Persist settings across power cycles</li>
 </ol>
@@ -747,9 +812,10 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 </ul>
 <p>If you have a different board available, you can likely adapt the examples. Chapter 3 has more details on platform trade-offs. For now, <strong>ESP32 DevKit v1</strong> is the best starting point: affordable, well-documented, and fully supported by the OpenMRN-Lite community.</p>
 <h2 id="next-choosing-your-development-environment"><a class="header" href="#next-choosing-your-development-environment">Next: Choosing Your Development Environment</a></h2>
-<p>With platform and toolchain locked in (Arduino + OpenMRN-Lite + ESP32), the next step is choosing an IDE and build system. That's covered in the next section.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="development-environments--tooling"><a class="header" href="#development-environments--tooling">Development Environments &amp; Tooling</a></h1>
-<p>Now that you've decided on Arduino + OpenMRN-Lite + ESP32, you need tools to write, build, and upload code. There are three main options for Arduino development. This section compares them so you can choose what works best for you.</p>
+<p>With platform and toolchain locked in (Arduino + OpenMRN-Lite + ESP32), the next step is choosing an IDE and build system. That’s covered in the next section.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="development-environments--tooling"><a class="header" href="#development-environments--tooling">Development Environments &amp; Tooling</a></h1>
+<p>Now that you’ve decided on Arduino + OpenMRN-Lite + ESP32, you need tools to write, build, and upload code. There are three main options for Arduino development. This section compares them so you can choose what works best for you.</p>
 <h2 id="three-options-for-arduino-development"><a class="header" href="#three-options-for-arduino-development">Three Options for Arduino Development</a></h2>
 <h3 id="1-arduino-ide"><a class="header" href="#1-arduino-ide">1. Arduino IDE</a></h3>
 <p><strong>What it is</strong>: The official Arduino development environment. A simple editor with integrated build and upload tools.</p>
@@ -805,9 +871,9 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 <li>More configuration options (which is a pro for power users)</li>
 </ul>
 <h2 id="personal-recommendation-platformio--vs-code--github-copilot"><a class="header" href="#personal-recommendation-platformio--vs-code--github-copilot">Personal Recommendation: PlatformIO + VS Code + GitHub Copilot</a></h2>
-<p>I personally use <strong>PlatformIO in VS Code</strong> with <strong>GitHub Copilot (paid subscription)</strong> enabled. Here's why:</p>
+<p>I personally use <strong>PlatformIO in VS Code</strong> with <strong>GitHub Copilot (paid subscription)</strong> enabled. Here’s why:</p>
 <ol>
-<li><strong>Professional environment</strong> - PlatformIO's build system is industrial-strength; you're learning with real tools you'd use in production.</li>
+<li><strong>Professional environment</strong> - PlatformIO’s build system is industrial-strength; you’re learning with real tools you’d use in production.</li>
 <li><strong>GitHub Copilot</strong> - The entry-level paid subscription (~$10/month) is exceptional value. Copilot goes way beyond auto-completion; I use it to write and edit actual code. This dramatically lowers the barrier to entry and makes you far more productive:
 <ul>
 <li>Writing functions and complex logic from natural language descriptions</li>
@@ -816,10 +882,10 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 <li>Explaining unfamiliar code and OpenMRN APIs</li>
 </ul>
 </li>
-<li><strong>Fast iteration</strong> - PlatformIO's build speed means less waiting between code changes and testing.</li>
+<li><strong>Fast iteration</strong> - PlatformIO’s build speed means less waiting between code changes and testing.</li>
 <li><strong>Future flexibility</strong> - If you later migrate to full OpenMRN, PlatformIO supports it seamlessly.</li>
 </ol>
-<p>The Copilot subscription is worth the investment if you're doing this seriously. It's not a necessity—you can learn OpenLCB without it—but it significantly improves the learning experience and accessibility for hobbyists.</p>
+<p>The Copilot subscription is worth the investment if you’re doing this seriously. It’s not a necessity—you can learn OpenLCB without it—but it significantly improves the learning experience and accessibility for hobbyists.</p>
 <h2 id="choosing-your-own-path"><a class="header" href="#choosing-your-own-path">Choosing Your Own Path</a></h2>
 <p>Each option is valid:</p>
 <ul>
@@ -827,8 +893,9 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 <li><strong>VS Code + Arduino CLI?</strong> → Arduino Maker Workshop</li>
 <li><strong>Professional, fastest, future-proof?</strong> → PlatformIO</li>
 </ul>
-<p>This book includes detailed setup instructions for <strong>PlatformIO</strong> (Chapter 3). If you prefer a different option, the concepts apply equally; you'll just follow that tool's documentation for the build and upload steps.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="transports-wifitcp-and-can"><a class="header" href="#transports-wifitcp-and-can">Transports: WiFi/TCP and CAN</a></h1>
+<p>This book includes detailed setup instructions for <strong>PlatformIO</strong> (Chapter 3). If you prefer a different option, the concepts apply equally; you’ll just follow that tool’s documentation for the build and upload steps.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="transports-wifitcp-and-can"><a class="header" href="#transports-wifitcp-and-can">Transports: WiFi/TCP and CAN</a></h1>
 <p>OpenLCB is designed to work over different physical transports. We use two main options across this book: <strong>WiFi/TCP</strong> (for rapid learning) and <strong>CAN</strong> (for real-world deployments).</p>
 <h2 id="phase-1-wifitcp-transport-quick-start"><a class="header" href="#phase-1-wifitcp-transport-quick-start">Phase 1: WiFi/TCP Transport (Quick Start)</a></h2>
 <p>We begin with <strong>WiFi and TCP</strong> to get your first OpenLCB node running in minutes:</p>
@@ -841,7 +908,7 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 </ul>
 <p><strong>Key Insight</strong>: The OpenLCB message formats, node startup, and event handling work <strong>identically</strong> over WiFi/TCP and CAN. Everything you learn in phase 1 transfers directly to CAN-based implementations in phase 2. TCP is a deliberate stepping stone, not a dead-end.</p>
 <h2 id="phase-2-can-bus-transport-main-focus"><a class="header" href="#phase-2-can-bus-transport-main-focus">Phase 2: CAN Bus Transport (Main Focus)</a></h2>
-<p><strong>CAN (Controller Area Network)</strong> is the traditional transport for OpenLCB and is used in the vast majority of commercial LCC products. After mastering the protocol over TCP, you'll add CAN hardware and use it as your primary transport.</p>
+<p><strong>CAN (Controller Area Network)</strong> is the traditional transport for OpenLCB and is used in the vast majority of commercial LCC products. After mastering the protocol over TCP, you’ll add CAN hardware and use it as your primary transport.</p>
 <p><strong>Why CAN is the Real-World Standard</strong>:</p>
 <ul>
 <li><strong>Excellent noise immunity</strong> - designed for harsh environments (layout with motors, lights, switching supplies)</li>
@@ -851,15 +918,15 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 <li><strong>Multi-device scalability</strong> - hundreds of nodes can share the same two-wire bus</li>
 <li><strong>Compatibility</strong> - interoperability with commercial LCC products and installations</li>
 </ul>
-<p><strong>What You'll Add</strong>:</p>
+<p><strong>What You’ll Add</strong>:</p>
 <ul>
 <li>A CAN transceiver board (~$5)</li>
 <li>Proper bus termination (two 120Ω resistors)</li>
 <li>A two-wire connection to other nodes</li>
 </ul>
-<p><strong>When Phase 2 Starts</strong>: Chapters on inputs and outputs focus on CAN. You'll explore multi-node systems, real-world layouts, and the patterns used in most model railroad installations.</p>
+<p><strong>When Phase 2 Starts</strong>: Chapters on inputs and outputs focus on CAN. You’ll explore multi-node systems, real-world layouts, and the patterns used in most model railroad installations.</p>
 <h2 id="phase-3-multi-transport-integration-advanced"><a class="header" href="#phase-3-multi-transport-integration-advanced">Phase 3: Multi-Transport Integration (Advanced)</a></h2>
-<p>Once you've mastered CAN-based I/O, you may eventually need to:</p>
+<p>Once you’ve mastered CAN-based I/O, you may eventually need to:</p>
 <ul>
 <li>Bridge TCP and CAN on the same device</li>
 <li>Implement virtual nodes</li>
@@ -867,18 +934,19 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 </ul>
 <p>These advanced features require full OpenMRN with FreeRTOS threading, covered in later chapters.</p>
 <h2 id="the-progression"><a class="header" href="#the-progression">The Progression</a></h2>
-<p>This is one of OpenLCB's strengths: the <strong>protocol is transport-agnostic</strong>. You can:</p>
+<p>This is one of OpenLCB’s strengths: the <strong>protocol is transport-agnostic</strong>. You can:</p>
 <ol>
 <li><strong>Start with WiFi/TCP</strong> on your workbench (phase 1—no special hardware)</li>
 <li><strong>Learn OpenLCB fundamentals</strong> (events, producers, consumers, CDI)</li>
 <li><strong>Add CAN hardware</strong> and switch to phase 2 (same code patterns; now using the real transport)</li>
 <li><strong>Integrate both transports</strong> if needed (phase 3, only when necessary)</li>
 </ol>
-<p>The key insight: learning with TCP doesn't waste your time. It's a deliberate stepping stone that lets you focus on protocol before worrying about hardware. When you move to CAN, the only change is the physical connection and a few hardware initialization lines—your OpenLCB knowledge applies perfectly.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="monitoring--verification"><a class="header" href="#monitoring--verification">Monitoring &amp; Verification</a></h1>
+<p>The key insight: learning with TCP doesn’t waste your time. It’s a deliberate stepping stone that lets you focus on protocol before worrying about hardware. When you move to CAN, the only change is the physical connection and a few hardware initialization lines—your OpenLCB knowledge applies perfectly.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="monitoring--verification"><a class="header" href="#monitoring--verification">Monitoring &amp; Verification</a></h1>
 <p>Building an OpenLCB node is only half the battle. You also need <strong>visibility</strong> into what your node is doing. This section introduces the monitoring tools and how to verify your node is working correctly.</p>
 <h2 id="jmri-the-essential-monitoring-tool"><a class="header" href="#jmri-the-essential-monitoring-tool">JMRI: The Essential Monitoring Tool</a></h2>
-<p><strong>JMRI</strong> (Java Model Railroad Interface) is a free, open-source tool for model railroad control and monitoring. It's essential for OpenLCB development:</p>
+<p><strong>JMRI</strong> (Java Model Railroad Interface) is a free, open-source tool for model railroad control and monitoring. It’s essential for OpenLCB development:</p>
 <p><strong>Why JMRI?</strong></p>
 <ul>
 <li><strong>Message decoder</strong> - Translates raw hex into readable OpenLCB messages</li>
@@ -887,7 +955,7 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 <li><strong>Layout integration</strong> - Connect your node to a larger LCC network</li>
 <li><strong>Configuration editor</strong> - Edit node settings (via CDI) without recompiling firmware</li>
 </ul>
-<p>For OpenLCB development, JMRI is <strong>invaluable</strong> for seeing what's happening on the network.</p>
+<p>For OpenLCB development, JMRI is <strong>invaluable</strong> for seeing what’s happening on the network.</p>
 <h2 id="tcpgridconnect-protocol"><a class="header" href="#tcpgridconnect-protocol">TCP/GridConnect Protocol</a></h2>
 <p>When your ESP32 node runs a TCP server (on port 12021 by default), JMRI connects as a TCP client. The communication uses <strong>GridConnect ASCII format</strong>, which is human-readable:</p>
 <pre><code>:X18AD4000N;
@@ -902,7 +970,7 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 <li><code>N</code> - Indicates normal message (not error)</li>
 <li><code>;</code> - Message terminator</li>
 </ul>
-<p><strong>What You'll See</strong>: When your node starts up, JMRI shows:</p>
+<p><strong>What You’ll See</strong>: When your node starts up, JMRI shows:</p>
 <ol>
 <li><strong>Four CID frames</strong> (checking alias availability)</li>
 <li><strong>RID frame</strong> (reserving an alias)</li>
@@ -925,39 +993,40 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 <p>When your node is running:</p>
 <ol>
 <li><strong>Serial monitor</strong> - See startup messages and debug output</li>
-<li><strong>JMRI connection</strong> - Connect JMRI to <code>localhost:12021</code> (or your ESP32's IP address)</li>
+<li><strong>JMRI connection</strong> - Connect JMRI to <code>localhost:12021</code> (or your ESP32’s IP address)</li>
 <li><strong>Message trace</strong> - Watch the four startup frames (CID/RID/AMD/Init)</li>
 <li><strong>Event test</strong> - Produce and consume a test event; watch it appear in JMRI</li>
-<li><strong>Node properties</strong> - View your node's name and description (from SNIP data)</li>
+<li><strong>Node properties</strong> - View your node’s name and description (from SNIP data)</li>
 </ol>
 <p>Chapter 4 includes detailed screenshots and step-by-step JMRI configuration instructions.</p>
-<h2 id="whats-next-1"><a class="header" href="#whats-next-1">What's Next</a></h2>
-<p>With monitoring tools in place, you're ready to:</p>
+<h2 id="whats-next-1"><a class="header" href="#whats-next-1">What’s Next</a></h2>
+<p>With monitoring tools in place, you’re ready to:</p>
 <ol>
 <li>Install PlatformIO (Chapter 3)</li>
 <li>Build and deploy the async_blink example</li>
 <li>Verify it with JMRI</li>
 <li>Start understanding the code</li>
 </ol>
-<p>Let's get hands-on in the next chapter.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="esp32-with-arduino--platformio"><a class="header" href="#esp32-with-arduino--platformio">ESP32 with Arduino &amp; PlatformIO</a></h1>
-<p>This chapter covers everything needed to build and deploy an OpenLCB node on an ESP32 microcontroller using Arduino and PlatformIO. We'll create a working example that you can modify for your own applications.</p>
+<p>Let’s get hands-on in the next chapter.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="esp32-with-arduino--platformio"><a class="header" href="#esp32-with-arduino--platformio">ESP32 with Arduino &amp; PlatformIO</a></h1>
+<p>This chapter covers everything needed to build and deploy an OpenLCB node on an ESP32 microcontroller using Arduino and PlatformIO. We’ll create a working example that you can modify for your own applications.</p>
 <h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
-<p>The ESP32 is a powerful, affordable microcontroller with built-in WiFi connectivity, making it ideal for learning OpenLCB concepts. In this chapter, we'll build a complete OpenLCB node that simultaneously runs the node protocol stack and hosts a TCP Hub—allowing JMRI to monitor and control your node over WiFi.</p>
-<p>As described in the &quot;Network Architecture&quot; section of Chapter 2, your ESP32 will act as both:</p>
+<p>The ESP32 is a powerful, affordable microcontroller with built-in WiFi connectivity, making it ideal for learning OpenLCB concepts. In this chapter, we’ll build a complete OpenLCB node that simultaneously runs the node protocol stack and hosts a TCP Hub—allowing JMRI to monitor and control your node over WiFi.</p>
+<p>As described in the “Network Architecture” section of Chapter 2, your ESP32 will act as both:</p>
 <ul>
 <li>An <strong>OpenLCB node</strong> that produces and consumes events</li>
 <li>A <strong>TCP Hub</strong> listening on port 12021 for JMRI connections</li>
 </ul>
-<p>We'll be using the <strong>OpenMRN-Lite library</strong>, which is the Arduino version of OpenMRN. If you're curious about why OpenMRN-Lite specifically, or what it can (and can't) do, see Chapter 2.5 (&quot;OpenMRN-Lite Architecture &amp; Capabilities&quot;) for a deeper dive. For now, know that it's the right tool for the job and it has everything we need to build real, functional OpenLCB nodes.</p>
-<p>We'll build this in two phases:</p>
+<p>We’ll be using the <strong>OpenMRN-Lite library</strong>, which is the Arduino version of OpenMRN. If you’re curious about why OpenMRN-Lite specifically, or what it can (and can’t) do, see Chapter 2.5 (“OpenMRN-Lite Architecture &amp; Capabilities”) for a deeper dive. For now, know that it’s the right tool for the job and it has everything we need to build real, functional OpenLCB nodes.</p>
+<p>We’ll build this in two phases:</p>
 <ol>
 <li><strong>Software-only</strong>: Create a node that produces and consumes events via JMRI (no physical hardware needed yet)</li>
 <li><strong>Hardware integration</strong> (optional): Add a physical button and LED to your breadboard</li>
 </ol>
 <p>This approach lets you start learning immediately while waiting for breadboard components to arrive.</p>
 <h2 id="esp32-board-selection"><a class="header" href="#esp32-board-selection">ESP32 Board Selection</a></h2>
-<p>Before installing software, you'll want to order an ESP32 development board. This section helps you choose the right board for this tutorial.</p>
+<p>Before installing software, you’ll want to order an ESP32 development board. This section helps you choose the right board for this tutorial.</p>
 <p>The ESP32 family includes many board variants. For this tutorial, we recommend boards with sufficient GPIO pins, USB programming support, and built-in CAN capability for future chapters.</p>
 <h3 id="recommended-board-esp32-devkit-v1"><a class="header" href="#recommended-board-esp32-devkit-v1">Recommended Board: ESP32 DevKit V1</a></h3>
 <p><strong>ESP32 DevKit V1 / ESP32-WROOM-32</strong> (Xtensa architecture)</p>
@@ -971,7 +1040,7 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 <li>Available from multiple manufacturers (Espressif, DOIT, etc.)</li>
 <li>Cost: $5-10 USD</li>
 </ul>
-<p>This is the board we'll use throughout the tutorial.</p>
+<p>This is the board we’ll use throughout the tutorial.</p>
 <h3 id="alternative-boards"><a class="header" href="#alternative-boards">Alternative Boards</a></h3>
 <p><strong>ESP32-DevKitC</strong></p>
 <ul>
@@ -1011,7 +1080,7 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 <h3 id="purchasing"><a class="header" href="#purchasing">Purchasing</a></h3>
 <p>ESP32 boards are available from:</p>
 <ul>
-<li><strong>Amazon</strong> / <strong>eBay</strong>: Search &quot;ESP32 DevKit&quot; (verify reviews)</li>
+<li><strong>Amazon</strong> / <strong>eBay</strong>: Search “ESP32 DevKit” (verify reviews)</li>
 <li><strong>AliExpress</strong> / <strong>Banggood</strong>: Direct from manufacturers (longer shipping)</li>
 <li><strong>Adafruit</strong> / <strong>SparkFun</strong>: Higher quality, better support, higher cost</li>
 <li><strong>DigiKey</strong> / <strong>Mouser</strong>: For bulk or commercial projects</li>
@@ -1020,7 +1089,7 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 <h2 id="platformio-installation--setup"><a class="header" href="#platformio-installation--setup">PlatformIO Installation &amp; Setup</a></h2>
 <p>PlatformIO is a professional embedded development platform that provides a unified build system, library management, and debugging tools. It integrates with VS Code to create a powerful development environment.</p>
 <h3 id="installing-vs-code"><a class="header" href="#installing-vs-code">Installing VS Code</a></h3>
-<p>If you don't already have Visual Studio Code installed:</p>
+<p>If you don’t already have Visual Studio Code installed:</p>
 <ol>
 <li>Download VS Code from <a href="https://code.visualstudio.com/">code.visualstudio.com</a></li>
 <li>Run the installer for your operating system (Windows, macOS, or Linux)</li>
@@ -1031,8 +1100,8 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 <ol>
 <li>Open VS Code</li>
 <li>Click the Extensions icon in the left sidebar (or press <code>Ctrl+Shift+X</code> / <code>Cmd+Shift+X</code>)</li>
-<li>Search for &quot;PlatformIO IDE&quot;</li>
-<li>Click <strong>Install</strong> on the &quot;PlatformIO IDE&quot; extension by PlatformIO</li>
+<li>Search for “PlatformIO IDE”</li>
+<li>Click <strong>Install</strong> on the “PlatformIO IDE” extension by PlatformIO</li>
 <li>Wait for the installation to complete (this may take several minutes as it downloads toolchains)</li>
 <li>Restart VS Code when prompted</li>
 </ol>
@@ -1041,7 +1110,7 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 <p><strong>Note</strong>: The ESP32 platform and toolchain will be installed automatically when you create your first project. PlatformIO handles all the toolchain downloads and configuration for you.</p>
 </blockquote>
 <h2 id="creating-your-first-project-async_blink_esp32"><a class="header" href="#creating-your-first-project-async_blink_esp32">Creating Your First Project: async_blink_esp32</a></h2>
-<p>Now we'll create the actual project we'll be working with throughout this chapter. Instead of creating a throwaway test project, we'll jump straight into building our OpenLCB node.</p>
+<p>Now we’ll create the actual project we’ll be working with throughout this chapter. Instead of creating a throwaway test project, we’ll jump straight into building our OpenLCB node.</p>
 <h3 id="create-the-project"><a class="header" href="#create-the-project">Create the Project</a></h3>
 <ol>
 <li>Click the PlatformIO icon in the left sidebar</li>
@@ -1059,7 +1128,7 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 <li>Create a basic <code>src/main.cpp</code> file</li>
 </ul>
 <h3 id="understanding-the-project-structure"><a class="header" href="#understanding-the-project-structure">Understanding the Project Structure</a></h3>
-<p>After creation, you'll see this structure:</p>
+<p>After creation, you’ll see this structure:</p>
 <pre><code>async_blink_esp32/
 ├── platformio.ini     # Project configuration
 ├── src/
@@ -1087,26 +1156,26 @@ framework = arduino
 lib_deps = openmrn/OpenMRNLite@2.0.0
 monitor_speed = 115200
 </code></pre>
-<p>Save the file. That's it! PlatformIO will automatically download OpenMRNLite from the registry when you build the project.</p>
-<p><strong>About monitor_speed</strong>: This setting ensures the serial monitor uses 115200 baud, matching the <code>Serial.begin(115200)</code> call in our code. Without this, you'll see garbled output instead of readable text.</p>
+<p>Save the file. That’s it! PlatformIO will automatically download OpenMRNLite from the registry when you build the project.</p>
+<p><strong>About monitor_speed</strong>: This setting ensures the serial monitor uses 115200 baud, matching the <code>Serial.begin(115200)</code> call in our code. Without this, you’ll see garbled output instead of readable text.</p>
 <p><strong>Why version 2.0.0?</strong></p>
 <ul>
-<li>Version 2.0.0 is fully compatible with PlatformIO's current ESP32 platform</li>
+<li>Version 2.0.0 is fully compatible with PlatformIO’s current ESP32 platform</li>
 <li>Later versions (2.2.x+) require newer ESP-IDF features not yet available in PlatformIO</li>
 <li>All core OpenLCB functionality is present in v2.0.0</li>
 </ul>
 <blockquote>
 <p><strong>About PlatformIO and Arduino-ESP32 versions</strong></p>
-<p>You may notice that PlatformIO uses Arduino-ESP32 v2.0.17 while the Arduino IDE can install v3.x. This isn't a bug — it's intentional:</p>
+<p>You may notice that PlatformIO uses Arduino-ESP32 v2.0.17 while the Arduino IDE can install v3.x. This isn’t a bug — it’s intentional:</p>
 <ul>
 <li><strong>PlatformIO prioritizes stability</strong> over bleeding-edge features. They thoroughly test each framework version across hundreds of boards, toolchains, and debuggers before releasing.</li>
 <li><strong>Arduino-ESP32 3.x introduced major breaking changes</strong> in the build system, partition handling, WiFi stack, and more. PlatformIO waits for these to stabilize before adoption.</li>
 <li><strong>Small team, massive ecosystem</strong>: PlatformIO maintains ESP32, STM32, RP2040, AVR, and many other platforms with a much smaller team than Espressif has for Arduino-ESP32 alone.</li>
 </ul>
-<p>This is why we use OpenMRNLite v2.0.0 — it's designed for the stable Arduino-ESP32 2.x that PlatformIO provides. You're trading cutting-edge features for rock-solid reliability, which is perfect for learning OpenLCB fundamentals.</p>
+<p>This is why we use OpenMRNLite v2.0.0 — it’s designed for the stable Arduino-ESP32 2.x that PlatformIO provides. You’re trading cutting-edge features for rock-solid reliability, which is perfect for learning OpenLCB fundamentals.</p>
 </blockquote>
 <h3 id="verification"><a class="header" href="#verification">Verification</a></h3>
-<p>Let's verify everything is working by building the project:</p>
+<p>Let’s verify everything is working by building the project:</p>
 <ol>
 <li>
 <p>In VS Code, click the PlatformIO icon in the left sidebar</p>
@@ -1129,33 +1198,33 @@ monitor_speed = 115200
 <blockquote>
 <p><strong>Note</strong>: The first build will take longer as PlatformIO downloads the library and compiles it. Subsequent builds are much faster.</p>
 </blockquote>
-<p>If the build succeeds, OpenMRNLite is installed correctly and you're ready to write code!</p>
+<p>If the build succeeds, OpenMRNLite is installed correctly and you’re ready to write code!</p>
 <h2 id="writing-the-async_blink_esp32-code"><a class="header" href="#writing-the-async_blink_esp32-code">Writing the async_blink_esp32 Code</a></h2>
-<p>Now we'll create the actual OpenLCB node that produces alternating events. This demonstrates the core OpenLCB protocol behavior you learned in Chapter 1 (node initialization and event production) without requiring physical hardware.</p>
+<p>Now we’ll create the actual OpenLCB node that produces alternating events. This demonstrates the core OpenLCB protocol behavior you learned in Chapter 1 (node initialization and event production) without requiring physical hardware.</p>
 <h3 id="creating-the-configuration-header"><a class="header" href="#creating-the-configuration-header">Creating the Configuration Header</a></h3>
-<p>OpenMRNLite requires a configuration structure (CDI - Configuration Description Information) even for simple nodes. We'll create a minimal config.h file.</p>
+<p>OpenMRNLite requires a configuration structure (CDI - Configuration Description Information) even for simple nodes. We’ll create a minimal config.h file.</p>
 <p>Create the file <code>include/config.h</code> with this content:</p>
 <pre><code class="language-cpp">#ifndef _ASYNC_BLINK_CONFIG_H_
 #define _ASYNC_BLINK_CONFIG_H_
 
-#include &quot;openlcb/ConfigRepresentation.hxx&quot;
-#include &quot;openlcb/MemoryConfig.hxx&quot;
+#include "openlcb/ConfigRepresentation.hxx"
+#include "openlcb/MemoryConfig.hxx"
 
 namespace openlcb {
 
 /// SNIP Static Data - Manufacturer information (read-only, compiled into firmware)
 extern const SimpleNodeStaticValues SNIP_STATIC_DATA = {
     4,               // Version
-    &quot;OpenMRN&quot;,       // Manufacturer
-    &quot;async_blink&quot;,   // Model
-    &quot;ESP32&quot;,         // Hardware version
-    &quot;1.00&quot;           // Software version
+    "OpenMRN",       // Manufacturer
+    "async_blink",   // Model
+    "ESP32",         // Hardware version
+    "1.00"           // Software version
 };
 
 /// SNIP Dynamic Data - User-editable node name and description
 /// These are stored in the config file and can be read/written via JMRI
-static const char SNIP_NODE_NAME[] = &quot;async_blink&quot;;
-static const char SNIP_NODE_DESC[] = &quot;ESP32 Blink demo&quot;;
+static const char SNIP_NODE_NAME[] = "async_blink";
+static const char SNIP_NODE_DESC[] = "ESP32 Blink demo";
 
 /// Version number for the configuration structure
 static constexpr uint16_t CANONICAL_VERSION = 0x0001;
@@ -1169,8 +1238,8 @@ CDI_GROUP_END();
 CDI_GROUP(ConfigDef, MainCdi());
 CDI_GROUP_ENTRY(ident, Identification);
 CDI_GROUP_ENTRY(acdi, Acdi);
-CDI_GROUP_ENTRY(userinfo, UserInfoSegment, Name(&quot;User Info&quot;));
-CDI_GROUP_ENTRY(seg, AsyncBlinkSegment, Name(&quot;Settings&quot;));
+CDI_GROUP_ENTRY(userinfo, UserInfoSegment, Name("User Info"));
+CDI_GROUP_ENTRY(seg, AsyncBlinkSegment, Name("Settings"));
 CDI_GROUP_END();
 
 } // namespace openlcb
@@ -1185,7 +1254,7 @@ CDI_GROUP_END();
 <li><strong>AsyncBlinkSegment</strong>: Internal configuration area for this node (currently minimal, but available for future expansion)</li>
 </ul>
 <blockquote>
-<p><strong>Configuration Storage</strong>: Configuration is saved to SPIFFS on first boot (via <code>factory_reset()</code>) and persists across restarts. In v0.1, the initial configuration is hardcoded in the constants above. In Chapter 5, we'll make configuration editable through JMRI and learn how to handle updates via <code>apply_configuration()</code>. See &quot;Configuration &amp; JMRI&quot; section below for more details.</p>
+<p><strong>Configuration Storage</strong>: Configuration is saved to SPIFFS on first boot (via <code>factory_reset()</code>) and persists across restarts. In v0.1, the initial configuration is hardcoded in the constants above. In Chapter 5, we’ll make configuration editable through JMRI and learn how to handle updates via <code>apply_configuration()</code>. See “Configuration &amp; JMRI” section below for more details.</p>
 </blockquote>
 <h3 id="the-complete-main-code"><a class="header" href="#the-complete-main-code">The Complete Main Code</a></h3>
 <p>Now replace the contents of <code>src/main.cpp</code> with the following code:</p>
@@ -1207,13 +1276,13 @@ CDI_GROUP_END();
 #include &lt;WiFi.h&gt;
 #include &lt;SPIFFS.h&gt;
 #include &lt;OpenMRNLite.h&gt;
-#include &quot;utils/GcTcpHub.hxx&quot;
+#include "utils/GcTcpHub.hxx"
 
-#include &quot;config.h&quot;
+#include "config.h"
 
 // WiFi credentials - CHANGE THESE to match your network
-const char* ssid = &quot;YourWiFiSSID&quot;;
-const char* password = &quot;YourWiFiPassword&quot;;
+const char* ssid = "YourWiFiSSID";
+const char* password = "YourWiFiPassword";
 
 // OpenLCB Node ID - must be unique on your network
 // This ID is in the reserved range for experimental use
@@ -1236,13 +1305,13 @@ static constexpr openlcb::ConfigDef cfg(0);
 // OpenLCB configuration - required by OpenMRNLite
 namespace openlcb {
   // Name of CDI.xml to generate dynamically
-  const char CDI_FILENAME[] = &quot;/spiffs/cdi.xml&quot;;
+  const char CDI_FILENAME[] = "/spiffs/cdi.xml";
   
   // This will stop openlcb from exporting the CDI memory space upon start
-  const char CDI_DATA[] = &quot;&quot;;
+  const char CDI_DATA[] = "";
   
   // Path to the config file and its size
-  const char* const CONFIG_FILENAME = &quot;/spiffs/openlcb_config&quot;;
+  const char* const CONFIG_FILENAME = "/spiffs/openlcb_config";
   const size_t CONFIG_FILE_SIZE = cfg.seg().size() + cfg.seg().offset();
   
   // SNIP (Simple Node Information Protocol) dynamic data storage
@@ -1298,39 +1367,39 @@ void init_serial() {
   Serial.begin(115200);
   delay(500);  // Give serial time to initialize
   
-  Serial.println(&quot;\n\n=== OpenLCB async_blink ESP32 Example ===&quot;);
-  Serial.printf(&quot;Node ID: 0x%012llX\n&quot;, NODE_ID);
-  Serial.printf(&quot;Event 0: 0x%016llX\n&quot;, EVENT_ID_0);
-  Serial.printf(&quot;Event 1: 0x%016llX\n&quot;, EVENT_ID_1);
+  Serial.println("\n\n=== OpenLCB async_blink ESP32 Example ===");
+  Serial.printf("Node ID: 0x%012llX\n", NODE_ID);
+  Serial.printf("Event 0: 0x%016llX\n", EVENT_ID_0);
+  Serial.printf("Event 1: 0x%016llX\n", EVENT_ID_1);
 }
 
 /**
  * Initialize SPIFFS filesystem for configuration storage.
  */
 void init_filesystem() {
-  Serial.println(&quot;\nInitializing SPIFFS...&quot;);
+  Serial.println("\nInitializing SPIFFS...");
   if (!SPIFFS.begin(true)) {  // true = format if mount fails
-    Serial.println(&quot;SPIFFS mount failed! Halting.&quot;);
+    Serial.println("SPIFFS mount failed! Halting.");
     while (1) { delay(1000); }  // Stop here if filesystem fails
   }
-  Serial.println(&quot;SPIFFS initialized successfully&quot;);
+  Serial.println("SPIFFS initialized successfully");
 }
 
 /**
  * Connect to WiFi network.
  */
 void init_network() {
-  Serial.printf(&quot;\nConnecting to WiFi SSID: %s\n&quot;, ssid);
+  Serial.printf("\nConnecting to WiFi SSID: %s\n", ssid);
   WiFi.begin(ssid, password);
   
   // Wait for WiFi connection
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
-    Serial.print(&quot;.&quot;);
+    Serial.print(".");
   }
   
-  Serial.println(&quot;\nWiFi connected!&quot;);
-  Serial.printf(&quot;IP Address: %s\n&quot;, WiFi.localIP().toString().c_str());
+  Serial.println("\nWiFi connected!");
+  Serial.printf("IP Address: %s\n", WiFi.localIP().toString().c_str());
 }
 
 /**
@@ -1341,12 +1410,12 @@ void init_network() {
 void init_openlcb_stack() {
   // Create the CDI.xml dynamically
   // CDI describes what configuration options are available
-  Serial.println(&quot;\nCreating CDI configuration descriptor...&quot;);
+  Serial.println("\nCreating CDI configuration descriptor...");
   openmrn.create_config_descriptor_xml(cfg, openlcb::CDI_FILENAME);
   
   // Create the config file if it doesn't exist
   // OpenMRNLite requires this even for simple nodes
-  Serial.println(&quot;Initializing OpenLCB configuration...&quot;);
+  Serial.println("Initializing OpenLCB configuration...");
   openmrn.stack()-&gt;create_config_file_if_needed(cfg.seg().internal_config(),
                                                   openlcb::CANONICAL_VERSION,
                                                   openlcb::CONFIG_FILE_SIZE);
@@ -1357,12 +1426,12 @@ void init_openlcb_stack() {
   // 2. Reserve ID (RID) - claims the Node ID
   // 3. Announce Membership (AMD) - announces node to network
   // 4. Initialization Complete - node enters normal operation
-  Serial.println(&quot;\nStarting OpenLCB stack...&quot;);
+  Serial.println("\nStarting OpenLCB stack...");
   openmrn.begin();
   
   // Start the executor thread for background processing
   // REQUIRED for TCP Hub to accept connections
-  Serial.println(&quot;Starting executor thread...&quot;);
+  Serial.println("Starting executor thread...");
   openmrn.start_executor_thread();
 }
 
@@ -1370,12 +1439,12 @@ void init_openlcb_stack() {
  * Initialize TCP Hub for JMRI connectivity.
  */
 void init_tcp_hub() {
-  Serial.println(&quot;Starting TCP Hub on port 12021...&quot;);
+  Serial.println("Starting TCP Hub on port 12021...");
   tcp_hub = new GcTcpHub(
     openmrn.stack()-&gt;can_hub(),  // Reference to the CAN hub
     12021                        // TCP port (standard for OpenLCB)
   );
-  Serial.println(&quot;TCP Hub listening. JMRI can connect to this device on port 12021&quot;);
+  Serial.println("TCP Hub listening. JMRI can connect to this device on port 12021");
 }
 
 /**
@@ -1395,8 +1464,8 @@ void setup() {
   init_openlcb_stack();
   init_tcp_hub();
   
-  Serial.println(&quot;OpenLCB node initialization complete!&quot;);
-  Serial.println(&quot;Entering run mode - will alternate events every 1 second\n&quot;);
+  Serial.println("OpenLCB node initialization complete!");
+  Serial.println("Entering run mode - will alternate events every 1 second\n");
   
   // Record start time for event production
   last_event_time = millis();
@@ -1427,7 +1496,7 @@ void loop() {
     }));
     
     // Print to serial monitor
-    Serial.printf(&quot;Produced event: 0x%016llX (state: %d)\n&quot;, 
+    Serial.printf("Produced event: 0x%016llX (state: %d)\n", 
                   event_to_send, event_state ? 1 : 0);
     
     // Update timing
@@ -1442,17 +1511,17 @@ void loop() {
 <li><strong>Initialization</strong> (setup function with helpers): WiFi, SPIFFS, OpenLCB stack, TCP Hub</li>
 <li><strong>Event production</strong> (loop function): Alternate between two events every second</li>
 </ol>
-<p>The code includes detailed comments explaining each section. We'll walk through the key concepts below.</p>
+<p>The code includes detailed comments explaining each section. We’ll walk through the key concepts below.</p>
 <h4 id="1-includes-and-wifi-configuration"><a class="header" href="#1-includes-and-wifi-configuration">1. Includes and WiFi Configuration</a></h4>
 <pre><code class="language-cpp">#include &lt;Arduino.h&gt;
 #include &lt;WiFi.h&gt;
 #include &lt;SPIFFS.h&gt;
 #include &lt;OpenMRNLite.h&gt;
 
-#include &quot;config.h&quot;
+#include "config.h"
 
-const char* ssid = &quot;YourWiFiSSID&quot;;
-const char* password = &quot;YourWiFiPassword&quot;;
+const char* ssid = "YourWiFiSSID";
+const char* password = "YourWiFiPassword";
 </code></pre>
 <p><strong>Required includes</strong>:</p>
 <ul>
@@ -1480,9 +1549,9 @@ static const uint64_t EVENT_ID_1 = 0x0502010202000001ULL;
 static constexpr openlcb::ConfigDef cfg(0);
 
 namespace openlcb {
-  const char CDI_FILENAME[] = &quot;/spiffs/cdi.xml&quot;;
-  const char CDI_DATA[] = &quot;&quot;;
-  const char* const CONFIG_FILENAME = &quot;/spiffs/openlcb_config&quot;;
+  const char CDI_FILENAME[] = "/spiffs/cdi.xml";
+  const char CDI_DATA[] = "";
+  const char* const CONFIG_FILENAME = "/spiffs/openlcb_config";
   const size_t CONFIG_FILE_SIZE = cfg.seg().size() + cfg.seg().offset();
   const char* const SNIP_DYNAMIC_FILENAME = CONFIG_FILENAME;
 }
@@ -1516,7 +1585,7 @@ public:
 } factory_reset_helper;
 </code></pre>
 <p>This class handles configuration lifecycle events:</p>
-<p><strong><code>factory_reset(int fd)</code></strong>: Called by OpenMRN automatically on first boot when the config file is created. It initializes the SNIP dynamic data using OpenMRN's built-in CDI framework:</p>
+<p><strong><code>factory_reset(int fd)</code></strong>: Called by OpenMRN automatically on first boot when the config file is created. It initializes the SNIP dynamic data using OpenMRN’s built-in CDI framework:</p>
 <ul>
 <li><code>cfg.userinfo().name().write()</code>: Writes the node name to the correct offset in the config file</li>
 <li><code>cfg.userinfo().description().write()</code>: Writes the node description to the correct offset</li>
@@ -1534,34 +1603,34 @@ public:
 <p><strong>SNIP data</strong>: The node name and description are displayed by JMRI in the node properties dialog, helping identify which ESP32 is which on your network.</p>
 <h4 id="5-wifi-connection"><a class="header" href="#5-wifi-connection">5. WiFi Connection</a></h4>
 <pre><code class="language-cpp">void init_network() {
-  Serial.printf(&quot;\nConnecting to WiFi SSID: %s\n&quot;, ssid);
+  Serial.printf("\nConnecting to WiFi SSID: %s\n", ssid);
   WiFi.begin(ssid, password);
   
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
-    Serial.print(&quot;.&quot;);
+    Serial.print(".");
   }
   
-  Serial.println(&quot;\nWiFi connected!&quot;);
-  Serial.printf(&quot;IP Address: %s\n&quot;, WiFi.localIP().toString().c_str());
+  Serial.println("\nWiFi connected!");
+  Serial.printf("IP Address: %s\n", WiFi.localIP().toString().c_str());
 }
 </code></pre>
-<p>This helper function establishes the WiFi connection before starting OpenLCB. The ESP32 won't be able to communicate on the OpenLCB network until WiFi is connected, so we wait here.</p>
+<p>This helper function establishes the WiFi connection before starting OpenLCB. The ESP32 won’t be able to communicate on the OpenLCB network until WiFi is connected, so we wait here.</p>
 <p>The dots printed to serial provide visual feedback during connection.</p>
 <h4 id="6-initialization-helper-functions-and-setup"><a class="header" href="#6-initialization-helper-functions-and-setup">6. Initialization Helper Functions and Setup</a></h4>
 <pre><code class="language-cpp">void init_openlcb_stack() {
-  Serial.println(&quot;\nCreating CDI configuration descriptor...&quot;);
+  Serial.println("\nCreating CDI configuration descriptor...");
   openmrn.create_config_descriptor_xml(cfg, openlcb::CDI_FILENAME);
   
-  Serial.println(&quot;Initializing OpenLCB configuration...&quot;);
+  Serial.println("Initializing OpenLCB configuration...");
   openmrn.stack()-&gt;create_config_file_if_needed(cfg.seg().internal_config(),
                                                   openlcb::CANONICAL_VERSION,
                                                   openlcb::CONFIG_FILE_SIZE);
 
-  Serial.println(&quot;\nStarting OpenLCB stack...&quot;);
+  Serial.println("\nStarting OpenLCB stack...");
   openmrn.begin();
   
-  Serial.println(&quot;Starting executor thread...&quot;);
+  Serial.println("Starting executor thread...");
   openmrn.start_executor_thread();
 }
 </code></pre>
@@ -1574,7 +1643,7 @@ public:
 <p><strong>Create config file if needed</strong>: <code>create_config_file_if_needed()</code> ensures the config file exists with proper structure. On first boot:</p>
 <ul>
 <li>File is created with space for internal config, SNIP data, and UserInfo</li>
-<li>FactoryResetHelper's <code>factory_reset()</code> is called automatically</li>
+<li>FactoryResetHelper’s <code>factory_reset()</code> is called automatically</li>
 <li>SNIP user data (name and description) is populated</li>
 </ul>
 </li>
@@ -1587,20 +1656,20 @@ public:
 </ol>
 <h4 id="7-tcp-hub-for-jmri-connectivity"><a class="header" href="#7-tcp-hub-for-jmri-connectivity">7. TCP Hub for JMRI Connectivity</a></h4>
 <pre><code class="language-cpp">void init_tcp_hub() {
-  Serial.println(&quot;Starting TCP Hub on port 12021...&quot;);
+  Serial.println("Starting TCP Hub on port 12021...");
   tcp_hub = new GcTcpHub(
     openmrn.stack()-&gt;can_hub(),
     12021
   );
-  Serial.println(&quot;TCP Hub listening. JMRI can connect to this device on port 12021&quot;);
+  Serial.println("TCP Hub listening. JMRI can connect to this device on port 12021");
 }
 </code></pre>
-<p>This helper function creates a TCP server on port 12021 using the GridConnect protocol (the ASCII format that JMRI expects). It's passed:</p>
+<p>This helper function creates a TCP server on port 12021 using the GridConnect protocol (the ASCII format that JMRI expects). It’s passed:</p>
 <ul>
 <li><code>openmrn.stack()-&gt;can_hub()</code>: Reference to the message router</li>
 <li><code>12021</code>: The TCP port to listen on (standard for OpenLCB TCP hubs)</li>
 </ul>
-<p>The TCP Hub allows JMRI and other TCP clients to connect and monitor your node's events in real-time. Multiple JMRI instances can connect simultaneously; messages are routed between all connected clients and the local node.</p>
+<p>The TCP Hub allows JMRI and other TCP clients to connect and monitor your node’s events in real-time. Multiple JMRI instances can connect simultaneously; messages are routed between all connected clients and the local node.</p>
 <h4 id="8-main-setup-function"><a class="header" href="#8-main-setup-function">8. Main Setup Function</a></h4>
 <pre><code class="language-cpp">void setup() {
   init_serial();
@@ -1609,8 +1678,8 @@ public:
   init_openlcb_stack();
   init_tcp_hub();
   
-  Serial.println(&quot;OpenLCB node initialization complete!&quot;);
-  Serial.println(&quot;Entering run mode - will alternate events every 1 second\n&quot;);
+  Serial.println("OpenLCB node initialization complete!");
+  Serial.println("Entering run mode - will alternate events every 1 second\n");
   
   last_event_time = millis();
 }
@@ -1623,7 +1692,7 @@ public:
 <li><strong><code>init_openlcb_stack()</code></strong>: Create CDI file, config file, initialize SNIP data via FactoryResetHelper, start OpenLCB protocol stack, start executor thread</li>
 <li><strong><code>init_tcp_hub()</code></strong>: Start TCP server for JMRI connectivity</li>
 </ol>
-<p><strong>Why break it down?</strong> Each helper function focuses on a single responsibility, making the code easier to understand and modify. If you need to add new initialization steps or change how the node starts up, it's clear where to make those changes.</p>
+<p><strong>Why break it down?</strong> Each helper function focuses on a single responsibility, making the code easier to understand and modify. If you need to add new initialization steps or change how the node starts up, it’s clear where to make those changes.</p>
 <h4 id="9-event-production-loop"><a class="header" href="#9-event-production-loop">9. Event Production Loop</a></h4>
 <pre><code class="language-cpp">void loop() {
   openmrn.loop();  // CRITICAL - processes all OpenLCB messages
@@ -1637,7 +1706,7 @@ public:
       openmrn.stack()-&gt;send_event(event_to_send);
     }));
     
-    Serial.printf(&quot;Produced event: 0x%016llX (state: %d)\n&quot;, 
+    Serial.printf("Produced event: 0x%016llX (state: %d)\n", 
                   event_to_send, event_state ? 1 : 0);
     
     last_event_time = current_time;
@@ -1653,7 +1722,7 @@ public:
 </ul>
 <p><strong>Event Production</strong>: Every 1000ms (1 second), we:</p>
 <ol>
-<li>Toggle <code>event_state</code> (false → true → false → ...)</li>
+<li>Toggle <code>event_state</code> (false → true → false → …)</li>
 <li>Select which event ID to send based on state</li>
 <li>Queue the event for transmission using the executor</li>
 <li>Print confirmation to serial monitor</li>
@@ -1668,7 +1737,7 @@ public:
 </ul>
 <p><strong>Event Production</strong>: Every 1000ms (1 second), we:</p>
 <ol>
-<li>Toggle <code>event_state</code> (false → true → false → ...)</li>
+<li>Toggle <code>event_state</code> (false → true → false → …)</li>
 <li>Select which event ID to send based on state</li>
 <li>Queue the event for transmission using the executor</li>
 <li>Print confirmation to serial monitor</li>
@@ -1711,7 +1780,7 @@ Produced event: 0x0502010202000001 (state: 1)
 E (523) SPIFFS: mount failed, -10025
 SPIFFS initialized successfully
 </code></pre>
-<p>This is <strong>normal and expected</strong>. On first boot, SPIFFS needs to format the filesystem, which takes approximately <strong>20 seconds</strong> on ESP32 DevKit. The error message appears because the filesystem doesn't exist yet, but the <code>SPIFFS.begin(true)</code> call automatically formats it. During this time, the ESP32 will appear to hang—just wait and don't interrupt it. Subsequent boots will skip this formatting step and proceed immediately.</p>
+<p>This is <strong>normal and expected</strong>. On first boot, SPIFFS needs to format the filesystem, which takes approximately <strong>20 seconds</strong> on ESP32 DevKit. The error message appears because the filesystem doesn’t exist yet, but the <code>SPIFFS.begin(true)</code> call automatically formats it. During this time, the ESP32 will appear to hang—just wait and don’t interrupt it. Subsequent boots will skip this formatting step and proceed immediately.</p>
 <p>This confirms:</p>
 <ul>
 <li>✅ SPIFFS filesystem initialized (formatted on first run if needed)</li>
@@ -1721,9 +1790,9 @@ SPIFFS initialized successfully
 <li>✅ Events are being produced alternately</li>
 </ul>
 <h3 id="before-you-build"><a class="header" href="#before-you-build">Before You Build</a></h3>
-<p><strong>Update WiFi credentials in the code!</strong> The build will succeed even with placeholder credentials, but the ESP32 won't connect to WiFi when you upload it.</p>
+<p><strong>Update WiFi credentials in the code!</strong> The build will succeed even with placeholder credentials, but the ESP32 won’t connect to WiFi when you upload it.</p>
 <h2 id="building-and-uploading-to-esp32"><a class="header" href="#building-and-uploading-to-esp32">Building and Uploading to ESP32</a></h2>
-<p>Now that you have the complete code, let's build it, upload it to your ESP32, and verify it works through the serial monitor.</p>
+<p>Now that you have the complete code, let’s build it, upload it to your ESP32, and verify it works through the serial monitor.</p>
 <h3 id="building-the-project"><a class="header" href="#building-the-project">Building the Project</a></h3>
 <ol>
 <li>
@@ -1732,8 +1801,8 @@ SPIFFS initialized successfully
 <li>
 <p><strong>Open the PlatformIO sidebar</strong>:</p>
 <ul>
-<li>Click the PlatformIO icon (alien head) in VS Code's left sidebar</li>
-<li>Or use the bottom toolbar's checkmark icon (Build)</li>
+<li>Click the PlatformIO icon (alien head) in VS Code’s left sidebar</li>
+<li>Or use the bottom toolbar’s checkmark icon (Build)</li>
 </ul>
 </li>
 <li>
@@ -1781,7 +1850,7 @@ Building .pio/build/esp32doit-devkit-v1/firmware.bin
 </ul>
 </li>
 <li>
-<p><strong>If the port isn't detected</strong>, you may need to install a USB driver:</p>
+<p><strong>If the port isn’t detected</strong>, you may need to install a USB driver:</p>
 <ul>
 <li><strong>CP2102</strong>: Download from <a href="https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers">Silicon Labs</a></li>
 <li><strong>CH340</strong>: Download from <a href="http://www.wch-ic.com/downloads/CH341SER_EXE.html">WCH</a></li>
@@ -1821,8 +1890,8 @@ Hard resetting via RTS pin...
 </ol>
 <p><strong>If upload fails</strong>:</p>
 <ul>
-<li><strong>&quot;Serial port not found&quot;</strong>: Check USB cable connection, try different USB port</li>
-<li><strong>&quot;Failed to connect&quot;</strong>: Hold the BOOT button while clicking upload, release after &quot;Connecting...&quot; appears</li>
+<li><strong>“Serial port not found”</strong>: Check USB cable connection, try different USB port</li>
+<li><strong>“Failed to connect”</strong>: Hold the BOOT button while clicking upload, release after “Connecting…” appears</li>
 <li><strong>Permission denied (Linux)</strong>: Add your user to the <code>dialout</code> group: <code>sudo usermod -a -G dialout $USER</code>, then log out and back in</li>
 </ul>
 <h3 id="opening-the-serial-monitor"><a class="header" href="#opening-the-serial-monitor">Opening the Serial Monitor</a></h3>
@@ -1881,14 +1950,14 @@ Produced event: 0x0502010202000001 (state: 1)
 <h3 id="understanding-what-you-see"><a class="header" href="#understanding-what-you-see">Understanding What You See</a></h3>
 <p>This output confirms your ESP32 is:</p>
 <ol>
-<li><strong>Connected to WiFi</strong>: The IP address shows it's on your network</li>
+<li><strong>Connected to WiFi</strong>: The IP address shows it’s on your network</li>
 <li><strong>Running the OpenLCB stack</strong>: Node initialization completed successfully</li>
 <li><strong>Producing events</strong>: The alternating event IDs prove the event production logic works</li>
-<li><strong>Ready for network communication</strong>: The node is broadcasting these events on the OpenLCB network (you'll verify this with JMRI next)</li>
+<li><strong>Ready for network communication</strong>: The node is broadcasting these events on the OpenLCB network (you’ll verify this with JMRI next)</li>
 </ol>
-<p><strong>Congratulations!</strong> You have a working OpenLCB node. The events are being broadcast over WiFi/TCP, but you can't see them on the network yet - that's what JMRI will show you in the next section.</p>
+<p><strong>Congratulations!</strong> You have a working OpenLCB node. The events are being broadcast over WiFi/TCP, but you can’t see them on the network yet - that’s what JMRI will show you in the next section.</p>
 <h3 id="common-issues"><a class="header" href="#common-issues">Common Issues</a></h3>
-<p><strong>WiFi won't connect</strong> (stuck on dots):</p>
+<p><strong>WiFi won’t connect</strong> (stuck on dots):</p>
 <ul>
 <li>Verify WiFi credentials in code are correct</li>
 <li>Check ESP32 is within range of your access point</li>
@@ -1907,16 +1976,16 @@ Produced event: 0x0502010202000001 (state: 1)
 <li>If you already added it, stop and restart the serial monitor</li>
 <li>Bad USB cable or connection</li>
 </ul>
-<p><strong>&quot;Brownout detector triggered&quot; errors</strong>:</p>
+<p><strong>“Brownout detector triggered” errors</strong>:</p>
 <ul>
 <li>Insufficient power from USB port</li>
 <li>Try a different USB port or powered USB hub</li>
-<li>This usually doesn't prevent operation, just a warning</li>
+<li>This usually doesn’t prevent operation, just a warning</li>
 </ul>
 <h2 id="testing-with-jmri"><a class="header" href="#testing-with-jmri">Testing with JMRI</a></h2>
-<p>Now that your ESP32 is producing events, let's use JMRI (Java Model Railroad Interface) to monitor them on the network. JMRI acts as a &quot;traffic monitor&quot; that shows all OpenLCB messages, letting you verify your node is working correctly.</p>
+<p>Now that your ESP32 is producing events, let’s use JMRI (Java Model Railroad Interface) to monitor them on the network. JMRI acts as a “traffic monitor” that shows all OpenLCB messages, letting you verify your node is working correctly.</p>
 <h3 id="what-is-jmri"><a class="header" href="#what-is-jmri">What is JMRI?</a></h3>
-<p>JMRI is an open-source application suite for model railroading that includes comprehensive OpenLCB/LCC support. In JMRI 5.x, LccPro is the authoritative tool for LCC configuration and monitoring. For our purposes, we'll use JMRI to:</p>
+<p>JMRI is an open-source application suite for model railroading that includes comprehensive OpenLCB/LCC support. In JMRI 5.x, LccPro is the authoritative tool for LCC configuration and monitoring. For our purposes, we’ll use JMRI to:</p>
 <ul>
 <li>Monitor all OpenLCB messages on the network via <strong>LCC Monitor</strong></li>
 <li>See when nodes initialize (CID, RID, AMD messages)</li>
@@ -1924,7 +1993,7 @@ Produced event: 0x0502010202000001 (state: 1)
 <li>View and configure node information via <strong>LccPro</strong></li>
 <li>Verify your ESP32 is communicating correctly</li>
 </ul>
-<p>Think of it as a &quot;network packet sniffer&quot; for OpenLCB.</p>
+<p>Think of it as a “network packet sniffer” for OpenLCB.</p>
 <h3 id="installing-jmri"><a class="header" href="#installing-jmri">Installing JMRI</a></h3>
 <ol>
 <li>
@@ -1955,17 +2024,17 @@ Produced event: 0x0502010202000001 (state: 1)
 </li>
 </ol>
 <h3 id="configuring-the-lcc-connection"><a class="header" href="#configuring-the-lcc-connection">Configuring the LCC Connection</a></h3>
-<p>JMRI needs to know how to connect to your ESP32's TCP Hub on port 12021. Let's configure that connection.</p>
+<p>JMRI needs to know how to connect to your ESP32’s TCP Hub on port 12021. Let’s configure that connection.</p>
 <ol>
 <li><strong>Launch LccPro</strong>:
 <ul>
 <li>In JMRI, go to <strong>ESP32 LCC → LccPro</strong></li>
-<li>If this is the <strong>first time</strong> you're running LccPro and you have <strong>no other connections</strong>, the LccPro Wizard appears automatically (see first image below)</li>
+<li>If this is the <strong>first time</strong> you’re running LccPro and you have <strong>no other connections</strong>, the LccPro Wizard appears automatically (see first image below)</li>
 <li>If you <strong>already have at least one connection</strong> from DecoderPro or PanelPro, continue to step 2</li>
 </ul>
 </li>
 </ol>
-<p><img src="03-esp32-arduino/../images/LccPro_FirstConnection.png" alt="LccPro Wizard on first launch (no existing connections)" /></p>
+<p><img src="images/LccPro_FirstConnection.png" alt="LccPro Wizard on first launch (no existing connections)"></p>
 <ol start="2">
 <li>
 <p><strong>Configure the connection settings</strong>:</p>
@@ -1982,7 +2051,7 @@ Produced event: 0x0502010202000001 (state: 1)
 </ul>
 </li>
 </ol>
-<p><img src="03-esp32-arduino/../images/JMRI_Preferences.png" alt="JMRI Preferences dialog with Connections tab" /></p>
+<p><img src="images/JMRI_Preferences.png" alt="JMRI Preferences dialog with Connections tab"></p>
 <ol start="3">
 <li>
 <p><strong>Enter the connection settings</strong>:</p>
@@ -1990,7 +2059,7 @@ Produced event: 0x0502010202000001 (state: 1)
 <li><strong>System manufacturer</strong>: Select <code>LCC</code> (this is the OpenLCB standard system name in JMRI)</li>
 <li><strong>System connection</strong>: Select <code>CAN via GridConnect Network Interface</code></li>
 <li><strong>Connection name</strong>: Enter <code>ESP32 LCC</code> (or any descriptive name)</li>
-<li><strong>IP Address/Host Name</strong>: Enter the IP address displayed in your PlatformIO serial monitor window (look for the line &quot;IP Address: 192.168.x.x&quot; from your ESP32's startup output)</li>
+<li><strong>IP Address/Host Name</strong>: Enter the IP address displayed in your PlatformIO serial monitor window (look for the line “IP Address: 192.168.x.x” from your ESP32’s startup output)</li>
 <li><strong>TCP/UDP Port</strong>: Enter <code>12021</code></li>
 <li><strong>Connection Protocol</strong>: Select <code>OpenLCB</code></li>
 </ul>
@@ -2005,7 +2074,7 @@ Produced event: 0x0502010202000001 (state: 1)
 </li>
 </ol>
 <h3 id="monitoring-lcc-traffic"><a class="header" href="#monitoring-lcc-traffic">Monitoring LCC Traffic</a></h3>
-<p>After JMRI restarts, let's open the message monitor to see your ESP32's events.</p>
+<p>After JMRI restarts, let’s open the message monitor to see your ESP32’s events.</p>
 <ol>
 <li>
 <p><strong>Open the LCC Monitor</strong>:</p>
@@ -2022,7 +2091,7 @@ Produced event: 0x0502010202000001 (state: 1)
 </ul>
 </li>
 </ol>
-<p><img src="03-esp32-arduino/../images/Traffic_Monitor.png" alt="LCC Traffic Monitor showing alternating events" /></p>
+<p><img src="images/Traffic_Monitor.png" alt="LCC Traffic Monitor showing alternating events"></p>
 <h3 id="viewing-node-properties-snip-information"><a class="header" href="#viewing-node-properties-snip-information">Viewing Node Properties (SNIP Information)</a></h3>
 <p>You can verify that JMRI recognizes your ESP32 as a node on the network and view its SNIP (Simple Node Information Protocol) details using LccPro:</p>
 <ol>
@@ -2040,7 +2109,7 @@ Produced event: 0x0502010202000001 (state: 1)
 <li>The node list displays the SNIP (Simple Node Information Protocol) data:
 <ul>
 <li><strong>Name</strong>: <code>async_blink</code> (your node name from <code>config.h</code>)</li>
-<li><strong>ID</strong>: <code>050201020200</code> (your node's unique OpenLCB identifier)</li>
+<li><strong>ID</strong>: <code>050201020200</code> (your node’s unique OpenLCB identifier)</li>
 <li><strong>Manufacturer</strong>: <code>OpenMRN</code></li>
 <li><strong>Model</strong>: <code>async_blink</code></li>
 <li><strong>Software</strong>: <code>1.00</code></li>
@@ -2051,9 +2120,9 @@ Produced event: 0x0502010202000001 (state: 1)
 </ul>
 </li>
 </ol>
-<p><img src="03-esp32-arduino/../images/LccProNodes.png" alt="LccPro node list showing the async_blink node" /></p>
+<p><img src="images/LccProNodes.png" alt="LccPro node list showing the async_blink node"></p>
 <blockquote>
-<p><strong>Note</strong>: The <strong>Configure</strong> button in LccPro is for editing the node's configuration. We'll explore that in Chapter 5.</p>
+<p><strong>Note</strong>: The <strong>Configure</strong> button in LccPro is for editing the node’s configuration. We’ll explore that in Chapter 5.</p>
 </blockquote>
 <h3 id="understanding-snip-vs-acdi-important"><a class="header" href="#understanding-snip-vs-acdi-important">Understanding SNIP vs ACDI (Important!)</a></h3>
 <p>Now is a good time to understand the distinction between two types of node information in OpenLCB:</p>
@@ -2070,12 +2139,12 @@ Produced event: 0x0502010202000001 (state: 1)
 <li>Stores <strong>layout identity</strong> - how YOU refer to the node in your model railroad</li>
 <li><strong>Persistent in SPIFFS</strong> (can be modified via JMRI without recompiling)</li>
 <li>User-editable through <strong>LccPro</strong></li>
-<li>Includes fields like &quot;User Name&quot; (what you call the node) and &quot;Description&quot;</li>
+<li>Includes fields like “User Name” (what you call the node) and “Description”</li>
 <li>Examples: <code>Main Station Blinker</code>, <code>Yard Controller #3</code></li>
 </ul>
-<p>In this v0.1 example, both are initialized from <code>config.h</code> constants. In Chapter 5, you'll learn to make ACDI values editable through JMRI using the configuration interface.</p>
+<p>In this v0.1 example, both are initialized from <code>config.h</code> constants. In Chapter 5, you’ll learn to make ACDI values editable through JMRI using the configuration interface.</p>
 <h3 id="optional-view-events-as-sensors"><a class="header" href="#optional-view-events-as-sensors">Optional: View Events as Sensors</a></h3>
-<p>Want to see your ESP32's events visualized as sensor states? You can create sensors in <strong>PanelPro</strong> that correspond to your event IDs.</p>
+<p>Want to see your ESP32’s events visualized as sensor states? You can create sensors in <strong>PanelPro</strong> that correspond to your event IDs.</p>
 <p><strong>Important</strong>: For this section, you need to have <strong>PanelPro</strong> open. If you only have JMRI running:</p>
 <ul>
 <li>Select <strong>File → Open PanelPro</strong> to launch it</li>
@@ -2129,12 +2198,12 @@ Produced event: 0x0502010202000001 (state: 1)
 <li>As your ESP32 produces alternating events, observe the sensor behavior:
 <ul>
 <li><strong>Expected behavior</strong>: The sensors will flash ACTIVE for a brief moment, then return to INACTIVE</li>
-<li><strong>Why the brief flash?</strong>: JMRI uses an event timeout mechanism. When an event is received, the sensor becomes ACTIVE. If the same event isn't re-sent within the timeout window, the sensor automatically reverts to INACTIVE (a safety feature to prevent stale states if a node disappears from the network)</li>
+<li><strong>Why the brief flash?</strong>: JMRI uses an event timeout mechanism. When an event is received, the sensor becomes ACTIVE. If the same event isn’t re-sent within the timeout window, the sensor automatically reverts to INACTIVE (a safety feature to prevent stale states if a node disappears from the network)</li>
 <li><strong>Pattern</strong>: Since your ESP32 alternates between EVENT_ID_0 and EVENT_ID_1 every second, you should see:
 <ul>
 <li>Second 1: Sensor 0 flashes ACTIVE, Sensor 1 stays INACTIVE</li>
 <li>Second 2: Sensor 1 flashes ACTIVE, Sensor 0 stays INACTIVE</li>
-<li>Second 3: Sensor 0 flashes ACTIVE, and so on...</li>
+<li>Second 3: Sensor 0 flashes ACTIVE, and so on…</li>
 </ul>
 </li>
 </ul>
@@ -2142,7 +2211,7 @@ Produced event: 0x0502010202000001 (state: 1)
 </ul>
 </li>
 </ol>
-<p><img src="03-esp32-arduino/../images/Sensors.png" alt="LCC Sensors showing alternating ACTIVE states" /></p>
+<p><img src="images/Sensors.png" alt="LCC Sensors showing alternating ACTIVE states"></p>
 <p>This demonstrates the bidirectional nature of LCC - your JMRI sensors are consuming events produced by your ESP32!</p>
 <h3 id="configuration--jmri-cdi-discovery"><a class="header" href="#configuration--jmri-cdi-discovery">Configuration &amp; JMRI: CDI Discovery</a></h3>
 <p>When JMRI first connects to your ESP32, it automatically discovers what configuration options are available by requesting the <strong>CDI (Configuration Description Information)</strong> file. This file (generated in <code>init_openlcb_stack()</code> as <code>/spiffs/cdi.xml</code>) describes:</p>
@@ -2155,42 +2224,42 @@ Produced event: 0x0502010202000001 (state: 1)
 <p>In v0.1, the CDI is generated automatically from the <code>ConfigDef</code> structure in <code>config.h</code>. Your node currently exposes:</p>
 <ul>
 <li><strong>SNIP Identification</strong>: Manufacturer, model, hardware/software versions (read-only)</li>
-<li><strong>ACDI User Info</strong>: Node name and description (editable, but changes aren't saved yet)</li>
+<li><strong>ACDI User Info</strong>: Node name and description (editable, but changes aren’t saved yet)</li>
 <li><strong>Internal Configuration</strong>: Reserved space for future parameters</li>
 </ul>
 <p>When you view node properties in <strong>LccPro → Configure</strong>, JMRI uses this CDI to render the appropriate dialog fields.</p>
-<p><strong>In Chapter 5</strong>, you'll:</p>
+<p><strong>In Chapter 5</strong>, you’ll:</p>
 <ul>
 <li>Add configurable parameters (like <code>EVENT_INTERVAL</code>) to the CDI</li>
 <li>Implement <code>apply_configuration()</code> to save user changes to SPIFFS</li>
 <li>Learn how to version your configuration schema for forward compatibility</li>
 <li>Test configuration updates through LccPro</li>
 </ul>
-<p>For now, understand that your node is already <strong>capable</strong> of being configured via JMRI - we're just not modifying the configuration yet. The CDI file ensures JMRI knows what configuration options your node supports.</p>
+<p>For now, understand that your node is already <strong>capable</strong> of being configured via JMRI - we’re just not modifying the configuration yet. The CDI file ensures JMRI knows what configuration options your node supports.</p>
 <h3 id="troubleshooting-jmri-connection"><a class="header" href="#troubleshooting-jmri-connection">Troubleshooting JMRI Connection</a></h3>
-<p><strong>JMRI shows &quot;Connection failed&quot; or &quot;No route to host&quot;</strong>:</p>
+<p><strong>JMRI shows “Connection failed” or “No route to host”</strong>:</p>
 <ul>
 <li>Verify the IP address matches what the ESP32 serial monitor showed</li>
 <li>Ensure your computer and ESP32 are on the same WiFi network</li>
 <li>Check firewall settings - allow Java/JMRI to access the network</li>
-<li>Try pinging the ESP32: <code>ping 192.168.1.100</code> (use your ESP32's IP)</li>
+<li>Try pinging the ESP32: <code>ping 192.168.1.100</code> (use your ESP32’s IP)</li>
 </ul>
 <p><strong>No messages appear in the monitor</strong>:</p>
 <ul>
 <li>Click <strong>Clear</strong> in the monitor to reset the display</li>
 <li>Press RESET on the ESP32 to trigger initialization messages</li>
-<li>Check the connection status at the bottom of the JMRI window (should show &quot;Connected&quot;)</li>
+<li>Check the connection status at the bottom of the JMRI window (should show “Connected”)</li>
 </ul>
-<p><strong>Messages appear but events don't match</strong>:</p>
+<p><strong>Messages appear but events don’t match</strong>:</p>
 <ul>
-<li>Verify the event IDs in your code match what you're looking for in JMRI</li>
-<li>Check that you didn't modify the EVENT_ID constants</li>
+<li>Verify the event IDs in your code match what you’re looking for in JMRI</li>
+<li>Check that you didn’t modify the EVENT_ID constants</li>
 </ul>
-<p><strong>&quot;Connection lost&quot; after working initially</strong>:</p>
+<p><strong>“Connection lost” after working initially</strong>:</p>
 <ul>
 <li>ESP32 may have rebooted or lost WiFi connection</li>
 <li>Check the serial monitor for errors or WiFi reconnection attempts</li>
-<li>ESP32's IP address may have changed if DHCP lease renewed</li>
+<li>ESP32’s IP address may have changed if DHCP lease renewed</li>
 </ul>
 <h2 id="troubleshooting"><a class="header" href="#troubleshooting">Troubleshooting</a></h2>
 <p><strong>Library not found during build:</strong></p>
@@ -2217,9 +2286,9 @@ Produced event: 0x0502010202000001 (state: 1)
 <li>Check that ESP32 and JMRI are on the same network</li>
 <li>Verify the TCP server address and port in ESP32 code</li>
 </ul>
-<h2 id="whats-next-2"><a class="header" href="#whats-next-2">What's Next</a></h2>
-<p>You've now built your first OpenLCB node with WiFi transport! </p>
-<p><strong>In the next chapter</strong>, we'll explore:</p>
+<h2 id="whats-next-2"><a class="header" href="#whats-next-2">What’s Next</a></h2>
+<p>You’ve now built your first OpenLCB node with WiFi transport!</p>
+<p><strong>In the next chapter</strong>, we’ll explore:</p>
 <ul>
 <li>Adding physical GPIO inputs (buttons) and outputs (LEDs) to your breadboard</li>
 <li>Modifying the code to respond to button presses and control LEDs</li>
@@ -2234,11 +2303,12 @@ Produced event: 0x0502010202000001 (state: 1)
 <li>Train control and specialized protocols</li>
 </ul>
 <p>For now, experiment with your working node: modify event IDs, add more inputs/outputs, or integrate it with other OpenLCB devices via JMRI.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="physical-io-with-gpio"><a class="header" href="#physical-io-with-gpio">Physical I/O with GPIO</a></h1>
-<p>Now that you've successfully created a WiFi-based OpenLCB node in Chapter 3, let's add physical hardware interactions. In this chapter, we'll connect a pushbutton and LED to your ESP32 using GPIO pins, and modify the code to respond to real-world events.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="physical-io-with-gpio"><a class="header" href="#physical-io-with-gpio">Physical I/O with GPIO</a></h1>
+<p>Now that you’ve successfully created a WiFi-based OpenLCB node in Chapter 3, let’s add physical hardware interactions. In this chapter, we’ll connect a pushbutton and LED to your ESP32 using GPIO pins, and modify the code to respond to real-world events.</p>
 <h2 id="overview-1"><a class="header" href="#overview-1">Overview</a></h2>
 <p>Chapter 3 demonstrated OpenLCB event production and consumption entirely in software—alternating between two events on a 1-second cycle. Your JMRI interface saw the events being transmitted over the network, but there were no physical inputs or outputs.</p>
-<p>In this chapter, we'll extend that example by:</p>
+<p>In this chapter, we’ll extend that example by:</p>
 <ul>
 <li>Connecting a pushbutton to a GPIO pin (input)</li>
 <li>Connecting an LED to a GPIO pin (output)</li>
@@ -2247,14 +2317,21 @@ Produced event: 0x0502010202000001 (state: 1)
 </ul>
 <p>The button and LED will interact through the OpenLCB network, allowing them to be controlled by JMRI or other nodes on the network.</p>
 <h2 id="bill-of-materials"><a class="header" href="#bill-of-materials">Bill of Materials</a></h2>
-<p>For this chapter, you'll need the following components (all commonly available):</p>
-<table><thead><tr><th>Component</th><th>Quantity</th><th>Notes</th></tr></thead><tbody>
+<p>For this chapter, you’ll need the following components (all commonly available):</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Component</th><th>Quantity</th><th>Notes</th></tr>
+</thead>
+<tbody>
 <tr><td>Solderless breadboard</td><td>1</td><td>Standard 830-hole breadboard</td></tr>
 <tr><td>Tactile pushbutton switch</td><td>1</td><td>Normally-open, momentary contact</td></tr>
 <tr><td>LED</td><td>1</td><td>Any color; 5mm standard size recommended</td></tr>
 <tr><td>220Ω resistor</td><td>1</td><td>Current limiting resistor for LED (5% tolerance, 1/4W)</td></tr>
 <tr><td>Jumper wires</td><td>~10</td><td>Male-to-male jumper wires for breadboard connections</td></tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p><strong>Optional (for easier debugging)</strong>:</p>
 <ul>
 <li>Breadboard power supply with USB adapter</li>
@@ -2269,17 +2346,24 @@ Produced event: 0x0502010202000001 (state: 1)
 <li><strong>DigiKey / Mouser</strong>: Professional bulk suppliers</li>
 <li><strong>Hobby Electronics Stores</strong>: Local retailers in your area</li>
 </ul>
-<p><strong>Budget Estimate</strong>: $2-5 USD for all components (or free if you have a &quot;maker kit&quot; lying around)</p>
+<p><strong>Budget Estimate</strong>: $2-5 USD for all components (or free if you have a “maker kit” lying around)</p>
 <h2 id="gpio-pin-assignment"><a class="header" href="#gpio-pin-assignment">GPIO Pin Assignment</a></h2>
-<p>For the ESP32 DevKit V1, we'll use the following GPIO pins:</p>
-<table><thead><tr><th>Component</th><th>GPIO Pin</th><th>Purpose</th><th>Notes</th></tr></thead><tbody>
+<p>For the ESP32 DevKit V1, we’ll use the following GPIO pins:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Component</th><th>GPIO Pin</th><th>Purpose</th><th>Notes</th></tr>
+</thead>
+<tbody>
 <tr><td>Pushbutton</td><td>GPIO 12</td><td>Input</td><td>Pulled HIGH with internal pull-up; button pulls to GND</td></tr>
 <tr><td>LED</td><td>GPIO 13</td><td>Output</td><td>Drives LED anode via 220Ω resistor</td></tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>These pins are chosen because:</p>
 <ul>
-<li>They're far from WiFi/USB pins (reduces interference)</li>
-<li>They're accessible on the standard DevKit V1 header</li>
+<li>They’re far from WiFi/USB pins (reduces interference)</li>
+<li>They’re accessible on the standard DevKit V1 header</li>
 <li>GPIO 12 is not used for flash boot configuration (it must be HIGH during boot, which works fine with our pull-up strategy)</li>
 <li>GPIO 13 is a safe, commonly-used output pin with no special boot-mode requirements</li>
 </ul>
@@ -2328,7 +2412,7 @@ Produced event: 0x0502010202000001 (state: 1)
 </ol>
 <p>The resistor current-limits the LED to safe operating levels. Always use a resistor with LEDs!</p>
 <h3 id="complete-breadboard-layout"><a class="header" href="#complete-breadboard-layout">Complete Breadboard Layout</a></h3>
-<p>Here's the full picture of how everything connects:</p>
+<p>Here’s the full picture of how everything connects:</p>
 <pre><code>Breadboard (top view):
 
      A    B    C    D    E
@@ -2361,28 +2445,22 @@ Key:
 <h3 id="connection-checklist"><a class="header" href="#connection-checklist">Connection Checklist</a></h3>
 <p>Before applying power, verify:</p>
 <ul>
-<li><input disabled="" type="checkbox"/>
-Button is connected between GPIO 12 and GND</li>
-<li><input disabled="" type="checkbox"/>
-220Ω resistor is in series with the LED</li>
-<li><input disabled="" type="checkbox"/>
-LED long pin (+) is toward GPIO 13, short pin (-) is toward GND</li>
-<li><input disabled="" type="checkbox"/>
-Both GND connections (from button and LED) go to the same GND pin on the ESP32</li>
-<li><input disabled="" type="checkbox"/>
-No jumper wires are touching (risk of shorts)</li>
-<li><input disabled="" type="checkbox"/>
-The breadboard power supply is <strong>OFF</strong> before plugging in</li>
+<li><input disabled="" type="checkbox"> Button is connected between GPIO 12 and GND</li>
+<li><input disabled="" type="checkbox"> 220Ω resistor is in series with the LED</li>
+<li><input disabled="" type="checkbox"> LED long pin (+) is toward GPIO 13, short pin (-) is toward GND</li>
+<li><input disabled="" type="checkbox"> Both GND connections (from button and LED) go to the same GND pin on the ESP32</li>
+<li><input disabled="" type="checkbox"> No jumper wires are touching (risk of shorts)</li>
+<li><input disabled="" type="checkbox"> The breadboard power supply is <strong>OFF</strong> before plugging in</li>
 </ul>
 <h2 id="testing-the-hardware"><a class="header" href="#testing-the-hardware">Testing the Hardware</a></h2>
-<p>Once you've wired everything up, you can test with simple code before moving to OpenLCB events. Here's a basic Arduino sketch to verify the connections:</p>
+<p>Once you’ve wired everything up, you can test with simple code before moving to OpenLCB events. Here’s a basic Arduino sketch to verify the connections:</p>
 <pre><code class="language-cpp">// Simple GPIO test sketch
 void setup() {
   Serial.begin(115200);
   pinMode(12, INPUT_PULLUP);   // Button input with pull-up
   pinMode(13, OUTPUT);         // LED output
   digitalWrite(13, LOW);       // LED off initially
-  Serial.println(&quot;GPIO test started&quot;);
+  Serial.println("GPIO test started");
 }
 
 void loop() {
@@ -2390,10 +2468,10 @@ void loop() {
   
   if (buttonPressed) {
     digitalWrite(13, HIGH);  // Turn on LED
-    Serial.println(&quot;Button pressed - LED ON&quot;);
+    Serial.println("Button pressed - LED ON");
   } else {
     digitalWrite(13, LOW);   // Turn off LED
-    Serial.println(&quot;Button released - LED OFF&quot;);
+    Serial.println("Button released - LED OFF");
   }
   
   delay(100);  // Debounce delay
@@ -2406,8 +2484,8 @@ void loop() {
 <li>The serial monitor will print messages showing button state changes</li>
 </ul>
 <p>If this test works, your hardware connections are correct!</p>
-<h2 id="whats-next-3"><a class="header" href="#whats-next-3">What's Next</a></h2>
-<p>Once you've verified the hardware is working, the next step is to integrate this with the OpenLCB code from Chapter 3:</p>
+<h2 id="whats-next-3"><a class="header" href="#whats-next-3">What’s Next</a></h2>
+<p>Once you’ve verified the hardware is working, the next step is to integrate this with the OpenLCB code from Chapter 3:</p>
 <ul>
 <li>Modify the code to detect button presses and produce OpenLCB events</li>
 <li>Modify the code to consume OpenLCB events and control the LED</li>
@@ -2415,13 +2493,13 @@ void loop() {
 </ul>
 <p>This transforms your ESP32 from a software-only node into a real-world interactive OpenLCB device!</p>
 <h2 id="troubleshooting-1"><a class="header" href="#troubleshooting-1">Troubleshooting</a></h2>
-<p><strong>LED doesn't light up:</strong></p>
+<p><strong>LED doesn’t light up:</strong></p>
 <ul>
 <li>Check LED orientation (long pin must be toward GPIO 13)</li>
 <li>Verify the resistor is not the LED (easy mistake!)</li>
 <li>Test with the simple GPIO sketch above to isolate the issue</li>
 </ul>
-<p><strong>Button doesn't respond:</strong></p>
+<p><strong>Button doesn’t respond:</strong></p>
 <ul>
 <li>Verify button is connected between GPIO 12 and GND</li>
 <li>Try pressing firmly or wiggling the button wires (may be loose)</li>
@@ -2444,44 +2522,51 @@ void loop() {
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                        
-                        
+
+
                         <div style="clear: both"></div>
                     </nav>
                 </div>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                
-                            </nav>
+
+            </nav>
 
         </div>
 
-        
-        
-        
-                <script type="text/javascript">
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
             window.playground_copyable = true;
         </script>
-        
-        
-                <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
-        
-        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
-        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-c2a407aa.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-a0b12cfe.js"></script>
 
         <!-- Custom JS scripts -->
-                <script type="text/javascript" src="mermaid.min.js"></script>
-                <script type="text/javascript" src="mermaid-init.js"></script>
-        
-                        <script type="text/javascript">
+        <script src="mermaid-eefea253.min.js"></script>
+        <script src="mermaid-init-ccf746f1.js"></script>
+
+        <script>
         window.addEventListener('load', function() {
             window.setTimeout(window.print, 100);
         });
         </script>
-                
+
+
+    </div>
     </body>
 </html>
