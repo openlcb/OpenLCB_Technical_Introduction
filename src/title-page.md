@@ -11,6 +11,6 @@ The source for this book is available at the project's GitHub repository: [openl
 
 Feedback and contributions are welcome — please open an issue or submit a pull request on the repository's issues page: [openlcb/OpenLCB_Technical_Introduction issues](https://github.com/openlcb/OpenLCB_Technical_Introduction/issues).
 
-Documentation Copyright © 2025 John Socha‑Leialoha. See the repository for license details: [LICENSE_DOCS.md](https://github.com/openlcb/OpenLCB_Technical_Introduction/blob/main/LICENSE_DOCS.md) and [LICENSE](https://github.com/openlcb/OpenLCB_Technical_Introduction/blob/main/LICENSE).
+Documentation Copyright © 2025 John Socha‑Leialoha. See the repository for license details: [LICENSE_DOCS.md](https://github.com/openlcb/OpenLCB_Technical_Introduction/blob/master/LICENSE_DOCS.md) and [LICENSE](https://github.com/openlcb/OpenLCB_Technical_Introduction/blob/master/LICENSE).
 
 
