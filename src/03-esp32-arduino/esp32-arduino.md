@@ -1046,7 +1046,7 @@ JMRI needs to know how to connect to your ESP32's TCP Hub on port 12021. Let's c
    - If this is the **first time** you're running LccPro and you have **no other connections**, the LccPro Wizard appears automatically (see first image below)
    - If you **already have at least one connection** from DecoderPro or PanelPro, continue to step 2
 
-   ![LccPro Wizard on first launch (no existing connections)](images/LccPro_FirstConnection.png)
+  ![LccPro Wizard on first launch (no existing connections)](../images/LccPro_FirstConnection.png)
 
 2. **Configure the connection settings**:
    
@@ -1059,7 +1059,7 @@ JMRI needs to know how to connect to your ESP32's TCP Hub on port 12021. Let's c
    - Click the **Connections** tab (in the left sidebar)
    - Click the **+** button (bottom left) to add a new connection
 
-   ![JMRI Preferences dialog with Connections tab](images/JMRI_Preferences.png)
+  ![JMRI Preferences dialog with Connections tab](../images/JMRI_Preferences.png)
 
 3. **Enter the connection settings**:
    - **System manufacturer**: Select `LCC` (this is the OpenLCB standard system name in JMRI)
@@ -1086,7 +1086,7 @@ After JMRI restarts, let's open the message monitor to see your ESP32's events.
    - You should see alternating event reports appearing every second
    - Each event corresponds to the events your ESP32 is producing
 
-   ![LCC Traffic Monitor showing alternating events](images/Traffic_Monitor.png)
+  ![LCC Traffic Monitor showing alternating events](../images/Traffic_Monitor.png)
 
 ### Viewing Node Properties (SNIP Information)
 
@@ -1107,7 +1107,7 @@ You can verify that JMRI recognizes your ESP32 as a node on the network and view
      - **Description**: The description from `SNIP_NODE_DESC`
    - This confirms the node initialized successfully with correct identity information
 
-   ![LccPro node list showing the async_blink node](images/LccProNodes.png)
+  ![LccPro node list showing the async_blink node](../images/LccProNodes.png)
 
    > **Note**: The **Configure** button in LccPro is for editing the node's configuration. We'll explore that in Chapter 5.
 
@@ -1172,7 +1172,7 @@ Once PanelPro is open:
        - Second 2: Sensor 1 flashes ACTIVE, Sensor 0 stays INACTIVE
        - Second 3: Sensor 0 flashes ACTIVE, and so on...
 
-   ![LCC Sensors showing alternating ACTIVE states](images/Sensors.png)
+  ![LCC Sensors showing alternating ACTIVE states](../images/Sensors.png)
 
 This demonstrates the bidirectional nature of LCC - your JMRI sensors are consuming events produced by your ESP32!
 

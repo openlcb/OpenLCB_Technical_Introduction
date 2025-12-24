@@ -8,13 +8,13 @@ We'll cover prototype solutions here as this is a good way to get started.
 
 One of the OpenLCB members, Balazs Racz, has put together a _daughter_ board for the Nucleo family of development boards. Here is a photo of the Rev. B version of this developer kit:
 
-![Dev Kit](images/devkit.jpg)
+![Dev Kit](../images/devkit.jpg)
 
 It uses all through-hole components for two reasons. First, because it doesn't require experience soldering surface-mounted parts. And second, perhaps more importantly, the components can be replaced easily if you happen to destroy them as part of testing.
 
 The next photo shows a Nucleo F091RC board, which has an ARM Coretex-M0 processor.
 
-![Dev Kit and Nucleo](images/devkit_nucleo.jpg)
+![Dev Kit and Nucleo](../images/devkit_nucleo.jpg)
 
 The DevKit has the following features:
 
