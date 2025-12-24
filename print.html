@@ -36,10 +36,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-bda53a12.js";
+            window.path_to_searchindex_js = "searchindex-2047feb3.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-bdfa2de3.js"></script>
+        <script src="toc-57ec3f65.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -1009,22 +1009,19 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 </ol>
 <p>Let’s get hands-on in the next chapter.</p>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="esp32-with-arduino--platformio"><a class="header" href="#esp32-with-arduino--platformio">ESP32 with Arduino &amp; PlatformIO</a></h1>
-<p>This chapter covers everything needed to build and deploy an OpenLCB node on an ESP32 microcontroller using Arduino and PlatformIO. We’ll create a working example that you can modify for your own applications.</p>
+<h1 id="your-first-wifi-based-openlcb-node"><a class="header" href="#your-first-wifi-based-openlcb-node">Your First WiFi-Based OpenLCB Node</a></h1>
+<p>This chapter covers everything needed to build and deploy your first OpenLCB node on an ESP32 microcontroller using Arduino and PlatformIO, connected via WiFi.</p>
 <h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
-<p>The ESP32 is a powerful, affordable microcontroller with built-in WiFi connectivity, making it ideal for learning OpenLCB concepts. In this chapter, we’ll build a complete OpenLCB node that simultaneously runs the node protocol stack and hosts a TCP Hub—allowing JMRI to monitor and control your node over WiFi.</p>
+<p>The ESP32 is a powerful, affordable microcontroller with built-in WiFi connectivity, making it ideal for learning OpenLCB concepts. This chapter walks through building a working OpenLCB node that simultaneously runs the node protocol stack and hosts a TCP Hub—allowing JMRI to monitor and control your WiFi-connected node over a network.</p>
+<p>Unlike “real” OpenLCB networks (which typically use CAN hardware transport), this WiFi-based approach lets you get a functioning node running quickly without special hardware, and it’s perfect for embedded systems with network connectivity.</p>
 <p>As described in the “Network Architecture” section of Chapter 2, your ESP32 will act as both:</p>
 <ul>
 <li>An <strong>OpenLCB node</strong> that produces and consumes events</li>
 <li>A <strong>TCP Hub</strong> listening on port 12021 for JMRI connections</li>
 </ul>
-<p>We’ll be using the <strong>OpenMRN-Lite library</strong>, which is the Arduino version of OpenMRN. If you’re curious about why OpenMRN-Lite specifically, or what it can (and can’t) do, see Chapter 2.5 (“OpenMRN-Lite Architecture &amp; Capabilities”) for a deeper dive. For now, know that it’s the right tool for the job and it has everything we need to build real, functional OpenLCB nodes.</p>
-<p>We’ll build this in two phases:</p>
-<ol>
-<li><strong>Software-only</strong>: Create a node that produces and consumes events via JMRI (no physical hardware needed yet)</li>
-<li><strong>Hardware integration</strong> (optional): Add a physical button and LED to your breadboard</li>
-</ol>
-<p>This approach lets you start learning immediately while waiting for breadboard components to arrive.</p>
+<p>We’ll be using the <strong>OpenMRN-Lite library</strong>, which is the Arduino version of OpenMRN. If you’re curious about why OpenMRN-Lite specifically, or what it can (and can’t) do, see Chapter 2.2 (“OpenMRN-Lite Architecture &amp; Capabilities”) for a deeper dive. For now, know that it’s the right tool for the job and it has everything we need to build real, functional OpenLCB nodes.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="board-selection"><a href="#board-selection" class="header">Board Selection</a></h1>
 <h2 id="esp32-board-selection"><a class="header" href="#esp32-board-selection">ESP32 Board Selection</a></h2>
 <p>Before installing software, you’ll want to order an ESP32 development board. This section helps you choose the right board for this tutorial.</p>
 <p>The ESP32 family includes many board variants. For this tutorial, we recommend boards with sufficient GPIO pins, USB programming support, and built-in CAN capability for future chapters.</p>
@@ -1086,6 +1083,8 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 <li><strong>DigiKey</strong> / <strong>Mouser</strong>: For bulk or commercial projects</li>
 </ul>
 <p><strong>Order your board now</strong>, then continue with the software setup while you wait for delivery.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="development-setup"><a href="#development-setup" class="header">Development Setup</a></h1>
 <h2 id="platformio-installation--setup"><a class="header" href="#platformio-installation--setup">PlatformIO Installation &amp; Setup</a></h2>
 <p>PlatformIO is a professional embedded development platform that provides a unified build system, library management, and debugging tools. It integrates with VS Code to create a powerful development environment.</p>
 <h3 id="installing-vs-code"><a class="header" href="#installing-vs-code">Installing VS Code</a></h3>
@@ -1109,6 +1108,8 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 <blockquote>
 <p><strong>Note</strong>: The ESP32 platform and toolchain will be installed automatically when you create your first project. PlatformIO handles all the toolchain downloads and configuration for you.</p>
 </blockquote>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="project-structure"><a href="#project-structure" class="header">Project Structure</a></h1>
 <h2 id="creating-your-first-project-async_blink_esp32"><a class="header" href="#creating-your-first-project-async_blink_esp32">Creating Your First Project: async_blink_esp32</a></h2>
 <p>Now we’ll create the actual project we’ll be working with throughout this chapter. Instead of creating a throwaway test project, we’ll jump straight into building our OpenLCB node.</p>
 <h3 id="create-the-project"><a class="header" href="#create-the-project">Create the Project</a></h3>
@@ -1139,40 +1140,41 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 </code></pre>
 <p>The <code>platformio.ini</code> file should look like this:</p>
 <pre><code class="language-ini">[env:esp32doit-devkit-v1]
-platform = espressif32
+platform = espressif32@6.12.0
 board = esp32doit-devkit-v1
 framework = arduino
 monitor_speed = 115200
 </code></pre>
-<p><strong>Note</strong>: The <code>monitor_speed = 115200</code> setting configures the serial monitor baud rate to match what our code will use. Without this, the serial output will appear as garbled characters.</p>
 <h2 id="adding-openmrnlite-to-your-project"><a class="header" href="#adding-openmrnlite-to-your-project">Adding OpenMRNLite to Your Project</a></h2>
 <p>OpenMRNLite is the lightweight version of OpenMRN designed for Arduino-compatible platforms. It provides all the core LCC/OpenLCB functionality without the full complexity of the OpenMRN framework.</p>
 <h3 id="installation-via-platformioini"><a class="header" href="#installation-via-platformioini">Installation via platformio.ini</a></h3>
 <p>Open the <code>platformio.ini</code> file in your <code>async_blink_esp32</code> project and add OpenMRNLite to the library dependencies:</p>
 <pre><code class="language-ini">[env:esp32doit-devkit-v1]
-platform = espressif32
+platform = espressif32@6.12.0
 board = esp32doit-devkit-v1
 framework = arduino
 lib_deps = openmrn/OpenMRNLite@2.0.0
 monitor_speed = 115200
 </code></pre>
 <p>Save the file. That’s it! PlatformIO will automatically download OpenMRNLite from the registry when you build the project.</p>
-<p><strong>About monitor_speed</strong>: This setting ensures the serial monitor uses 115200 baud, matching the <code>Serial.begin(115200)</code> call in our code. Without this, you’ll see garbled output instead of readable text.</p>
-<p><strong>Why version 2.0.0?</strong></p>
+<p><strong>About OpenMRNLite version 2.0.0</strong>: We’re using v2.0.0 rather than newer versions because:</p>
 <ul>
 <li>Version 2.0.0 is fully compatible with PlatformIO’s current ESP32 platform</li>
 <li>Later versions (2.2.x+) require newer ESP-IDF features not yet available in PlatformIO</li>
 <li>All core OpenLCB functionality is present in v2.0.0</li>
 </ul>
+<p><strong>About monitor_speed</strong>: This setting ensures the serial monitor uses 115200 baud, matching the <code>Serial.begin(115200)</code> call in our code. Without this, you’ll see garbled output instead of readable text.</p>
 <blockquote>
-<p><strong>About PlatformIO and Arduino-ESP32 versions</strong></p>
-<p>You may notice that PlatformIO uses Arduino-ESP32 v2.0.17 while the Arduino IDE can install v3.x. This isn’t a bug — it’s intentional:</p>
+<p><strong>About platform versions and Arduino-ESP32</strong></p>
+<p>Arduino-ESP32 has two major versions: 2.x and 3.x. The Arduino IDE now supports 3.x, but PlatformIO still uses 2.x. The <code>platform = espressif32@6.12.0</code> pins us to PlatformIO’s current 2.x series.</p>
+<p>Why not upgrade to Arduino-ESP32 3.x?</p>
 <ul>
+<li><strong>Arduino-ESP32 3.x is still evolving</strong> with breaking changes to the build system, partition handling, WiFi stack, and more.</li>
 <li><strong>PlatformIO prioritizes stability</strong> over bleeding-edge features. They thoroughly test each framework version across hundreds of boards, toolchains, and debuggers before releasing.</li>
-<li><strong>Arduino-ESP32 3.x introduced major breaking changes</strong> in the build system, partition handling, WiFi stack, and more. PlatformIO waits for these to stabilize before adoption.</li>
-<li><strong>Small team, massive ecosystem</strong>: PlatformIO maintains ESP32, STM32, RP2040, AVR, and many other platforms with a much smaller team than Espressif has for Arduino-ESP32 alone.</li>
+<li><strong>Smaller maintenance burden</strong>: By using a tested, stable version, we reduce variables when troubleshooting issues.</li>
 </ul>
-<p>This is why we use OpenMRNLite v2.0.0 — it’s designed for the stable Arduino-ESP32 2.x that PlatformIO provides. You’re trading cutting-edge features for rock-solid reliability, which is perfect for learning OpenLCB fundamentals.</p>
+<p>OpenMRNLite v2.0.0 is designed for the Arduino-ESP32 2.x that PlatformIO provides via espressif32@6.12.0. You’re trading bleeding-edge features for rock-solid reliability, which is perfect for learning OpenLCB fundamentals.</p>
+<p><strong>Note</strong>: The code in this chapter should also work with Arduino-ESP32 3.x using either the Arduino IDE or Arduino Maker Workshop, but we haven’t tested those configurations.</p>
 </blockquote>
 <h3 id="verification"><a class="header" href="#verification">Verification</a></h3>
 <p>Let’s verify everything is working by building the project:</p>
@@ -1199,7 +1201,9 @@ monitor_speed = 115200
 <p><strong>Note</strong>: The first build will take longer as PlatformIO downloads the library and compiles it. Subsequent builds are much faster.</p>
 </blockquote>
 <p>If the build succeeds, OpenMRNLite is installed correctly and you’re ready to write code!</p>
-<h2 id="writing-the-async_blink_esp32-code"><a class="header" href="#writing-the-async_blink_esp32-code">Writing the async_blink_esp32 Code</a></h2>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="code-configuration-1"><a href="#code-configuration-1" class="header">Code Configuration</a></h1>
+<h2 id="code-configuration"><a class="header" href="#code-configuration">Code Configuration</a></h2>
 <p>Now we’ll create the actual OpenLCB node that produces alternating events. This demonstrates the core OpenLCB protocol behavior you learned in Chapter 1 (node initialization and event production) without requiring physical hardware.</p>
 <h3 id="creating-the-configuration-header"><a class="header" href="#creating-the-configuration-header">Creating the Configuration Header</a></h3>
 <p>OpenMRNLite requires a configuration structure (CDI - Configuration Description Information) even for simple nodes. We’ll create a minimal config.h file.</p>
@@ -1254,8 +1258,11 @@ CDI_GROUP_END();
 <li><strong>AsyncBlinkSegment</strong>: Internal configuration area for this node (currently minimal, but available for future expansion)</li>
 </ul>
 <blockquote>
-<p><strong>Configuration Storage</strong>: Configuration is saved to SPIFFS on first boot (via <code>factory_reset()</code>) and persists across restarts. In v0.1, the initial configuration is hardcoded in the constants above. In Chapter 5, we’ll make configuration editable through JMRI and learn how to handle updates via <code>apply_configuration()</code>. See “Configuration &amp; JMRI” section below for more details.</p>
+<p><strong>Configuration Storage</strong>: Configuration is saved to SPIFFS on first boot (via <code>factory_reset()</code> shown in the next section) and persists across restarts. In v0.1, the initial configuration is hardcoded in the constants above. In Chapter 4, we’ll make configuration editable through JMRI and learn how to handle updates via <code>apply_configuration()</code>. See “Configuration &amp; JMRI” section in the JMRI Monitoring chapter for more details.</p>
 </blockquote>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="code-implementation-1"><a href="#code-implementation-1" class="header">Code Implementation</a></h1>
+<h2 id="code-implementation"><a class="header" href="#code-implementation">Code Implementation</a></h2>
 <h3 id="the-complete-main-code"><a class="header" href="#the-complete-main-code">The Complete Main Code</a></h3>
 <p>Now replace the contents of <code>src/main.cpp</code> with the following code:</p>
 <pre><code class="language-cpp">/** \copyright
@@ -1504,7 +1511,20 @@ void loop() {
   }
 }
 </code></pre>
-<h3 id="code-walkthrough"><a class="header" href="#code-walkthrough">Code Walkthrough</a></h3>
+<h3 id="before-you-build"><a class="header" href="#before-you-build">Before You Build</a></h3>
+<p><strong>Update WiFi credentials in the code!</strong> The build will succeed even with placeholder credentials, but the ESP32 won’t connect to WiFi when you upload it.</p>
+<blockquote>
+<p><strong>Important</strong>: Never check WiFi credentials (or any secrets) into a version control repository. In a real project, use environment variables or a separate configuration file excluded from git.</p>
+</blockquote>
+<blockquote>
+<p><strong>Better approach</strong>: OpenMRNLite provides <code>Esp32WiFiManager</code> for a more robust WiFi configuration system, but we’re using hardcoded credentials here for simplicity in this learning example.</p>
+</blockquote>
+<blockquote>
+<p><strong>Future note</strong>: WiFi is temporary for learning. When we add CAN transport in a later chapter, we’ll remove the WiFi code entirely. This approach helps you understand the differences between transport types.</p>
+</blockquote>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="code-walkthrough-1"><a href="#code-walkthrough-1" class="header">Code Walkthrough</a></h1>
+<h2 id="code-walkthrough"><a class="header" href="#code-walkthrough">Code Walkthrough</a></h2>
 <p>This code is organized into:</p>
 <ol>
 <li><strong>Configuration</strong> (config.h): Node identity and CDI structure</li>
@@ -1512,7 +1532,7 @@ void loop() {
 <li><strong>Event production</strong> (loop function): Alternate between two events every second</li>
 </ol>
 <p>The code includes detailed comments explaining each section. We’ll walk through the key concepts below.</p>
-<h4 id="1-includes-and-wifi-configuration"><a class="header" href="#1-includes-and-wifi-configuration">1. Includes and WiFi Configuration</a></h4>
+<h3 id="1-includes-and-wifi-configuration"><a class="header" href="#1-includes-and-wifi-configuration">1. Includes and WiFi Configuration</a></h3>
 <pre><code class="language-cpp">#include &lt;Arduino.h&gt;
 #include &lt;WiFi.h&gt;
 #include &lt;SPIFFS.h&gt;
@@ -1537,14 +1557,14 @@ const char* password = "YourWiFiPassword";
 <li>SSID is case-sensitive</li>
 <li>This is hardcoded for simplicity - production code would use configuration storage</li>
 </ul>
-<h4 id="2-node-and-event-ids"><a class="header" href="#2-node-and-event-ids">2. Node and Event IDs</a></h4>
+<h3 id="2-node-and-event-ids"><a class="header" href="#2-node-and-event-ids">2. Node and Event IDs</a></h3>
 <pre><code class="language-cpp">static constexpr uint64_t NODE_ID = 0x050201020200ULL;
 static const uint64_t EVENT_ID_0 = 0x0502010202000000ULL;
 static const uint64_t EVENT_ID_1 = 0x0502010202000001ULL;
 </code></pre>
 <p><strong>Node ID</strong>: Every OpenLCB node must have a globally unique 48-bit identifier. This ID (<code>0x050201020200</code>) is in the experimental range - safe for learning but not for production deployment.</p>
 <p><strong>Event IDs</strong>: These 64-bit identifiers represent the two events our node will produce. Notice they differ only in the last byte (<code>00</code> vs <code>01</code>), making them easy to track. These match the desktop <code>async_blink</code> OpenMRN example for consistency.</p>
-<h4 id="3-configuration-and-openmrn-stack"><a class="header" href="#3-configuration-and-openmrn-stack">3. Configuration and OpenMRN Stack</a></h4>
+<h3 id="3-configuration-and-openmrn-stack"><a class="header" href="#3-configuration-and-openmrn-stack">3. Configuration and OpenMRN Stack</a></h3>
 <pre><code class="language-cpp">OpenMRN openmrn(NODE_ID);
 static constexpr openlcb::ConfigDef cfg(0);
 
@@ -1566,7 +1586,7 @@ namespace openlcb {
 <li><code>CONFIG_FILE_SIZE</code>: Calculated as the size of all configuration segments. This ensures the file is large enough for all data (SNIP + internal config + UserInfo)</li>
 <li><code>SNIP_DYNAMIC_FILENAME</code>: Store SNIP data in the same file as config</li>
 </ul>
-<h4 id="4-factoryresethelper-and-configuration-initialization"><a class="header" href="#4-factoryresethelper-and-configuration-initialization">4. FactoryResetHelper and Configuration Initialization</a></h4>
+<h3 id="4-factoryresethelper-and-configuration-initialization"><a class="header" href="#4-factoryresethelper-and-configuration-initialization">4. FactoryResetHelper and Configuration Initialization</a></h3>
 <pre><code class="language-cpp">class FactoryResetHelper : public DefaultConfigUpdateListener
 {
 public:
@@ -1601,7 +1621,7 @@ public:
 <p><strong><code>apply_configuration()</code></strong>: Currently returns UPDATED without doing anything. In a real node, this would handle persistence when users modify configuration through JMRI. For v0.1, config is read-only.</p>
 </blockquote>
 <p><strong>SNIP data</strong>: The node name and description are displayed by JMRI in the node properties dialog, helping identify which ESP32 is which on your network.</p>
-<h4 id="5-wifi-connection"><a class="header" href="#5-wifi-connection">5. WiFi Connection</a></h4>
+<h3 id="5-wifi-connection"><a class="header" href="#5-wifi-connection">5. WiFi Connection</a></h3>
 <pre><code class="language-cpp">void init_network() {
   Serial.printf("\nConnecting to WiFi SSID: %s\n", ssid);
   WiFi.begin(ssid, password);
@@ -1617,7 +1637,7 @@ public:
 </code></pre>
 <p>This helper function establishes the WiFi connection before starting OpenLCB. The ESP32 won’t be able to communicate on the OpenLCB network until WiFi is connected, so we wait here.</p>
 <p>The dots printed to serial provide visual feedback during connection.</p>
-<h4 id="6-initialization-helper-functions-and-setup"><a class="header" href="#6-initialization-helper-functions-and-setup">6. Initialization Helper Functions and Setup</a></h4>
+<h3 id="6-initialization-helper-functions-and-setup"><a class="header" href="#6-initialization-helper-functions-and-setup">6. Initialization Helper Functions and Setup</a></h3>
 <pre><code class="language-cpp">void init_openlcb_stack() {
   Serial.println("\nCreating CDI configuration descriptor...");
   openmrn.create_config_descriptor_xml(cfg, openlcb::CDI_FILENAME);
@@ -1654,7 +1674,7 @@ public:
 <p><strong>Start executor thread</strong>: Background thread for processing OpenLCB messages. <strong>This is required for TCP Hub to work.</strong></p>
 </li>
 </ol>
-<h4 id="7-tcp-hub-for-jmri-connectivity"><a class="header" href="#7-tcp-hub-for-jmri-connectivity">7. TCP Hub for JMRI Connectivity</a></h4>
+<h3 id="7-tcp-hub-for-jmri-connectivity"><a class="header" href="#7-tcp-hub-for-jmri-connectivity">7. TCP Hub for JMRI Connectivity</a></h3>
 <pre><code class="language-cpp">void init_tcp_hub() {
   Serial.println("Starting TCP Hub on port 12021...");
   tcp_hub = new GcTcpHub(
@@ -1670,7 +1690,7 @@ public:
 <li><code>12021</code>: The TCP port to listen on (standard for OpenLCB TCP hubs)</li>
 </ul>
 <p>The TCP Hub allows JMRI and other TCP clients to connect and monitor your node’s events in real-time. Multiple JMRI instances can connect simultaneously; messages are routed between all connected clients and the local node.</p>
-<h4 id="8-main-setup-function"><a class="header" href="#8-main-setup-function">8. Main Setup Function</a></h4>
+<h3 id="8-main-setup-function"><a class="header" href="#8-main-setup-function">8. Main Setup Function</a></h3>
 <pre><code class="language-cpp">void setup() {
   init_serial();
   init_filesystem();
@@ -1693,7 +1713,7 @@ public:
 <li><strong><code>init_tcp_hub()</code></strong>: Start TCP server for JMRI connectivity</li>
 </ol>
 <p><strong>Why break it down?</strong> Each helper function focuses on a single responsibility, making the code easier to understand and modify. If you need to add new initialization steps or change how the node starts up, it’s clear where to make those changes.</p>
-<h4 id="9-event-production-loop"><a class="header" href="#9-event-production-loop">9. Event Production Loop</a></h4>
+<h3 id="9-event-production-loop"><a class="header" href="#9-event-production-loop">9. Event Production Loop</a></h3>
 <pre><code class="language-cpp">void loop() {
   openmrn.loop();  // CRITICAL - processes all OpenLCB messages
   
@@ -1728,69 +1748,10 @@ public:
 <li>Print confirmation to serial monitor</li>
 </ol>
 <p><strong>Why use the executor?</strong> OpenLCB message handling runs in a separate execution context. The <code>executor()-&gt;add()</code> pattern ensures thread-safe event production.</p>
-<p><strong>Critical Detail</strong>: <code>openmrn.loop()</code> must be called frequently (ideally every few milliseconds). This processes:</p>
-<ul>
-<li>Incoming network messages</li>
-<li>Outgoing message queues</li>
-<li>Protocol state machines</li>
-<li>Internal timers</li>
-</ul>
-<p><strong>Event Production</strong>: Every 1000ms (1 second), we:</p>
-<ol>
-<li>Toggle <code>event_state</code> (false → true → false → …)</li>
-<li>Select which event ID to send based on state</li>
-<li>Queue the event for transmission using the executor</li>
-<li>Print confirmation to serial monitor</li>
-</ol>
-<p><strong>Why use the executor?</strong> OpenLCB message handling runs in a separate execution context. The <code>executor()-&gt;add()</code> pattern ensures thread-safe event production.</p>
-<h3 id="expected-serial-monitor-output"><a class="header" href="#expected-serial-monitor-output">Expected Serial Monitor Output</a></h3>
-<p>When the code runs, you should see output like this:</p>
-<pre><code>=== OpenLCB async_blink ESP32 Example ===
-Node ID: 0x050201020200
-Event 0: 0x0502010202000000
-Event 1: 0x0502010202000001
-
-Initializing SPIFFS...
-SPIFFS initialized successfully
-
-Connecting to WiFi SSID: YourNetwork
-.....
-WiFi connected!
-IP Address: 192.168.1.100
-
-Creating CDI configuration descriptor...
-Initializing OpenLCB configuration...
-
-Starting OpenLCB stack...
-Starting executor thread...
-Starting TCP Hub on port 12021...
-TCP Hub listening. JMRI can connect to this device on port 12021
-
-OpenLCB node initialization complete!
-Entering run mode - will alternate events every 1 second
-
-Produced event: 0x0502010202000000 (state: 0)
-Produced event: 0x0502010202000001 (state: 1)
-Produced event: 0x0502010202000000 (state: 0)
-Produced event: 0x0502010202000001 (state: 1)
-...
-</code></pre>
-<p><strong>On First Run Only</strong>: You may see a brief pause and an SPIFFS error message:</p>
-<pre><code>Initializing SPIFFS...
-E (523) SPIFFS: mount failed, -10025
-SPIFFS initialized successfully
-</code></pre>
-<p>This is <strong>normal and expected</strong>. On first boot, SPIFFS needs to format the filesystem, which takes approximately <strong>20 seconds</strong> on ESP32 DevKit. The error message appears because the filesystem doesn’t exist yet, but the <code>SPIFFS.begin(true)</code> call automatically formats it. During this time, the ESP32 will appear to hang—just wait and don’t interrupt it. Subsequent boots will skip this formatting step and proceed immediately.</p>
-<p>This confirms:</p>
-<ul>
-<li>✅ SPIFFS filesystem initialized (formatted on first run if needed)</li>
-<li>✅ WiFi connection succeeded (shows your network SSID and IP address)</li>
-<li>✅ OpenLCB node initialized (config file created, SNIP data written)</li>
-<li>✅ <strong>TCP Hub is listening on port 12021</strong> - JMRI can now connect!</li>
-<li>✅ Events are being produced alternately</li>
-</ul>
-<h3 id="before-you-build"><a class="header" href="#before-you-build">Before You Build</a></h3>
-<p><strong>Update WiFi credentials in the code!</strong> The build will succeed even with placeholder credentials, but the ESP32 won’t connect to WiFi when you upload it.</p>
+<h3 id="what-happens-next"><a class="header" href="#what-happens-next">What Happens Next</a></h3>
+<p>Now that you understand how the code works, the next section covers building this code and uploading it to your ESP32. You’ll see all of these initialization steps happen in the serial monitor, and we’ll verify everything is working correctly.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="build-and-upload"><a href="#build-and-upload" class="header">Build and Upload</a></h1>
 <h2 id="building-and-uploading-to-esp32"><a class="header" href="#building-and-uploading-to-esp32">Building and Uploading to ESP32</a></h2>
 <p>Now that you have the complete code, let’s build it, upload it to your ESP32, and verify it works through the serial monitor.</p>
 <h3 id="building-the-project"><a class="header" href="#building-the-project">Building the Project</a></h3>
@@ -1858,14 +1819,13 @@ Building .pio/build/esp32doit-devkit-v1/firmware.bin
 </ul>
 </li>
 </ol>
-<h3 id="uploading-the-firmware"><a class="header" href="#uploading-the-firmware">Uploading the Firmware</a></h3>
+<h3 id="uploading-the-firmware-and-opening-the-monitor"><a class="header" href="#uploading-the-firmware-and-opening-the-monitor">Uploading the Firmware and Opening the Monitor</a></h3>
 <ol>
 <li>
-<p><strong>Upload the firmware</strong>:</p>
+<p><strong>Upload the firmware and automatically open the serial monitor</strong>:</p>
 <ul>
-<li>In PROJECT TASKS → <strong>esp32doit-devkit-v1</strong>, click <strong>Upload</strong></li>
-<li>Or click the arrow (→) icon in the bottom toolbar</li>
-<li>Or press <code>Ctrl+Alt+U</code> / <code>Cmd+Alt+U</code></li>
+<li>In PROJECT TASKS → <strong>esp32doit-devkit-v1</strong>, click <strong>Upload and Monitor</strong></li>
+<li>Or press <code>Ctrl+Alt+U</code> then <code>Ctrl+Alt+S</code> / <code>Cmd+Alt+U</code> then <code>Cmd+Alt+S</code></li>
 </ul>
 </li>
 <li>
@@ -1891,45 +1851,39 @@ Hard resetting via RTS pin...
 <p><strong>If upload fails</strong>:</p>
 <ul>
 <li><strong>“Serial port not found”</strong>: Check USB cable connection, try different USB port</li>
-<li><strong>“Failed to connect”</strong>: Hold the BOOT button while clicking upload, release after “Connecting…” appears</li>
+<li><strong>“Failed to connect”</strong>: Hold the BOOT button while clicking “Upload and Monitor”, release after “Connecting…” appears</li>
 <li><strong>Permission denied (Linux)</strong>: Add your user to the <code>dialout</code> group: <code>sudo usermod -a -G dialout $USER</code>, then log out and back in</li>
 </ul>
-<h3 id="opening-the-serial-monitor"><a class="header" href="#opening-the-serial-monitor">Opening the Serial Monitor</a></h3>
-<p>The serial monitor lets you see the debug output from your ESP32 in real-time.</p>
-<ol>
-<li>
-<p><strong>Open the serial monitor</strong>:</p>
-<ul>
-<li>In PROJECT TASKS → <strong>esp32doit-devkit-v1</strong>, click <strong>Monitor</strong></li>
-<li>Or click the plug icon (🔌) in the bottom toolbar</li>
-<li>Or press <code>Ctrl+Alt+S</code> / <code>Cmd+Alt+S</code></li>
-</ul>
-</li>
-<li>
-<p><strong>The serial monitor opens</strong> in a new terminal panel at the bottom of VS Code</p>
-</li>
-<li>
-<p><strong>If you missed the startup sequence</strong>, press the <strong>RESET</strong> button on your ESP32 board to restart it</p>
-</li>
-</ol>
+<p><strong>If you missed the startup sequence</strong>, press the <strong>RESET</strong> button on your ESP32 board to restart it and the serial monitor will display the output again.</p>
 <h3 id="verifying-the-output"><a class="header" href="#verifying-the-output">Verifying the Output</a></h3>
-<p>You should see output similar to this:</p>
+<p>On first run, you should see output like this:</p>
 <pre><code>=== OpenLCB async_blink ESP32 Example ===
 Node ID: 0x050201020200
 Event 0: 0x0502010202000000
 Event 1: 0x0502010202000001
 
 Initializing SPIFFS...
+E (523) SPIFFS: mount failed, -10025
 SPIFFS initialized successfully
 
 Connecting to WiFi SSID: YourNetwork
-.
+.....
 WiFi connected!
 IP Address: 192.168.1.100
 
+Creating CDI configuration descriptor...
+[CDI] Checking /spiffs/cdi.xml...
+[CDI] File /spiffs/cdi.xml does not exist
+[CDI] Updating /spiffs/cdi.xml (len 987)
+[CDI] Registering CDI with stack...
 Initializing OpenLCB configuration...
+Creating config file /spiffs/openlcb_config
 
 Starting OpenLCB stack...
+Starting executor thread...
+Starting TCP Hub on port 12021...
+TCP Hub listening. JMRI can connect to this device on port 12021
+
 OpenLCB node initialization complete!
 Entering run mode - will alternate events every 1 second
 
@@ -1939,6 +1893,7 @@ Produced event: 0x0502010202000000 (state: 0)
 Produced event: 0x0502010202000001 (state: 1)
 ...
 </code></pre>
+<p><strong>First Run Note</strong>: The initial startup (especially the “Creating CDI configuration” and “Creating config file” steps) takes 20-30 seconds due to SPIFFS filesystem formatting. The SPIFFS mount error is normal—the filesystem doesn’t exist yet, but it’s automatically created. Don’t interrupt the ESP32 during this time. Subsequent boots skip formatting and start much faster.</p>
 <p><strong>What to verify</strong>:</p>
 <ul>
 <li>✅ SPIFFS initializes successfully</li>
@@ -1982,6 +1937,8 @@ Produced event: 0x0502010202000001 (state: 1)
 <li>Try a different USB port or powered USB hub</li>
 <li>This usually doesn’t prevent operation, just a warning</li>
 </ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="jmri-monitoring"><a href="#jmri-monitoring" class="header">JMRI Monitoring</a></h1>
 <h2 id="testing-with-jmri"><a class="header" href="#testing-with-jmri">Testing with JMRI</a></h2>
 <p>Now that your ESP32 is producing events, let’s use JMRI (Java Model Railroad Interface) to monitor them on the network. JMRI acts as a “traffic monitor” that shows all OpenLCB messages, letting you verify your node is working correctly.</p>
 <h3 id="what-is-jmri"><a class="header" href="#what-is-jmri">What is JMRI?</a></h3>
@@ -2261,7 +2218,7 @@ Produced event: 0x0502010202000001 (state: 1)
 <li>Check the serial monitor for errors or WiFi reconnection attempts</li>
 <li>ESP32’s IP address may have changed if DHCP lease renewed</li>
 </ul>
-<h2 id="troubleshooting"><a class="header" href="#troubleshooting">Troubleshooting</a></h2>
+<h2 id="troubleshooting-general-issues"><a class="header" href="#troubleshooting-general-issues">Troubleshooting General Issues</a></h2>
 <p><strong>Library not found during build:</strong></p>
 <ul>
 <li>Verify the <code>lib_deps</code> line in <code>platformio.ini</code> has no typos</li>
@@ -2288,21 +2245,7 @@ Produced event: 0x0502010202000001 (state: 1)
 </ul>
 <h2 id="whats-next-2"><a class="header" href="#whats-next-2">What’s Next</a></h2>
 <p>You’ve now built your first OpenLCB node with WiFi transport!</p>
-<p><strong>In the next chapter</strong>, we’ll explore:</p>
-<ul>
-<li>Adding physical GPIO inputs (buttons) and outputs (LEDs) to your breadboard</li>
-<li>Modifying the code to respond to button presses and control LEDs</li>
-<li>Understanding GPIO configuration and debouncing</li>
-</ul>
-<p><strong>Beyond that</strong>, future chapters will cover:</p>
-<ul>
-<li>Adding CAN hardware for traditional LCC bus communication</li>
-<li>Advanced event handling and CDI (Configuration Description Information)</li>
-<li>Memory configuration and parameter persistence</li>
-<li>SNIP (Simple Node Information Protocol) for node identification</li>
-<li>Train control and specialized protocols</li>
-</ul>
-<p>For now, experiment with your working node: modify event IDs, add more inputs/outputs, or integrate it with other OpenLCB devices via JMRI.</p>
+<p>In the next chapter, we’ll cover configuration—how to customize your node’s behavior and settings through the CDI (Configuration Description Information) interface.</p>
 
                     </main>
 

@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>CAN - OpenLCB Programmer&#x27;s Guide</title>
+        <title>JMRI Monitoring - OpenLCB Programmer&#x27;s Guide</title>
 
 
         <!-- Custom HTML head -->
@@ -174,48 +174,322 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="introduction-to-can"><a class="header" href="#introduction-to-can">Introduction to CAN</a></h1>
-<p>Controller Area Network (CAN) is a standard that was initially created in 1981 by Bosch, and has since been used for factory automation and communication networks in cars, to name just a few uses. Today there are hundreds of billions of devices using CAN bus in daily use.</p>
-<p>As a result, there are a number of relatively inexpensive ICs available that fully implement the CAN specifications out of the box. By using CAN controllers and drivers, you do not have to write highly time-sensitive code. Instead, you can focus on implementing support for the messages in the application layers, which is a “relatively” simple task compared with implementing a transport layer.</p>
-<h2 id="can-messages"><a class="header" href="#can-messages">CAN Messages</a></h2>
-<p>CAN transmits messages, called <em>frames</em> on the bus. Every other device (node) on the bus can (and must) listen to all of the traffic on the bus. One of the interesting and useful aspects of CAN is how it handles collisions, which is through arbitration.</p>
-<p>CAN frames, in the form used by OpenLCB, consist of a 29-bit header followed by zero or more bytes of data. This is using the <em>extended frame format</em>, also know as CAN 2.0 B.</p>
-<p><img src="../images/can_bits.jpg" alt="CAN Format"></p>
-<h3 id="arbitration"><a class="header" href="#arbitration">Arbitration</a></h3>
-<p>Arbitration is the process used to ensure that only one message is being transmitted at one time. If two nodes are trying to transmit different messages at the same time, one of those two will pass through the bus unharmed, while the other node will realize it lost the arbitration and attempt to re-transmit right after the first message is completed. This allows nearly 100% utilization of the bandwidth, because the node(s) that lost the arbitration will immediately stop, thereby not corrupting the frame that is being transmitted by the winner of the arbitration. This guarantees forward progress. In contrast, old style Ethernet (and LocoNet, btw.) uses a more complex scheme, where a collision destroys the frame, then nodes have to back off, wait a random period, then attempt to transmit again, thus wasting bandwidth.</p>
-<p>The arbitration phase relies on drivers only pulling the bus low. If two nodes attempt to put different bit values on the bus at the same time, the 0 will always win. Here is a chart that shows how this works:</p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Node 1</th><th>Node 2</th><th>Bus Value</th></tr>
-</thead>
-<tbody>
-<tr><td>0</td><td>0</td><td>0</td></tr>
-<tr><td>0</td><td>1</td><td>0</td></tr>
-<tr><td>1</td><td>0</td><td>0</td></tr>
-<tr><td>1</td><td>1</td><td>1</td></tr>
-</tbody>
-</table>
-</div>
+                        <h2 id="testing-with-jmri"><a class="header" href="#testing-with-jmri">Testing with JMRI</a></h2>
+<p>Now that your ESP32 is producing events, let’s use JMRI (Java Model Railroad Interface) to monitor them on the network. JMRI acts as a “traffic monitor” that shows all OpenLCB messages, letting you verify your node is working correctly.</p>
+<h3 id="what-is-jmri"><a class="header" href="#what-is-jmri">What is JMRI?</a></h3>
+<p>JMRI is an open-source application suite for model railroading that includes comprehensive OpenLCB/LCC support. In JMRI 5.x, LccPro is the authoritative tool for LCC configuration and monitoring. For our purposes, we’ll use JMRI to:</p>
+<ul>
+<li>Monitor all OpenLCB messages on the network via <strong>LCC Monitor</strong></li>
+<li>See when nodes initialize (CID, RID, AMD messages)</li>
+<li>Observe event production and consumption</li>
+<li>View and configure node information via <strong>LccPro</strong></li>
+<li>Verify your ESP32 is communicating correctly</li>
+</ul>
+<p>Think of it as a “network packet sniffer” for OpenLCB.</p>
+<h3 id="installing-jmri"><a class="header" href="#installing-jmri">Installing JMRI</a></h3>
+<ol>
+<li>
+<p><strong>Download JMRI</strong>:</p>
+<ul>
+<li>Visit <a href="https://www.jmri.org/">jmri.org</a></li>
+<li>Click <strong>Download</strong> → Latest Production Release</li>
+<li>Choose your operating system (Windows, macOS, or Linux)</li>
+<li>Download and run the installer</li>
+</ul>
+</li>
+<li>
+<p><strong>System Requirements</strong>:</p>
+<ul>
+<li>JMRI <strong>5.12 or later</strong> (LccPro requires JMRI 5.12+; earlier versions use the older DecoderPro LCC tools)</li>
+<li>Java 11 or newer (usually bundled with JMRI installer)</li>
+<li>Windows 7+, macOS 10.14+, or Linux with X11</li>
+<li>~500MB disk space</li>
+</ul>
+</li>
+<li>
+<p><strong>Install JMRI</strong>:</p>
+<ul>
+<li>Run the installer with default options</li>
+<li>On macOS, you may need to allow the app in System Preferences → Security</li>
+<li>On Linux, you may need to make the script executable: <code>chmod +x JMRI-installer.sh</code></li>
+</ul>
+</li>
+</ol>
+<h3 id="configuring-the-lcc-connection"><a class="header" href="#configuring-the-lcc-connection">Configuring the LCC Connection</a></h3>
+<p>JMRI needs to know how to connect to your ESP32’s TCP Hub on port 12021. Let’s configure that connection.</p>
+<ol>
+<li><strong>Launch LccPro</strong>:
+<ul>
+<li>In JMRI, go to <strong>ESP32 LCC → LccPro</strong></li>
+<li>If this is the <strong>first time</strong> you’re running LccPro and you have <strong>no other connections</strong>, the LccPro Wizard appears automatically (see first image below)</li>
+<li>If you <strong>already have at least one connection</strong> from DecoderPro or PanelPro, continue to step 2</li>
+</ul>
+</li>
+</ol>
+<p><img src="../images/LccPro_FirstConnection.png" alt="LccPro Wizard on first launch (no existing connections)"></p>
+<ol start="2">
+<li>
+<p><strong>Configure the connection settings</strong>:</p>
+<p><strong>If using the Wizard</strong> (first-time launch):</p>
+<ul>
+<li>Enter the connection details in the Wizard form (see steps 3 below for field definitions)</li>
+<li>Click <strong>Next</strong> to proceed</li>
+</ul>
+<p><strong>If you have existing connections</strong>:</p>
+<ul>
+<li>Click <strong>Edit → Preferences</strong> in the LccPro window</li>
+<li>Click the <strong>Connections</strong> tab (in the left sidebar)</li>
+<li>Click the <strong>+</strong> button (bottom left) to add a new connection</li>
+</ul>
+</li>
+</ol>
+<p><img src="../images/JMRI_Preferences.png" alt="JMRI Preferences dialog with Connections tab"></p>
+<ol start="3">
+<li>
+<p><strong>Enter the connection settings</strong>:</p>
+<ul>
+<li><strong>System manufacturer</strong>: Select <code>LCC</code> (this is the OpenLCB standard system name in JMRI)</li>
+<li><strong>System connection</strong>: Select <code>CAN via GridConnect Network Interface</code></li>
+<li><strong>Connection name</strong>: Enter <code>ESP32 LCC</code> (or any descriptive name)</li>
+<li><strong>IP Address/Host Name</strong>: Enter the IP address displayed in your PlatformIO serial monitor window (look for the line “IP Address: 192.168.x.x” from your ESP32’s startup output)</li>
+<li><strong>TCP/UDP Port</strong>: Enter <code>12021</code></li>
+<li><strong>Connection Protocol</strong>: Select <code>OpenLCB</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Save settings</strong> (required for both Wizard and Preferences):</p>
+<ul>
+<li>Click <strong>Edit → Preferences</strong> in the LccPro window (if not already there)</li>
+<li>Click <strong>Save</strong> at the bottom of the Preferences window</li>
+<li>JMRI will prompt to restart - click <strong>Restart Now</strong></li>
+</ul>
+</li>
+</ol>
+<h3 id="monitoring-lcc-traffic"><a class="header" href="#monitoring-lcc-traffic">Monitoring LCC Traffic</a></h3>
+<p>After JMRI restarts, let’s open the message monitor to see your ESP32’s events.</p>
+<ol>
+<li>
+<p><strong>Open the LCC Monitor</strong>:</p>
+<ul>
+<li>Go to <strong>ESP32 LCC → Monitor Traffic</strong></li>
+<li>A new window opens showing a live feed of LCC messages</li>
+</ul>
+</li>
+<li>
+<p><strong>Observe the event production</strong>:</p>
+<ul>
+<li>You should see alternating event reports appearing every second</li>
+<li>Each event corresponds to the events your ESP32 is producing</li>
+</ul>
+</li>
+</ol>
+<p><img src="../images/Traffic_Monitor.png" alt="LCC Traffic Monitor showing alternating events"></p>
+<h3 id="viewing-node-properties-snip-information"><a class="header" href="#viewing-node-properties-snip-information">Viewing Node Properties (SNIP Information)</a></h3>
+<p>You can verify that JMRI recognizes your ESP32 as a node on the network and view its SNIP (Simple Node Information Protocol) details using LccPro:</p>
+<ol>
+<li>
+<p><strong>Open LccPro</strong>:</p>
+<ul>
+<li>In JMRI, go to <strong>ESP32 LCC → LccPro</strong></li>
+<li>This opens the LCC configuration tool and displays the node list</li>
+</ul>
+</li>
+<li>
+<p><strong>Find your ESP32 node</strong>:</p>
+<ul>
+<li>You should see a node with the ID matching your code (<code>050201020200</code>)</li>
+<li>The node list displays the SNIP (Simple Node Information Protocol) data:
+<ul>
+<li><strong>Name</strong>: <code>async_blink</code> (your node name from <code>config.h</code>)</li>
+<li><strong>ID</strong>: <code>050201020200</code> (your node’s unique OpenLCB identifier)</li>
+<li><strong>Manufacturer</strong>: <code>OpenMRN</code></li>
+<li><strong>Model</strong>: <code>async_blink</code></li>
+<li><strong>Software</strong>: <code>1.00</code></li>
+<li><strong>Description</strong>: The description from <code>SNIP_NODE_DESC</code></li>
+</ul>
+</li>
+<li>This confirms the node initialized successfully with correct identity information</li>
+</ul>
+</li>
+</ol>
+<p><img src="../images/LccProNodes.png" alt="LccPro node list showing the async_blink node"></p>
 <blockquote>
-<p>Dominant and recessive are the normal terms used because a ‘1’ bit (recessive) does NOT drive the bus. It allows the terminators to ‘drive’ the bus by pulling the two bus lines to a common voltage. (2.5V) On the other hand a ‘0’ bit (dominant) drives the bus to both high and low. (CANH goes to 5V and CANL goes to 0V) The bus drivers can always over power the terminators, and that is how the zero bit always dominates over the one bit. It also explains why at least some termination is required. The termination values are also chosen to suppress cable reflections, but that is actually only an issue on long lines. Also note that this explains the complexity of our RR-CirKits terminators. You can attach a logic analyzer to one of our terminators because it creates a logic level image of the bus (to drive the activity LED). You cannot connect a logic analyzer directly to the CAN bus, because it does not contain a logic level signal on either line.</p>
-<p>Normally two nodes will happily send identical data until one node or the other transmits a zero bit during the other node’s one bit. At that point the recessive node notices that it transmitted a one bit,but received a zero bit back from the bus. This tells the recessive node that it is in conflict and must immediately stop transmitting. No other nodes can observe that this happened. This requirement for an immediate (within a fraction of the bit time) response is what limits the CAN bus segment lengths.</p>
-<p>– Dick Bronson, RR Cirkits</p>
+<p><strong>Note</strong>: The <strong>Configure</strong> button in LccPro is for editing the node’s configuration. We’ll explore that in Chapter 5.</p>
 </blockquote>
-<p>Arbitration uses the 29-bit header value as a priority value to gain access to the bus, where lower values have higher priority. This mechanism provides very high utilization of the bus’ bandwidth because one node will always win a collision and keep transmitting. In contrast, Ethernet uses a more complex scheme where nodes have to back off, wait a random period, then attempt to transmit again, thus wasting bandwidth.</p>
-<p>For arbitration to work sucessfully, each message sent by a node needs to use a unique 29-bit ID. The details for this are handled by the OpenLCB specifications, and are different for different types of messages.</p>
+<h3 id="understanding-snip-vs-acdi-important"><a class="header" href="#understanding-snip-vs-acdi-important">Understanding SNIP vs ACDI (Important!)</a></h3>
+<p>Now is a good time to understand the distinction between two types of node information in OpenLCB:</p>
+<p><strong>SNIP (Simple Node Information Protocol)</strong>:</p>
+<ul>
+<li>Identifies <strong>what the device IS</strong> (manufacturer, model, hardware/software versions)</li>
+<li><strong>Hardcoded in firmware</strong> (in <code>config.h</code> as <code>SNIP_STATIC_DATA</code>)</li>
+<li><strong>Read-only</strong> - cannot be changed without recompiling</li>
+<li>Displayed in <strong>LccPro → Identification tab</strong> when you view node properties</li>
+<li>Examples: <code>OpenMRN</code> (manufacturer), <code>async_blink</code> (model)</li>
+</ul>
+<p><strong>ACDI (Abbreviated Configuration Description Information)</strong>:</p>
+<ul>
+<li>Stores <strong>layout identity</strong> - how YOU refer to the node in your model railroad</li>
+<li><strong>Persistent in SPIFFS</strong> (can be modified via JMRI without recompiling)</li>
+<li>User-editable through <strong>LccPro</strong></li>
+<li>Includes fields like “User Name” (what you call the node) and “Description”</li>
+<li>Examples: <code>Main Station Blinker</code>, <code>Yard Controller #3</code></li>
+</ul>
+<p>In this v0.1 example, both are initialized from <code>config.h</code> constants. In Chapter 5, you’ll learn to make ACDI values editable through JMRI using the configuration interface.</p>
+<h3 id="optional-view-events-as-sensors"><a class="header" href="#optional-view-events-as-sensors">Optional: View Events as Sensors</a></h3>
+<p>Want to see your ESP32’s events visualized as sensor states? You can create sensors in <strong>PanelPro</strong> that correspond to your event IDs.</p>
+<p><strong>Important</strong>: For this section, you need to have <strong>PanelPro</strong> open. If you only have JMRI running:</p>
+<ul>
+<li>Select <strong>File → Open PanelPro</strong> to launch it</li>
+</ul>
+<p>Once PanelPro is open:</p>
+<ol>
+<li>
+<p><strong>Open the Sensor Table</strong>:</p>
+<ul>
+<li>Go to <strong>Tools → Tables → Sensors</strong></li>
+<li>The sensor table displays any configured LCC sensors</li>
+</ul>
+</li>
+<li>
+<p><strong>Add your first sensor</strong>:</p>
+<ul>
+<li>Click <strong>Add</strong> to create a new sensor</li>
+<li>In the dialog:
+<ul>
+<li><strong>System Name</strong>: Enter the hardware address for your first event ID
+<ul>
+<li>For <code>EVENT_ID_0</code> (0x0502010202000000), type: <code>0502010202000000</code></li>
+<li>JMRI will automatically add the <code>MS</code> prefix when you click Create</li>
+</ul>
+</li>
+<li><strong>User Name</strong>: Enter <code>ESP32 Event 0</code> (or any descriptive name)</li>
+</ul>
+</li>
+<li>Click <strong>Create</strong></li>
+</ul>
+</li>
+<li>
+<p><strong>Repeat for the second event</strong>:</p>
+<ul>
+<li>Click <strong>Add</strong> again</li>
+<li><strong>System Name</strong>: Type <code>0502010202000001</code></li>
+<li><strong>User Name</strong>: <code>ESP32 Event 1</code></li>
+<li>Click <strong>Create</strong></li>
+</ul>
+</li>
+<li>
+<p><strong>Watch the sensors</strong>:</p>
+<ul>
+<li>Return to the sensor table</li>
+<li>Verify the system names are correct:
+<ul>
+<li>Event 0 should show: <code>MS0502010202000000</code></li>
+<li>Event 1 should show: <code>MS0502010202000001</code></li>
+</ul>
+</li>
+<li>As your ESP32 produces alternating events, observe the sensor behavior:
+<ul>
+<li><strong>Expected behavior</strong>: The sensors will flash ACTIVE for a brief moment, then return to INACTIVE</li>
+<li><strong>Why the brief flash?</strong>: JMRI uses an event timeout mechanism. When an event is received, the sensor becomes ACTIVE. If the same event isn’t re-sent within the timeout window, the sensor automatically reverts to INACTIVE (a safety feature to prevent stale states if a node disappears from the network)</li>
+<li><strong>Pattern</strong>: Since your ESP32 alternates between EVENT_ID_0 and EVENT_ID_1 every second, you should see:
+<ul>
+<li>Second 1: Sensor 0 flashes ACTIVE, Sensor 1 stays INACTIVE</li>
+<li>Second 2: Sensor 1 flashes ACTIVE, Sensor 0 stays INACTIVE</li>
+<li>Second 3: Sensor 0 flashes ACTIVE, and so on…</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<p><img src="../images/Sensors.png" alt="LCC Sensors showing alternating ACTIVE states"></p>
+<p>This demonstrates the bidirectional nature of LCC - your JMRI sensors are consuming events produced by your ESP32!</p>
+<h3 id="configuration--jmri-cdi-discovery"><a class="header" href="#configuration--jmri-cdi-discovery">Configuration &amp; JMRI: CDI Discovery</a></h3>
+<p>When JMRI first connects to your ESP32, it automatically discovers what configuration options are available by requesting the <strong>CDI (Configuration Description Information)</strong> file. This file (generated in <code>init_openlcb_stack()</code> as <code>/spiffs/cdi.xml</code>) describes:</p>
+<ul>
+<li>What segments are available (Internal settings, User info, Device-specific parameters)</li>
+<li>What fields can be edited in each segment</li>
+<li>Data types (text, numbers, enums, etc.)</li>
+<li>Constraints (min/max values, field lengths, etc.)</li>
+</ul>
+<p>In v0.1, the CDI is generated automatically from the <code>ConfigDef</code> structure in <code>config.h</code>. Your node currently exposes:</p>
+<ul>
+<li><strong>SNIP Identification</strong>: Manufacturer, model, hardware/software versions (read-only)</li>
+<li><strong>ACDI User Info</strong>: Node name and description (editable, but changes aren’t saved yet)</li>
+<li><strong>Internal Configuration</strong>: Reserved space for future parameters</li>
+</ul>
+<p>When you view node properties in <strong>LccPro → Configure</strong>, JMRI uses this CDI to render the appropriate dialog fields.</p>
+<p><strong>In Chapter 5</strong>, you’ll:</p>
+<ul>
+<li>Add configurable parameters (like <code>EVENT_INTERVAL</code>) to the CDI</li>
+<li>Implement <code>apply_configuration()</code> to save user changes to SPIFFS</li>
+<li>Learn how to version your configuration schema for forward compatibility</li>
+<li>Test configuration updates through LccPro</li>
+</ul>
+<p>For now, understand that your node is already <strong>capable</strong> of being configured via JMRI - we’re just not modifying the configuration yet. The CDI file ensures JMRI knows what configuration options your node supports.</p>
+<h3 id="troubleshooting-jmri-connection"><a class="header" href="#troubleshooting-jmri-connection">Troubleshooting JMRI Connection</a></h3>
+<p><strong>JMRI shows “Connection failed” or “No route to host”</strong>:</p>
+<ul>
+<li>Verify the IP address matches what the ESP32 serial monitor showed</li>
+<li>Ensure your computer and ESP32 are on the same WiFi network</li>
+<li>Check firewall settings - allow Java/JMRI to access the network</li>
+<li>Try pinging the ESP32: <code>ping 192.168.1.100</code> (use your ESP32’s IP)</li>
+</ul>
+<p><strong>No messages appear in the monitor</strong>:</p>
+<ul>
+<li>Click <strong>Clear</strong> in the monitor to reset the display</li>
+<li>Press RESET on the ESP32 to trigger initialization messages</li>
+<li>Check the connection status at the bottom of the JMRI window (should show “Connected”)</li>
+</ul>
+<p><strong>Messages appear but events don’t match</strong>:</p>
+<ul>
+<li>Verify the event IDs in your code match what you’re looking for in JMRI</li>
+<li>Check that you didn’t modify the EVENT_ID constants</li>
+</ul>
+<p><strong>“Connection lost” after working initially</strong>:</p>
+<ul>
+<li>ESP32 may have rebooted or lost WiFi connection</li>
+<li>Check the serial monitor for errors or WiFi reconnection attempts</li>
+<li>ESP32’s IP address may have changed if DHCP lease renewed</li>
+</ul>
+<h2 id="troubleshooting-general-issues"><a class="header" href="#troubleshooting-general-issues">Troubleshooting General Issues</a></h2>
+<p><strong>Library not found during build:</strong></p>
+<ul>
+<li>Verify the <code>lib_deps</code> line in <code>platformio.ini</code> has no typos</li>
+<li>Run <strong>PlatformIO: Clean</strong> from the command palette (<code>Ctrl+Shift+P</code>)</li>
+<li>Rebuild the project</li>
+</ul>
+<p><strong>ESP32 not detected:</strong></p>
+<ul>
+<li>Check USB cable (must be data cable, not charge-only)</li>
+<li>Install CP2102 or CH340 USB driver for your operating system</li>
+<li>Try a different USB port</li>
+</ul>
+<p><strong>WiFi connection fails:</strong></p>
+<ul>
+<li>Verify SSID and password in code</li>
+<li>Check that ESP32 is within range of access point</li>
+<li>ESP32 only supports 2.4GHz WiFi (not 5GHz)</li>
+</ul>
+<p><strong>JMRI not seeing events:</strong></p>
+<ul>
+<li>Verify JMRI is configured for TCP GridConnect connection</li>
+<li>Check that ESP32 and JMRI are on the same network</li>
+<li>Verify the TCP server address and port in ESP32 code</li>
+</ul>
+<h2 id="whats-next"><a class="header" href="#whats-next">What’s Next</a></h2>
+<p>You’ve now built your first OpenLCB node with WiFi transport!</p>
+<p>In the next chapter, we’ll cover configuration—how to customize your node’s behavior and settings through the CDI (Configuration Description Information) interface.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../01-intro/node_architecture.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../03-esp32-arduino/build-and-upload.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../01-intro/intro_async_blink.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
-                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -223,13 +497,10 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../01-intro/node_architecture.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../03-esp32-arduino/build-and-upload.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../01-intro/intro_async_blink.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
-                    </a>
             </nav>
 
         </div>

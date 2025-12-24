@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>CAN - OpenLCB Programmer&#x27;s Guide</title>
+        <title>Build and Upload - OpenLCB Programmer&#x27;s Guide</title>
 
 
         <!-- Custom HTML head -->
@@ -174,46 +174,201 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="introduction-to-can"><a class="header" href="#introduction-to-can">Introduction to CAN</a></h1>
-<p>Controller Area Network (CAN) is a standard that was initially created in 1981 by Bosch, and has since been used for factory automation and communication networks in cars, to name just a few uses. Today there are hundreds of billions of devices using CAN bus in daily use.</p>
-<p>As a result, there are a number of relatively inexpensive ICs available that fully implement the CAN specifications out of the box. By using CAN controllers and drivers, you do not have to write highly time-sensitive code. Instead, you can focus on implementing support for the messages in the application layers, which is a “relatively” simple task compared with implementing a transport layer.</p>
-<h2 id="can-messages"><a class="header" href="#can-messages">CAN Messages</a></h2>
-<p>CAN transmits messages, called <em>frames</em> on the bus. Every other device (node) on the bus can (and must) listen to all of the traffic on the bus. One of the interesting and useful aspects of CAN is how it handles collisions, which is through arbitration.</p>
-<p>CAN frames, in the form used by OpenLCB, consist of a 29-bit header followed by zero or more bytes of data. This is using the <em>extended frame format</em>, also know as CAN 2.0 B.</p>
-<p><img src="../images/can_bits.jpg" alt="CAN Format"></p>
-<h3 id="arbitration"><a class="header" href="#arbitration">Arbitration</a></h3>
-<p>Arbitration is the process used to ensure that only one message is being transmitted at one time. If two nodes are trying to transmit different messages at the same time, one of those two will pass through the bus unharmed, while the other node will realize it lost the arbitration and attempt to re-transmit right after the first message is completed. This allows nearly 100% utilization of the bandwidth, because the node(s) that lost the arbitration will immediately stop, thereby not corrupting the frame that is being transmitted by the winner of the arbitration. This guarantees forward progress. In contrast, old style Ethernet (and LocoNet, btw.) uses a more complex scheme, where a collision destroys the frame, then nodes have to back off, wait a random period, then attempt to transmit again, thus wasting bandwidth.</p>
-<p>The arbitration phase relies on drivers only pulling the bus low. If two nodes attempt to put different bit values on the bus at the same time, the 0 will always win. Here is a chart that shows how this works:</p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Node 1</th><th>Node 2</th><th>Bus Value</th></tr>
-</thead>
-<tbody>
-<tr><td>0</td><td>0</td><td>0</td></tr>
-<tr><td>0</td><td>1</td><td>0</td></tr>
-<tr><td>1</td><td>0</td><td>0</td></tr>
-<tr><td>1</td><td>1</td><td>1</td></tr>
-</tbody>
-</table>
-</div>
-<blockquote>
-<p>Dominant and recessive are the normal terms used because a ‘1’ bit (recessive) does NOT drive the bus. It allows the terminators to ‘drive’ the bus by pulling the two bus lines to a common voltage. (2.5V) On the other hand a ‘0’ bit (dominant) drives the bus to both high and low. (CANH goes to 5V and CANL goes to 0V) The bus drivers can always over power the terminators, and that is how the zero bit always dominates over the one bit. It also explains why at least some termination is required. The termination values are also chosen to suppress cable reflections, but that is actually only an issue on long lines. Also note that this explains the complexity of our RR-CirKits terminators. You can attach a logic analyzer to one of our terminators because it creates a logic level image of the bus (to drive the activity LED). You cannot connect a logic analyzer directly to the CAN bus, because it does not contain a logic level signal on either line.</p>
-<p>Normally two nodes will happily send identical data until one node or the other transmits a zero bit during the other node’s one bit. At that point the recessive node notices that it transmitted a one bit,but received a zero bit back from the bus. This tells the recessive node that it is in conflict and must immediately stop transmitting. No other nodes can observe that this happened. This requirement for an immediate (within a fraction of the bit time) response is what limits the CAN bus segment lengths.</p>
-<p>– Dick Bronson, RR Cirkits</p>
-</blockquote>
-<p>Arbitration uses the 29-bit header value as a priority value to gain access to the bus, where lower values have higher priority. This mechanism provides very high utilization of the bus’ bandwidth because one node will always win a collision and keep transmitting. In contrast, Ethernet uses a more complex scheme where nodes have to back off, wait a random period, then attempt to transmit again, thus wasting bandwidth.</p>
-<p>For arbitration to work sucessfully, each message sent by a node needs to use a unique 29-bit ID. The details for this are handled by the OpenLCB specifications, and are different for different types of messages.</p>
+                        <h2 id="building-and-uploading-to-esp32"><a class="header" href="#building-and-uploading-to-esp32">Building and Uploading to ESP32</a></h2>
+<p>Now that you have the complete code, let’s build it, upload it to your ESP32, and verify it works through the serial monitor.</p>
+<h3 id="building-the-project"><a class="header" href="#building-the-project">Building the Project</a></h3>
+<ol>
+<li>
+<p><strong>Save the modified main.cpp file</strong> (<code>Ctrl+S</code> / <code>Cmd+S</code>)</p>
+</li>
+<li>
+<p><strong>Open the PlatformIO sidebar</strong>:</p>
+<ul>
+<li>Click the PlatformIO icon (alien head) in VS Code’s left sidebar</li>
+<li>Or use the bottom toolbar’s checkmark icon (Build)</li>
+</ul>
+</li>
+<li>
+<p><strong>Build the project</strong>:</p>
+<ul>
+<li>In PROJECT TASKS → <strong>esp32doit-devkit-v1</strong>, click <strong>Build</strong></li>
+<li>Or click the checkmark (✓) icon in the bottom toolbar</li>
+<li>Or press <code>Ctrl+Alt+B</code> / <code>Cmd+Alt+B</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Watch the build output</strong>:</p>
+<pre><code>Building in release mode
+Compiling .pio/build/esp32doit-devkit-v1/src/main.cpp.o
+Linking .pio/build/esp32doit-devkit-v1/firmware.elf
+Building .pio/build/esp32doit-devkit-v1/firmware.bin
+========================= [SUCCESS] Took 5.23 seconds =========================
+</code></pre>
+</li>
+</ol>
+<p>The first build takes longer because it compiles OpenMRNLite. Subsequent builds are much faster.</p>
+<p><strong>If the build fails</strong>, check:</p>
+<ul>
+<li>WiFi credentials are properly quoted (strings)</li>
+<li>All braces <code>{}</code> and parentheses <code>()</code> match</li>
+<li><code>#include &lt;OpenMRNLite.h&gt;</code> is present</li>
+<li><code>lib_deps</code> in <code>platformio.ini</code> includes OpenMRNLite</li>
+</ul>
+<h3 id="connecting-your-esp32"><a class="header" href="#connecting-your-esp32">Connecting Your ESP32</a></h3>
+<ol>
+<li>
+<p><strong>Connect the ESP32 to your computer</strong> via USB cable</p>
+<ul>
+<li>Use a <strong>data cable</strong>, not a charge-only cable</li>
+<li>The ESP32 should power on (onboard LED may light up)</li>
+</ul>
+</li>
+<li>
+<p><strong>Identify the COM port</strong> (Windows) or device path (Mac/Linux):</p>
+<ul>
+<li>PlatformIO usually auto-detects the port</li>
+<li>Windows: <code>COM3</code>, <code>COM4</code>, etc.</li>
+<li>Mac: <code>/dev/cu.usbserial-*</code> or <code>/dev/cu.wchusbserial*</code></li>
+<li>Linux: <code>/dev/ttyUSB0</code> or <code>/dev/ttyACM0</code></li>
+</ul>
+</li>
+<li>
+<p><strong>If the port isn’t detected</strong>, you may need to install a USB driver:</p>
+<ul>
+<li><strong>CP2102</strong>: Download from <a href="https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers">Silicon Labs</a></li>
+<li><strong>CH340</strong>: Download from <a href="http://www.wch-ic.com/downloads/CH341SER_EXE.html">WCH</a></li>
+<li>Most modern operating systems include these drivers</li>
+</ul>
+</li>
+</ol>
+<h3 id="uploading-the-firmware-and-opening-the-monitor"><a class="header" href="#uploading-the-firmware-and-opening-the-monitor">Uploading the Firmware and Opening the Monitor</a></h3>
+<ol>
+<li>
+<p><strong>Upload the firmware and automatically open the serial monitor</strong>:</p>
+<ul>
+<li>In PROJECT TASKS → <strong>esp32doit-devkit-v1</strong>, click <strong>Upload and Monitor</strong></li>
+<li>Or press <code>Ctrl+Alt+U</code> then <code>Ctrl+Alt+S</code> / <code>Cmd+Alt+U</code> then <code>Cmd+Alt+S</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Watch the upload process</strong>:</p>
+<pre><code>Configuring upload protocol...
+Looking for upload port...
+Auto-detected: COM3
+Uploading .pio/build/esp32doit-devkit-v1/firmware.bin
+esptool.py v4.5.1
+Connecting........__
+Chip is ESP32-D0WDQ6 (revision 1)
+Writing at 0x00010000... (100 %)
+Wrote 876544 bytes (543210 compressed) at 0x00010000 in 48.2 seconds
+Leaving...
+Hard resetting via RTS pin...
+========================= [SUCCESS] Took 52.91 seconds =========================
+</code></pre>
+</li>
+<li>
+<p><strong>The ESP32 will automatically reboot</strong> and start running your code</p>
+</li>
+</ol>
+<p><strong>If upload fails</strong>:</p>
+<ul>
+<li><strong>“Serial port not found”</strong>: Check USB cable connection, try different USB port</li>
+<li><strong>“Failed to connect”</strong>: Hold the BOOT button while clicking “Upload and Monitor”, release after “Connecting…” appears</li>
+<li><strong>Permission denied (Linux)</strong>: Add your user to the <code>dialout</code> group: <code>sudo usermod -a -G dialout $USER</code>, then log out and back in</li>
+</ul>
+<p><strong>If you missed the startup sequence</strong>, press the <strong>RESET</strong> button on your ESP32 board to restart it and the serial monitor will display the output again.</p>
+<h3 id="verifying-the-output"><a class="header" href="#verifying-the-output">Verifying the Output</a></h3>
+<p>On first run, you should see output like this:</p>
+<pre><code>=== OpenLCB async_blink ESP32 Example ===
+Node ID: 0x050201020200
+Event 0: 0x0502010202000000
+Event 1: 0x0502010202000001
+
+Initializing SPIFFS...
+E (523) SPIFFS: mount failed, -10025
+SPIFFS initialized successfully
+
+Connecting to WiFi SSID: YourNetwork
+.....
+WiFi connected!
+IP Address: 192.168.1.100
+
+Creating CDI configuration descriptor...
+[CDI] Checking /spiffs/cdi.xml...
+[CDI] File /spiffs/cdi.xml does not exist
+[CDI] Updating /spiffs/cdi.xml (len 987)
+[CDI] Registering CDI with stack...
+Initializing OpenLCB configuration...
+Creating config file /spiffs/openlcb_config
+
+Starting OpenLCB stack...
+Starting executor thread...
+Starting TCP Hub on port 12021...
+TCP Hub listening. JMRI can connect to this device on port 12021
+
+OpenLCB node initialization complete!
+Entering run mode - will alternate events every 1 second
+
+Produced event: 0x0502010202000000 (state: 0)
+Produced event: 0x0502010202000001 (state: 1)
+Produced event: 0x0502010202000000 (state: 0)
+Produced event: 0x0502010202000001 (state: 1)
+...
+</code></pre>
+<p><strong>First Run Note</strong>: The initial startup (especially the “Creating CDI configuration” and “Creating config file” steps) takes 20-30 seconds due to SPIFFS filesystem formatting. The SPIFFS mount error is normal—the filesystem doesn’t exist yet, but it’s automatically created. Don’t interrupt the ESP32 during this time. Subsequent boots skip formatting and start much faster.</p>
+<p><strong>What to verify</strong>:</p>
+<ul>
+<li>✅ SPIFFS initializes successfully</li>
+<li>✅ WiFi connects successfully (shows your network name and IP address)</li>
+<li>✅ OpenLCB stack initializes</li>
+<li>✅ Events alternate between <code>...00</code> and <code>...01</code> every second</li>
+<li>✅ State toggles between <code>0</code> and <code>1</code></li>
+</ul>
+<h3 id="understanding-what-you-see"><a class="header" href="#understanding-what-you-see">Understanding What You See</a></h3>
+<p>This output confirms your ESP32 is:</p>
+<ol>
+<li><strong>Connected to WiFi</strong>: The IP address shows it’s on your network</li>
+<li><strong>Running the OpenLCB stack</strong>: Node initialization completed successfully</li>
+<li><strong>Producing events</strong>: The alternating event IDs prove the event production logic works</li>
+<li><strong>Ready for network communication</strong>: The node is broadcasting these events on the OpenLCB network (you’ll verify this with JMRI next)</li>
+</ol>
+<p><strong>Congratulations!</strong> You have a working OpenLCB node. The events are being broadcast over WiFi/TCP, but you can’t see them on the network yet - that’s what JMRI will show you in the next section.</p>
+<h3 id="common-issues"><a class="header" href="#common-issues">Common Issues</a></h3>
+<p><strong>WiFi won’t connect</strong> (stuck on dots):</p>
+<ul>
+<li>Verify WiFi credentials in code are correct</li>
+<li>Check ESP32 is within range of your access point</li>
+<li>Confirm your network is 2.4GHz (not 5GHz only)</li>
+<li>Some corporate/school networks block device connections</li>
+</ul>
+<p><strong>No serial output at all</strong>:</p>
+<ul>
+<li>Verify <code>monitor_speed = 115200</code> is in your <code>platformio.ini</code> file</li>
+<li>Try pressing RESET button on ESP32</li>
+<li>Verify the serial monitor is connected to the correct port</li>
+</ul>
+<p><strong>Output is garbled/random characters</strong>:</p>
+<ul>
+<li>Wrong baud rate - ensure <code>monitor_speed = 115200</code> is in <code>platformio.ini</code></li>
+<li>If you already added it, stop and restart the serial monitor</li>
+<li>Bad USB cable or connection</li>
+</ul>
+<p><strong>“Brownout detector triggered” errors</strong>:</p>
+<ul>
+<li>Insufficient power from USB port</li>
+<li>Try a different USB port or powered USB hub</li>
+<li>This usually doesn’t prevent operation, just a warning</li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../01-intro/node_architecture.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../03-esp32-arduino/code-walkthrough.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../01-intro/intro_async_blink.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../03-esp32-arduino/jmri-monitoring.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -223,11 +378,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../01-intro/node_architecture.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../03-esp32-arduino/code-walkthrough.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../01-intro/intro_async_blink.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../03-esp32-arduino/jmri-monitoring.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
