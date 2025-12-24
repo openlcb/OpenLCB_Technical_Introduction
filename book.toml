@@ -2,7 +2,7 @@
 authors = ["John Socha-Leialoha"]
 language = "en"
 src = "src"
-title = "OpenLCB Technical Introduction"
+title = "OpenLCB Programmer's Guide"
 
 [preprocessor.mermaid]
 command = "mdbook-mermaid"
