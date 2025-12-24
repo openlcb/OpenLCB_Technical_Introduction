@@ -1,7 +1,7 @@
 # Summary
 
 - [Introduction](./intro.md)
-  - [Node](./intro_node.md)
+  - [Node](./node_architecture.md)
   - [CAN](./intro_can.md)
   - [Node Startup Sequence](./intro_async_blink.md)
   - [Events and Run Mode](./intro_ab_events.md)

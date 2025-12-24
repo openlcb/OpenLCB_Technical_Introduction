@@ -25,25 +25,7 @@ We're going to build a simple but complete OpenLCB node that demonstrates the co
 
 This example is intentionally simple to focus on learning. Real layout nodes can have dozens of inputs/outputs, configuration systems, and specialized protocols—we'll cover those in future chapters.
 
-## Why WiFi/TCP First?
 
-As mentioned in Chapter 1, OpenLCB works over multiple physical transports. We're starting with WiFi and TCP for several practical reasons:
-
-**For Learning**:
-- **No special hardware required** - ESP32 boards have WiFi built-in, no CAN transceivers needed
-- **Easy monitoring** - standard network tools and JMRI can capture all traffic
-- **Faster iteration** - wireless upload and debugging without physical bus connections
-- **Lower barrier to entry** - get started with just a microcontroller and breadboard
-
-**Same Protocols**: The OpenLCB message formats, node startup, and event handling work identically over WiFi/TCP and CAN. Everything you learn here transfers directly to CAN-based implementations.
-
-**CAN Is Still Important**: Traditional LCC installations use CAN bus, and for good reason:
-- Excellent noise immunity for layout environments
-- Built-in collision handling and arbitration
-- Two-wire bus with simple termination
-- Industry-proven reliability
-
-We'll cover adding CAN hardware in future chapters. For now, WiFi/TCP lets you focus on understanding OpenLCB without hardware complexity.
 
 ## Library Choice: OpenMRN-Lite
 
@@ -80,6 +62,26 @@ We've chosen the ESP32 microcontroller platform for this book because it's one o
 - Other ESP32 variants (ESP32-S3, ESP32-C3)
 
 If you have a different board available, you can likely adapt the examples. Chapter 2.5 has more details on platform trade-offs. For now, ESP32 is the best starting point: affordable, well-documented, and fully supported by the OpenMRN-Lite community.
+
+## Why WiFi/TCP First?
+
+As mentioned in Chapter 1, OpenLCB works over multiple physical transports. We're starting with WiFi and TCP for several practical reasons:
+
+**For Learning**:
+- **No special hardware required** - ESP32 boards have WiFi built-in, no CAN transceivers needed
+- **Easy monitoring** - standard network tools and JMRI can capture all traffic
+- **Faster iteration** - wireless upload and debugging without physical bus connections
+- **Lower barrier to entry** - get started with just a microcontroller and breadboard
+
+**Same Protocols**: The OpenLCB message formats, node startup, and event handling work identically over WiFi/TCP and CAN. Everything you learn here transfers directly to CAN-based implementations.
+
+**CAN Is Still Important**: Traditional LCC installations use CAN bus, and for good reason:
+- Excellent noise immunity for layout environments
+- Built-in collision handling and arbitration
+- Two-wire bus with simple termination
+- Industry-proven reliability
+
+We'll cover adding CAN hardware in future chapters. For now, WiFi/TCP lets you focus on understanding OpenLCB without hardware complexity.
 
 ## Prerequisites & Assumptions
 
@@ -169,56 +171,7 @@ JMRI (Java Model Railroad Interface) is an essential tool for working with OpenL
 
 Chapter 3 includes detailed JMRI setup and verification steps. You'll see your first OpenLCB messages within minutes of uploading code.
 
-## Network Architecture: Hubs and Nodes
-
-Now that we've introduced JMRI, it's important to understand the architecture that makes this all work. An OpenLCB network consists of two types of participants working together:
-
-**Nodes** are devices that produce and consume events—like your ESP32 with a button and LED. Each node has a unique 6-byte identifier and announces itself when joining the network.
-
-**Hubs** are central coordinators that route messages between nodes. In a WiFi/TCP network, the hub is a TCP server listening on port 12021. When JMRI or other tools connect to the hub, they can see all network traffic and send commands to any node.
-
-The clever part: your ESP32 can be **both a node and a hub simultaneously**. It runs the OpenLCB protocol stack (making it a node), and it also runs a TCP Hub service (making it a network coordinator). This is exactly what we'll do in Chapter 3—create a single device that acts as both.
-
-Here's how the architecture works:
-
-```mermaid
-graph TB
-    subgraph ESP32["ESP32 Device"]
-        Node["OpenLCB Node<br/>(produces/consumes events)"]
-        Hub["TCP Hub<br/>(port 12021)"]
-        Node ---|message routing| Hub
-    end
-    
-    JMRI["JMRI Monitor<br/>(TCP Client)"]
-    Node2["Other ESP32 Node<br/>(optional future)"]
-    CAN["CAN Bus<br/>(optional future)"]
-    
-    JMRI ---|TCP connection| Hub
-    Node2 ---|TCP connection| Hub
-    CAN -.->|CAN transceiver| Hub
-    
-    style ESP32 fill:#e1f5ff
-    style Node fill:#fff9c4
-    style Hub fill:#f3e5f5
-    style CAN fill:#eeeeee
-    style Node2 fill:#eeeeee
-```
-
-**What You See in This Architecture**:
-
-- **ESP32 Node**: Produces events (button presses) and consumes events (LED changes). It announces itself to the network during startup with the CID/RID/AMD sequence.
-- **TCP Hub**: Listens on port 12021, accepts connections from JMRI and other TCP clients, and forwards all OpenLCB messages between connected participants.
-- **JMRI Monitor**: Connects as a TCP client to see all network traffic. Can send test events to your node and observe responses.
-- **Future Expansion**: You can add more ESP32 nodes (all connecting to the same hub), or add CAN hardware to bridge between TCP and CAN participants.
-
-**Why This Design?** OpenMRNLite makes it easy to add a TCP Hub service to any node. The hub needs just a few lines of code—we'll see this in Chapter 3. This approach is perfect for learning because:
-
-1. **No extra hardware** - The hub runs on the same ESP32 as your node
-2. **Scalable** - Add more nodes just by connecting them to port 12021
-3. **Transport-agnostic** - Whether using TCP, CAN, or both, the message format stays the same
-4. **Future-proof** - Later chapters will add CAN hardware and integrate it seamlessly with the existing TCP hub
-
-We're starting with **TCP because it requires no special hardware**. In later chapters, we'll add CAN transceivers to support traditional LCC installations—but the hub concept remains identical.
+For a conceptual overview of network architecture (hubs, nodes, and the diagram), see the Node overview: [Node](./node_architecture.md#network-architecture).
 
 ## What's Next
 

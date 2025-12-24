@@ -31,19 +31,4 @@ OpenLCB is the name of the working group that created the standards approved by 
 
 You'll notice that the standards use the name OpenLCB everywhere except for the header at the top of the document. In this book, as in the standards, we'll use the term OpenLCB everywhere except this page.
 
-## Transport Layers
-
-OpenLCB is designed to work over different physical transport layers. The two main options are:
-
-**CAN (Controller Area Network)**: The traditional transport for OpenLCB, used in most commercial LCC products. CAN uses a two-wire bus with excellent noise immunity and built-in arbitration, making it ideal for model railroad environments. It requires CAN transceiver hardware and proper bus termination.
-
-**WiFi/TCP**: An alternative transport that uses standard WiFi networking and TCP/IP. This is particularly useful for development and learning because:
-- No special hardware required beyond WiFi-capable microcontrollers
-- Easy to monitor traffic using standard network tools
-- Can connect to JMRI and other tools over your home network
-- Simplifies initial prototyping and testing
-
-In this book, we'll start with WiFi/TCP transport because it's more accessible for learning. Once you understand the core concepts, the principles transfer directly to CAN-based implementations. Future chapters will cover adding CAN hardware.
-
-Both transports use the same OpenLCB protocols and message formats—only the physical layer changes.
 
