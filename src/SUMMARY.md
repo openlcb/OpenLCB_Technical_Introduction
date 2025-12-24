@@ -15,4 +15,3 @@
   - [Transports: WiFi & CAN](./02-start/platform-and-transports.md)
   - [Monitoring & Verification](./02-start/monitoring-and-tools.md)
 - [ESP32 with Arduino & PlatformIO](./03-esp32-arduino/esp32-arduino.md)
-- [Physical I/O with GPIO](./04-gpio/gpio-hardware.md)
