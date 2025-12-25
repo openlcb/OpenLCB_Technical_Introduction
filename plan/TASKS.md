@@ -323,15 +323,14 @@
 - **Priority**: HIGH
 - **Effort**: 1.5-2 hours
 - **Description**:
-  - ✅ Created `src/04-configuration/` directory with 5 markdown files
+  - ✅ Created `src/04-configuration/` directory with 4 markdown files
   - ✅ Wrote overview.md: "Building on Chapter 3 concepts of CDI and SNIP"
   - ✅ **Sections Written**:
     1. overview.md: Why configuration matters, what's in this chapter, what's deferred
     2. storage-model.md: Offset-based storage, SNIP static vs. dynamic, CANONICAL_VERSION, CDI segments
     3. editing-in-jmri.md: Step-by-step LccPro workflow for renaming node (6 steps with placeholders)
     4. factory-reset.md: What happens on first boot, what gets preserved, serial console output examples
-    5. persistence-details.md: How accessor writes work, apply_configuration() callback, lifecycle diagram
-  - ✅ Updated SUMMARY.md to add Chapter 4 with all 5 sections
+  - ✅ Updated SUMMARY.md to add Chapter 4 with initial sections
   - ✅ Updated forward references in Chapter 3 (code-configuration.md, code-walkthrough.md, jmri-monitoring.md)
   - ✅ Verified mdbook build with no errors
 - **Testing**: Completed; mdbook builds successfully
@@ -364,23 +363,24 @@
 - **Blocks**: T4.3
 
 ### T4.3 - Write Phase 3: Configuration Versioning Content & Code Implementation (Session 3)
-- **Status**: 📋 READY TO START
+- **Status**: � READY TO START
 - **Priority**: HIGH
 - **Effort**: 2-2.5 hours
 - **Description**:
-  - **Complete Chapter 4 sections** based on T4.2 research:
-    1. Configuration Versioning: CANONICAL_VERSION role, what triggers resets
-    2. Reserved Space Technique: How to evolve schema without breaking configs
-    3. Version Mismatch Behavior: Factory reset triggers, SNIP preservation at offset 0-127
-    4. Hands-on Walkthrough: Modify EventInterval via JMRI, demonstrate runtime effect
-    5. Best Practices: When to bump version, when to use reserved space
+  - **Create new Chapter 4 section** (persistence-details.md was removed; content will be written during implementation based on practical EventInterval example):
+    - Configurable Settings / Applying Configuration Changes: Practical implementation of apply_configuration()
+    - Configuration Versioning: CANONICAL_VERSION role, what triggers resets
+    - Reserved Space Technique: How to evolve schema without breaking configs
+    - Version Mismatch Behavior: Factory reset triggers, SNIP preservation at offset 0-127
+    - Hands-on Walkthrough: Modify EventInterval via JMRI, demonstrate runtime effect
+    - Best Practices: When to bump version, when to use reserved space
   - **Code Implementation** in test/async_blink_esp32:
+    - Add EventInterval uint16_t field to config.h CDI segment
     - Implement enhanced apply_configuration() to read EventInterval from config
     - Update loop() to use configurable interval instead of hardcoded EVENT_INTERVAL
     - Add logging to show when config changes are detected
     - Test with JMRI: change interval via Configure, verify firmware reads and applies it
-  - **Update code comments** in config.h explaining reserved space pattern
-  - **Document config struct** explaining field layout and offsets
+  - **Update code comments** in config.h explaining reserved space pattern and field layout
 - **Testing**: Requires ESP32 hardware, JMRI, and verifying EventInterval changes work
 - **Owner**: Next session
 - **Depends On**: T4.2 ✅

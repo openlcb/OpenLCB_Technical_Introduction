@@ -83,9 +83,9 @@ This version number is **not** for your application—it's for OpenMRN to track 
 
 - **First Boot**: No config file exists yet. OpenMRN sees `CANONICAL_VERSION = 0x0001` and initializes a new config file with this version number.
 - **Later Boots**: OpenMRN reads the version from the config file. If it matches `CANONICAL_VERSION`, everything is normal—use the config file as-is.
-- **Version Mismatch**: If you change `CANONICAL_VERSION` in your code and recompile, OpenMRN detects a mismatch and **triggers a complete factory reset**. The entire config file is wiped except for the first 128 bytes (SNIP user data: your node name and description). Everything else at offset 128+ is reset to defaults.
+- **Version Mismatch**: If you change `CANONICAL_VERSION` in your code and recompile, OpenMRN detects a mismatch and **triggers a complete factory reset**. This wipes the ENTIRE config file, including SNIP user data at offset 0-127 (your node name and description that users may have customized). Everything is reinitialized to defaults.
 
-We won't change CANONICAL_VERSION in this section, but it's the mechanism that lets you evolve your configuration schema safely. Later sections of this chapter explore versioning in detail.
+**Important**: Users lose their custom node name and any other persisted configuration when CANONICAL_VERSION changes. We won't change it in this section, but later sections explore how to evolve configuration safely while preserving user data.
 
 ## The CDI Segments
 
@@ -94,17 +94,24 @@ Recall from Chapter 3 that `config.h` defines configuration segments:
 ```cpp
 CDI_GROUP(ConfigDef, MainCdi());
   CDI_GROUP_ENTRY(ident, Identification);      // Static SNIP data: manufacturer, model, etc.
-  CDI_GROUP_ENTRY(acdi, Acdi);                 // SNIP user data: name/description (editable via JMRI)
-  CDI_GROUP_ENTRY(userinfo, UserInfoSegment);  // User-editable metadata
+  CDI_GROUP_ENTRY(acdi, Acdi);                 // ACDI protocol marker (tells tools ACDI data exists)
+  CDI_GROUP_ENTRY(userinfo, UserInfoSegment);  // User-editable name/description (configuration tool interface)
   CDI_GROUP_ENTRY(seg, AsyncBlinkSegment);     // Internal config (offset 128+)
 CDI_GROUP_END();
 ```
 
-Each segment maps to a memory offset:
-- **ident**: Static, firmware-based (no config file storage)
-- **acdi**: Dynamic, stored at offset 0-127 of the config file
-- **userinfo**: Alias for acdi, provides JMRI-friendly name/description fields
+Each segment serves a specific role:
+
+- **ident**: Static manufacturer data (Identification) — read-only in JMRI, compiled into firmware
+- **acdi**: ACDI protocol marker — signals to configuration tools that ACDI data is available. Does NOT expose data directly; instead acts as a tag for the SNIP protocol handler
+- **userinfo**: User-editable ACDI fields (User Name, Description) — what JMRI displays as the "User Info" tab for user customization
 - **seg**: Internal app config, stored at offset 128+
+
+In JMRI's LccPro configuration dialog, you'll see:
+1. **Identification** tab (from ident: manufacturer, model, hardware/software versions)
+2. **User Info** tab (from userinfo: the name and description fields you can customize)
+
+The `acdi` entry doesn't appear as a separate tab—it's a protocol marker that enables the SNIP data exchange behind the scenes.
 
 ## Why Offsets Matter
 
@@ -119,13 +126,13 @@ config.h shows:
 ```
 
 This means:
-- User name/description go to offset 0-127 (SNIP user data, **always preserved during factory reset**)
+- User name/description go to offset 0-127 (SNIP user data, **completely wiped on factory reset** and reinitialized to defaults from config.h)
 - Internal config starts at offset 128+ (**completely wiped on factory reset**, replaced with defaults)
 - When JMRI edits the user name, it writes directly to offset 0-127
-- When firmware applies_configuration(), it reads from the appropriate offsets
+- When factory reset is triggered, both offset 0-127 and offset 128+ are wiped and reinitialized from the firmware defaults
 
-We'll design our own config segments in Chapter 5. For now, understand that offsets let you organize data logically and preserve some fields while resetting others.
+> **Important:** There are NO offsets preserved during factory reset except for the static SNIP data compiled into firmware (manufacturer, model, hardware/software versions). All config file data, including user customizations at offset 0-127, is lost.
 
 ## Key Takeaway
 
-Configuration is organized by memory offset in a SPIFFS file. Static data (manufacturer info) lives in firmware; dynamic data (node name) lives in flash. OpenMRN tracks schema with CANONICAL_VERSION to know when to reset vs. upgrade the config file. The CDI segments map C++ structures to these memory offsets, giving JMRI a machine-readable map of what's configurable.
+Configuration is organized by memory offset in a SPIFFS file. Static data (manufacturer info) lives in firmware; dynamic data (node name) lives in flash. OpenMRN tracks schema with CANONICAL_VERSION to trigger a factory reset when the config schema changes (all-or-nothing reset, no field migration). The CDI segments map C++ structures to these memory offsets, giving JMRI a machine-readable map of what's configurable.

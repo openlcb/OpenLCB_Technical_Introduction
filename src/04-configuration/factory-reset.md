@@ -38,17 +38,18 @@ After factory_reset() completes:
 - Node name is "async_blink" (the default from SNIP_NODE_NAME constant)
 - JMRI can now edit the user name via the User Info tab
 
-### What Gets Preserved?
+### What Gets Wiped and What Doesn't
 
-The term "factory reset" might sound destructive, but it's surgical:
+When `factory_reset()` is triggered:
 
 | Data | What Happens | Reason |
 |------|--------------|--------|
 | **Static SNIP Data** (manufacturer, model, hardware/software version) | Untouched | Lives in firmware, not in config file |
-| **SNIP User Data** (user name, description) | Initialized to defaults | Created fresh, but can be edited afterward |
-| **Internal Config** (offset 128+) | Set to hardcoded defaults | Reset to application defaults |
+| **SNIP User Data** (user name, description) | **Completely wiped** | Reset to defaults from config.h (e.g., "async_blink") |
+| **Internal Config** (offset 128+) | Completely wiped | Reset to application defaults |
+| **User Customizations** (node name set via JMRI) | **Lost** | Factory reset erases all custom edits |
 
-If you later press a physical "factory reset" button or call `factory_reset()` again, it wipes the entire config file and reinitializes everything. SNIP user data returns to "async_blink".
+This is important to understand: factory reset is **all-or-nothing**. Once triggered, users lose any custom node name or description they may have set through JMRI. There is no selective preservation of custom fields.
 
 ## What Persists Across Reboots
 
@@ -67,58 +68,88 @@ Once factory_reset() runs and the config file exists, normal boots are much simp
 Besides explicitly calling factory_reset() (or pressing a physical button), OpenMRN automatically triggers a reset if:
 
 - **Config file is corrupted** (CRC check fails)
-- **CANONICAL_VERSION mismatch** (firmware says 0x0002, config file says 0x0001)
+- **CANONICAL_VERSION mismatch** (firmware version differs from saved config version)
 
-Version mismatch is how you evolve configuration safely. Later sections of this chapter dive into the details.
+**Important Warning**: If you change `CANONICAL_VERSION` in your firmware (e.g., to add new configuration fields), the next boot will trigger a factory reset. Users will lose any custom node name or configuration they set through JMRI. This is a breaking change for deployed nodes.
 
-## Practical Example: Your First Boot Sequence
+## Triggering a Factory Reset from JMRI
 
-Here's what your serial console shows:
+You can manually trigger a factory reset from the JMRI LccPro configure dialog without recompiling firmware or pressing buttons on the ESP32:
 
-```
-[ESP32] Starting OpenLCB Node...
-[OpenMRN] Mounting SPIFFS...
-[OpenMRN] Checking for config file at /spiffs/openlcb_config...
-[OpenMRN] Config file not found. Running factory_reset()...
-[OpenMRN] Creating default configuration...
-[OpenMRN] SNIP User Name: async_blink
-[OpenMRN] SNIP User Desc: ESP32 Blink demo
-[OpenMRN] Internal config: initialized to defaults
-[OpenMRN] CANONICAL_VERSION: 0x0001
-[OpenMRN] Configuration saved to SPIFFS
-[OpenMRN] Attempting WiFi connection...
-[WiFi] Connected to "MyNetwork"
-[OpenMRN] Starting LCC node...
-[OpenMRN] Node ID: 05.01.02.03.04.05
-[OpenMRN] CID → RID → AMD → Init Complete
-[OpenMRN] Node online
-[OpenMRN] Waiting for events...
-```
+1. Open **LccPro** and select your node
+2. Click **Configure** (or double-click the node)
+3. In the configure dialog, click the **More...** button
+4. Select **Factory Reset**
 
-On the **second boot**:
+JMRI will send a factory reset command to the node via OpenLCB Configuration protocol. The node will immediately reinitialize its config file with factory defaults. This is useful for:
+
+- **Testing**: Quickly reset configuration during development
+- **Troubleshooting**: Recover from corrupted settings without physical access to the board
+- **User Support**: Remotely help users restore a node to factory defaults without recompiling
+
+## Practical Example: Factory Reset Reboot
+
+When you trigger a factory reset (via JMRI or version mismatch), here's what the serial console shows on the reboot:
 
 ```
-[ESP32] Starting OpenLCB Node...
-[OpenMRN] Mounting SPIFFS...
-[OpenMRN] Checking for config file at /spiffs/openlcb_config...
-[OpenMRN] Config file found. Loading configuration...
-[OpenMRN] CANONICAL_VERSION check: 0x0001 (OK)
-[OpenMRN] SNIP User Name: async_blink  (or "Kitchen Light" if edited)
-[OpenMRN] SNIP User Desc: ESP32 Blink demo
-[OpenMRN] Internal config: loaded from offset 128+
-[OpenMRN] Attempting WiFi connection...
-[WiFi] Connected to "MyNetwork"
-[OpenMRN] Starting LCC node...
-[OpenMRN] Node ID: 05.01.02.03.04.05
-[OpenMRN] CID → RID → AMD → Init Complete
-[OpenMRN] Node online
-[OpenMRN] Waiting for events...
+rst:0xc (SW_CPU_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0030,len:1184
+load:0x40078000,len:13232
+load:0x40080400,len:3028
+entry 0x400805e4
+
+=== OpenLCB async_blink ESP32 Example ===
+Node ID: 0x050201020200
+Event 0: 0x0502010202000000
+Event 1: 0x0502010202000001
+
+Initializing SPIFFS...
+SPIFFS initialized successfully
+
+Connecting to WiFi SSID: YourNetwork
+.
+WiFi connected!
+IP Address: 192.168.1.100
+
+Creating CDI configuration descriptor...
+[CDI] Checking /spiffs/cdi.xml...
+[CDI] File /spiffs/cdi.xml appears up-to-date (len 987 vs 987)
+[CDI] Registering CDI with stack...
+Initializing OpenLCB configuration...
+
+Starting OpenLCB stack...
+Starting executor thread...
+Starting TCP Hub on port 12021...
+TCP Hub listening. JMRI can connect to this device on port 12021
+
+OpenLCB node initialization complete!
+Entering run mode - will alternate events every 1 second
+
+Allocating new alias C41 for node 050201020200
+Produced event: 0x0502010202000001 (state: 1)
+Produced event: 0x0502010202000000 (state: 0)
+Produced event: 0x0502010202000001 (state: 1)
+...
 ```
 
-Notice: No factory reset on the second boot. The config is trusted and reused.
+**Important**: Notice there is **no console message when the reset is triggered**. The reset happens silently from an external trigger. The boot diagnostics (ROM messages about `rst:0xc`, `clock div`, etc.) indicate a software reset occurred. Then the normal initialization proceeds.
+
+After factory reset, your config file is re-initialized with defaults:
+- **SNIP User Name**: "async_blink" (from `SNIP_NODE_NAME` constant)
+- **SNIP User Desc**: "ESP32 Blink demo" (from `SNIP_USER_DESCRIPTION` constant)
+- Any custom node name set via JMRI is **lost**
+
+## What Happens After Factory Reset
+
+After factory reset, subsequent boots proceed normally. The config file already exists and is valid, so no factory reset runs again unless:
+
+- The config file becomes corrupted
+- The `CANONICAL_VERSION` in firmware differs from the saved version
+- You explicitly trigger another reset via JMRI Configure dialog
 
 ## Key Takeaway
 
-`factory_reset()` runs once, on first boot, to initialize a valid config file with SNIP defaults. Afterward, the config persists across every reboot. JMRI can edit the user name, which overwrites just the SNIP user data, preserving the rest. Version mismatches and corruption detection trigger resets automatically to keep configuration in sync with firmware.
-
-This design lets your node remember user preferences while safely handling firmware updates.
+`factory_reset()` runs on first boot or when triggered by JMRI, version mismatch, or config corruption to initialize a valid config file with SNIP defaults. After that, the config persists across every reboot. JMRI can edit the user name, which updates the config file while preserving other settings.

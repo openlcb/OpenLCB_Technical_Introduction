@@ -2,7 +2,7 @@
 
 ## Step-by-Step: Edit Node Name in LccPro
 
-One of the most common configuration tasks is renaming a node to something meaningful (e.g., "Front Door Lock" instead of "async_blink"). Here's how it works:
+One of the most common configuration tasks is renaming a node to something meaningful (e.g., "Test Blink Node" instead of "async_blink"). Here's how it works:
 
 ### 1. Launch JMRI and Open the LccPro Tool
 
@@ -13,22 +13,18 @@ Tools → LCC → LccPro
 
 You should see a list of nodes currently on your LCC network. Your ESP32 node appears here, identified by its ACDI manufacturer and model information.
 
-```
-[SCREENSHOT PLACEHOLDER: LccPro main window showing node list with async_blink]
-```
+![LccPro main window showing node list with async_blink](images/NodeListFirstBoot.png)
 
 ### 2. Select Your Node
 
 In the node list, click on the node you want to configure (e.g., "async_blink").
 
-The node details panel shows:
+The details panel below the list now shows information for the selected node:
 - Node ID
-- Static SNIP Data: Manufacturer ("OpenMRN"), Model ("async_blink"), Hardware/Software versions
-- SNIP User Data: User name (currently "async_blink"), user description
+- Static SNIP Data: Manufacturer (`OpenMRN`), Model (`async_blink`), Hardware version (`ESP32`), Software version (`1.00`)
+- SNIP User Data: User name (currently `async_blink`), user description (`ESP32 Blink demo`)
 
-```
-[SCREENSHOT PLACEHOLDER: LccPro node details, ACDI section]
-```
+![LccPro node details, ACDI section](images/NodeListClickAsyncBlink.png)
 
 ### 3. Open the Configuration Editor
 
@@ -39,55 +35,47 @@ LccPro opens a dialog showing the node's CDI. You'll see tabs for different sect
 - **User Info** (editable): SNIP user name and description from config file
 - **Settings** (if present): Application-specific configuration
 
-```
-[SCREENSHOT PLACEHOLDER: LccPro Configure dialog, tabs visible]
-```
+![SCREENSHOT PLACEHOLDER: LccPro Configure dialog, tabs visible](images/ConfigureDialog.png)
 
 ### 4. Edit the User Name
 
-Select the **User Info** tab.
+Expand the **User Info** tab.
 
-You'll see fields like:
-```
-User Name:  ______________________________
-User Description: ______________________________
-```
+You'll see the User Info tab with fields populated with the current values from the node (as shown in the previous step). Change the User Name to something meaningful, like `Test Blink Node`. You can also edit the description if you'd like.
 
-Change the User Name from "async_blink" to something meaningful, like "Kitchen Light".
+![LccPro User Info tab with edited name "Test Blink Node"](images/ConfigureDialogUserNameSet.png)
 
-```
-[SCREENSHOT PLACEHOLDER: LccPro User Info tab with edited name "Kitchen Light"]
-```
+### 5. Write the Changes to the Node
 
-### 5. Save the Configuration
+After editing the User Name, you have two options:
 
-Click **Save** (or **OK**).
+- **Write individually**: Click the **Write** button next to the User Name field to send just that change to the node
+- **Write all changes**: Click the **Save Changes** button at the bottom of the dialog to write all modified fields at once
 
-LccPro sends the new user name to the ESP32 node via OpenLCB Configuration protocol. The node writes it to SPIFFS at offset 0-127.
+Either way, LccPro sends the new user name to the ESP32 node via OpenLCB Configuration protocol. Here's what happens behind the scenes:
 
-Behind the scenes:
-```
-JMRI → LccPro → Configuration write message → ESP32
-          → OpenMRN receives message
-          → apply_configuration() is called
-          → User name is written to SPIFFS offset 0-127
-          → Configuration write response sent back
-JMRI ← Configuration write ACK ← ESP32
+```mermaid
+sequenceDiagram
+    actor User as You (JMRI)
+    participant JMRI
+    participant ESP32 as ESP32<br/>(OpenMRN)
+    participant SPIFFS
+    
+    User->>JMRI: Click "Write" or<br/>"Save Changes"
+    JMRI->>ESP32: Configuration write message<br/>(new user name)
+    ESP32->>ESP32: apply_configuration()<br/>called
+    ESP32->>SPIFFS: Write new name<br/>to offset 0-127
+    ESP32->>JMRI: Configuration write ACK<br/>(success)
+    JMRI->>User: Changes saved!
 ```
 
 ### 6. Verify Persistence
 
 Once saved, the new name persists across reboots:
 
-1. **Immediate Check**: In LccPro, select the node again. The "User Info" tab now shows "Kitchen Light".
+1. **Immediate Check in LccPro**: Click the **Refresh** button above the node list. This tells LccPro to ask all nodes for their current information. The node list should now show the updated name `Test Blink Node` instead of `async_blink`.
 
-2. **Power Cycle Check**: Power off the ESP32, wait a few seconds, power it back on. Reconnect JMRI to the node. The name is still "Kitchen Light"—it was saved to SPIFFS.
-
-3. **Serial Monitor Check** (optional): Watch the ESP32 serial console during boot. You'll see the config file being loaded, including the user name at offset 0-127.
-
-```
-[SCREENSHOT PLACEHOLDER: Serial monitor showing config initialization]
-```
+2. **Power Cycle Check**: Power off the ESP32, wait a few seconds, power it back on. Reconnect JMRI to the node (or click Refresh again). The name is still `Test Blink Node`—it was saved to SPIFFS.
 
 ## What Just Happened
 

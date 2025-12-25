@@ -11,21 +11,20 @@
 **This session's focus**: Code changes to validate versioning behavior and write Phase 3 documentation
 
 1. **Read These Files First** (10 minutes):
-   - **plan/PROJECT_STATUS.md** - Current phase status
-   - **plan/TASKS.md** - T4.2 research findings and T4.3 plan
-   - **plan/T4.2-RESEARCH.md** - Detailed standards and implementation analysis (START HERE!)
-   - **OpenLCB_Technical_Introduction/src/04-configuration/** - All 5 existing Chapter 4 files
+   - **plan/TASKS.md** - T4.3 plan
+   - **plan/T4.2-RESEARCH.md** - Detailed standards and implementation analysis (reference)
+   - **OpenLCB_Technical_Introduction/src/04-configuration/** - All 4 existing Chapter 4 files (overview, storage-model, editing-in-jmri, factory-reset)
 
 2. **Execute T4.3** (2-2.5 hours): Code implementation + Phase 3 documentation
    - Modify test/async_blink_esp32/include/config.h: Add EventInterval configurable field
    - Modify test/async_blink_esp32/src/main.cpp: Implement enhanced apply_configuration()
    - Test on ESP32 hardware: Change interval via JMRI, verify firmware responds
-   - Write Phase 3 sections: Versioning, Reserved Space, Version Mismatch, Walkthrough, Best Practices
+   - Write new Chapter 4 section (content-driven): Configurable Settings, Versioning, Reserved Space, Best Practices
 
 3. **After T4.3 Works**: Wrap-up (T4.4)
-   - Update SUMMARY.md references
+   - Update SUMMARY.md references if needed
    - Add cross-references from Chapter 3
-   - Verify mSessions (Completed)
+   - Verify mdbook build succeedsSessions (Completed)
 - ✅ T0.1: Restructure intro.md for high-level overview
 - ✅ T1.1-T1.4: Initial content restructuring (archive STM32, create ESP32 chapter skeleton)
 - ✅ T2.0.1: OpenMRN-Lite CDI enhancement (working code on hardware)
@@ -142,7 +141,7 @@
 
 ### Session 1: Write Initial Configuration Content (T4.1) ✅
 ✅ Completed 2025-12-24
-   - Created 5 markdown files in src/04-configuration/
+   - Created 4 markdown files in src/04-configuration/ (overview, storage-model, editing-in-jmri, factory-reset)
    - Updated SUMMARY.md with Chapter 4 TOC
    - Forward references added to Chapter 3
 
@@ -156,19 +155,10 @@
 
 ### Session 3: Implementation & Phase 3 Content (T4.3) — NEXT
 **Ready to start**. Modify test/async_blink_esp32 to:
-   - Add EventInterval configurable field
-   - Implement apply_configuration() to read and apply changes
-   - Write Phase 3 sections: Versioning, Reserved Space, Best Practices, Hands-on Walkthrough
-3. **After T4.1**: Update TASKS.md marking T4.1 complete, ready for Session 2
-
-### Session 2: Research Configuration Versioning (T4.2)
-1. **Read These Files First** (10 minutes):
-   - plan/TASKS.md T4.2 section
-   - plan/RESEARCH.md for async_blink context
-   - d:/src/github/LCC/async_blink_esp32_3.3/config.h (how config is currently structured)
-2. **Set Up Test Environment** (15 minutes):
-   - Use d:/src/github/LCC/test/async_blink_esp32 as working copy (NOT async_blink_esp32_3.3)
-   - Ensure it builds and uploads successfully with current code
+   - Add EventInterval configurable field to config.h CDI
+   - Implement enhanced apply_configuration() to read and apply changes
+   - Test with JMRI: change interval, verify firmware responds
+   - Write new Chapter 4 section based on practical example: Configurable Settings, Versioning, Reserved Space, Best Practices
    - Verify JMRI can connect via TCP
 3. **Execute T4.2 Part A** (45 minutes): Add EventInterval field with auto-extend test
    - Update config.h: Add `EventInterval` uint16_t field with reserved space pattern
