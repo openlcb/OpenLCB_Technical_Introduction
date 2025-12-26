@@ -104,7 +104,7 @@ This approach is better than manual file I/O because:
 - Less prone to errors (no manual `fseek`, `fwrite` calls)
 - Foundation ready for `apply_configuration()` in future chapters when users modify config via JMRI
 
-> **`apply_configuration()`**: Currently returns UPDATED without doing anything. In a real node, this would handle persistence when users modify configuration through JMRI. For v0.1, config is read-only.
+> **`apply_configuration()`**: Currently returns UPDATED without doing anything. In v0.1, the config is read-only (no runtime changes). Chapter 4 explains what this callback does and why it exists. Later sections of Chapter 4 will implement it to handle real configuration changes.
 
 **SNIP data**: The node name and description are displayed by JMRI in the node properties dialog, helping identify which ESP32 is which on your network.
 

@@ -295,7 +295,7 @@
 ## Phase 3: Diagrams & Visualization
 
 ### T3.1 - Create Mermaid: Node Startup Sequence
-- **Status**: ⏳ Not Started
+- **Status**: ✅ Completed
 - **Priority**: MEDIUM
 - **Effort**: 1 hour
 - **Description**:
@@ -308,114 +308,126 @@
     - Timing/pauses between messages
   - Include in `intro.md` with explanation text
   - Reference from `esp32-arduino.md` as well
-- **Owner**: Next session
+- **Owner**: Completed 2025-12-24
 - **Depends On**: None
 - **Blocks**: None
 
-### T3.2 - Create Mermaid: async_blink_esp32 Event State Machine
-- **Status**: ⏳ Not Started
-- **Priority**: MEDIUM
-- **Effort**: 45 minutes
-- **Description**:
-  - Mermaid state diagram showing:
-    - Idle/wait state
-    - Button pressed → produce event_1 → return to idle
-    - Consume event_2 → toggle LED → return to idle
-    - Timing (1-second loop or event-driven)
-  - Include in `esp32-arduino.md` after code explanation
-  - Keep simple; focus on clear event flow
-- **Owner**: Next session
-- **Depends On**: T2.1
-- **Blocks**: None
 
-### T3.3 - Create Optional: Breadboard Schematic Diagram
-- **Status**: ⏳ Not Started
-- **Priority**: LOW
-- **Effort**: 1.5 hours
-- **Description**:
-  - Option A: ASCII art schematic in markdown
-  - Option B: Mermaid diagram (if feasible for wiring)
-  - Option C: PNG export from draw.io or similar tool
-  - Show ESP32 GPIO pins → button/LED connections clearly
-  - Include resistor values and pin labels
-  - Include in `esp32-arduino.md`
-- **Owner**: Defer to later session if time-constrained
-- **Depends On**: T2.3
-- **Blocks**: None
 
 ---
 
-## Phase 4: Integration & Testing
+## Phase 4: Configuration Chapter — Multi-Session Development
 
-### T4.1 - End-to-End Testing & Verification Guide
-- **Status**: ⏳ Not Started
+### T4.1 - Write Phase 1: Initial Configuration Content (Session 1)
+- **Status**: ✅ COMPLETED (2025-12-24)
 - **Priority**: HIGH
-- **Effort**: 2 hours
+- **Effort**: 1.5-2 hours
 - **Description**:
-  - Build & deploy async_blink_esp32 on actual ESP32 hardware
-  - Verify:
-    - Sketch compiles with PlatformIO
-    - ESP32 connects to WiFi
-    - Startup messages appear in JMRI (CID/RID/AMD/Init Complete)
-    - Button press produces event in JMRI console
-    - JMRI-generated event toggles LED
-  - Document expected serial output and JMRI messages
-  - Create troubleshooting guide for common issues:
-    - WiFi connection failures
-    - JMRI TCP connection refused
-    - Button/LED GPIO conflicts
-    - Startup message delays or missing frames
-  - Add to `esp32-arduino.md` as "Verification & Troubleshooting" section
-- **Owner**: Next session (must have hardware)
-- **Depends On**: T2.1, T2.2, T2.3, T2.4
-- **Blocks**: T5.1
+  - ✅ Created `src/04-configuration/` directory with 4 markdown files
+  - ✅ Wrote overview.md: "Building on Chapter 3 concepts of CDI and SNIP"
+  - ✅ **Sections Written**:
+    1. overview.md: Why configuration matters, what's in this chapter, what's deferred
+    2. storage-model.md: Offset-based storage, SNIP static vs. dynamic, CANONICAL_VERSION, CDI segments
+    3. editing-in-jmri.md: Step-by-step LccPro workflow for renaming node (6 steps with placeholders)
+    4. factory-reset.md: What happens on first boot, what gets preserved, serial console output examples
+  - ✅ Updated SUMMARY.md to add Chapter 4 with initial sections
+  - ✅ Updated forward references in Chapter 3 (code-configuration.md, code-walkthrough.md, jmri-monitoring.md)
+  - ✅ Verified mdbook build with no errors
+- **Testing**: Completed; mdbook builds successfully
+- **Owner**: Completed 2025-12-24
+- **Depends On**: None (builds on existing Chapter 3 knowledge)
+- **Blocks**: T4.2, T4.3
 
-### T4.2 - Create "What's Next" Preview Section
-- **Status**: ⏳ Not Started
-- **Priority**: MEDIUM
-- **Effort**: 30 minutes
+### T4.2 - Research & Test Configuration Versioning (Session 2)
+- **Status**: ✅ COMPLETED (2025-12-24)
+- **Priority**: HIGH
+- **Effort**: 1.5-2 hours
 - **Description**:
-  - Add section to end of `esp32-arduino.md` or new file:
-    - "You've built a WiFi-based LCC node! Here's what comes next:"
-    - Preview: CAN Hardware Setup, Advanced Events, Memory Config, SNIP/CDI
-    - Explain WiFi→CAN transition rationale
-    - Link to archived Nucleo content (optional alternative)
-  - Keep tone encouraging and forward-looking
+  - ✅ **Research Completed** - Created comprehensive T4.2-RESEARCH.md document covering:
+    - OpenLCB Standards: S-9.7.4.1/2/3 and corresponding TN documents
+    - Configuration Update Workflow: Discovery → Retrieval → Modification → Activation
+    - OpenMRNLite Implementation: Publish-subscribe pattern, ConfigUpdateFlow state machine
+    - Standards Compliance Analysis: What's implemented, partial, and missing
+    - Critical Gaps: No field migration, no persistent initialized flag, no dependency ordering
+    - Memory Space Details: 0xFF (CDI), 0xFD (Config), 0xF0-F2 alternatives
+  - ✅ **Key Findings**:
+    - Version mismatch: Complete factory reset (all-or-nothing), not selective migration
+    - What survives reset: Only first 128 bytes (ACDI user data: node name/description)
+    - Offset 128+ completely wiped: factory_reset() callbacks apply defaults
+    - No field mapping: Code does NOT migrate fields selectively
+    - Reserved space workaround: Adding padding avoids version bumps during development
+  - ✅ **Standards Verification**: Chapter 4 content is factually correct
+- **Testing**: Research-only; no hardware testing needed
+- **Owner**: Completed 2025-12-24
+- **Depends On**: T4.1 ✅
+- **Blocks**: T4.3
+
+### T4.3 - Write Phase 3: Configuration Versioning Content & Code Implementation (Session 3)
+- **Status**: � READY TO START
+- **Priority**: HIGH
+- **Effort**: 2-2.5 hours
+- **Description**:
+  - **Create new Chapter 4 section** (persistence-details.md was removed; content will be written during implementation based on practical EventInterval example):
+    - Configurable Settings / Applying Configuration Changes: Practical implementation of apply_configuration()
+    - Configuration Versioning: CANONICAL_VERSION role, what triggers resets
+    - Reserved Space Technique: How to evolve schema without breaking configs
+    - Version Mismatch Behavior: Factory reset triggers, SNIP preservation at offset 0-127
+    - Hands-on Walkthrough: Modify EventInterval via JMRI, demonstrate runtime effect
+    - Best Practices: When to bump version, when to use reserved space
+  - **Code Implementation** in test/async_blink_esp32:
+    - Add EventInterval uint16_t field to config.h CDI segment
+    - Implement enhanced apply_configuration() to read EventInterval from config
+    - Update loop() to use configurable interval instead of hardcoded EVENT_INTERVAL
+    - Add logging to show when config changes are detected
+    - Test with JMRI: change interval via Configure, verify firmware reads and applies it
+  - **Update code comments** in config.h explaining reserved space pattern and field layout
+- **Testing**: Requires ESP32 hardware, JMRI, and verifying EventInterval changes work
 - **Owner**: Next session
-- **Depends On**: T4.1
-- **Blocks**: None
+- **Depends On**: T4.2 ✅
+- **Blocks**: T4.4
+
+### T4.4 - Integrate Chapter 4 into Book & Cross-References
+- **Status**: ✅ COMPLETED (2025-12-25)
+- **Priority**: HIGH
+- **Effort**: 30-45 minutes
+- **Description**:
+  - Verify SUMMARY.md includes all Chapter 4 sections (already added in T4.1) ✅
+  - Add cross-references after T4.3:
+    - From Chapter 3 code-walkthrough.md: Link to Chapter 4 for "Configuration Versioning" deep dive
+    - From Chapter 3 code-configuration.md: Link to Chapter 4 for "Configuration Persistence Patterns"
+  - Update CHAPTERS.md in plan/ folder:
+    - Add Chapter 4 full status and content summary
+    - Note dependencies and future chapter relationships
+  - Update plan/FORWARD_REFERENCES.md if any forward references to Chapter 5+ were added
+- **Testing**: Run `mdbook build` and verify no errors, TOC includes all Chapter 4 sections
+- **Owner**: After T4.3
+- **Depends On**: T4.3 (content complete)
+- **Blocks**: T5.1 (CAN transport chapter)
+- **Completion Notes**: 
+  - Updated SUMMARY.md to include all 7 Chapter 4 sections in correct order
+  - Removed stub files (configuration-lifecycle.md, understanding-interval-setting.md) from SUMMARY to be populated later if needed
+  - Updated "Next Steps" in adding-interval-setting.md to summarize Chapter 4 completion and preview CAN transport as next chapter
+  - No placeholder TODOs remain in active Chapter 4 content files
 
 ---
 
-## Phase 5: Configuration Chapter & Book Release
+## Phase 5: Future Chapters (CAN, GPIO, Advanced Topics)
 
-### T5.1 - Create Configuration & Persistence Chapter (NEW)
+### T5.1 - Switching to CAN Transport Chapter (FUTURE)
 - **Status**: 📋 PLANNED
-- **Priority**: HIGH (v0.2)
+- **Priority**: MEDIUM (v0.3)
 - **Effort**: 3-4 hours
 - **Description**:
-  - Create new file: `src/configuration-persistence.md` (becomes Chapter 5 in book)
-  - Enhance async_blink_esp32 example with configurable EVENT_INTERVAL:
-    - Add `EventInterval` configuration entry to CDI in config.h
-    - Implement apply_configuration() to read interval from config and apply to running code
-    - Use configurable interval in loop() instead of hardcoded EVENT_INTERVAL constant
-    - Document how this pattern applies to other configuration values
-  - Document:
-    - CDI (Configuration Description Information) structure deep dive: what it is, how JMRI uses it for discovery
-    - SNIP vs ACDI distinction with concrete examples (SNIP in device firmware, ACDI in layout configuration)
-    - Config file versioning (CANONICAL_VERSION behavior):
-      - When to bump version (breaking schema changes)
-      - How OpenMRN handles version mismatch (triggers factory reset)
-    - Techniques to avoid version bumps without losing forward compatibility:
-      - Reserved space at end of config segments for future fields
-      - Example: add 16 bytes reserved in AsyncBlinkSegment for future use
-    - PlatformIO Erase Flash option for development (forces config file reinitialization)
-    - Hands-on walkthrough: modify EVENT_INTERVAL via JMRI LccPro, verify node produces events at new interval
-    - Difference between factory_reset() (one-time initialization) and apply_configuration() (runtime application)
-  - Update SUMMARY.md: add Chapter 5 in correct position (after esp32-arduino.md, before any future hardware chapters)
-  - Result: Users understand config management, schema versioning, and how to add new configurable parameters without breaking existing configurations
-- **Owner**: Implementation session after T2.7
-- **Depends On**: T2.7 (esp32-arduino.md updated with correct config explanation)
+  - Create new file: `src/05-switching-to-can/switching-to-can.md` (becomes Chapter 5 in book)
+  - Content:
+    - Transport architecture comparison: WiFi/TCP vs CAN bus
+    - Hardware requirements: CAN transceiver selection, wiring, termination
+    - Porting async_blink_esp32 to use CAN instead of WiFi
+    - Configuration changes needed (no more WiFi credentials, add CAN pin setup)
+    - Testing with JMRI via CAN interface instead of TCP
+  - Result: Users understand transport layer abstraction and can migrate to production CAN-based nodes
+- **Owner**: Future session
+- **Depends On**: T4.4 (Configuration chapter complete)
 - **Blocks**: None
 
 ### T5.2 - Final Book Build & Verification

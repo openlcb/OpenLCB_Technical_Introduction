@@ -58,4 +58,4 @@ CDI_GROUP_END();
 - **Acdi and UserInfo**: Standard OpenLCB configuration segments
 - **AsyncBlinkSegment**: Internal configuration area for this node (currently minimal, but available for future expansion)
 
-> **Configuration Storage**: Configuration is saved to SPIFFS on first boot (via `factory_reset()` shown in the next section) and persists across restarts. In v0.1, the initial configuration is hardcoded in the constants above. In Chapter 4, we'll make configuration editable through JMRI and learn how to handle updates via `apply_configuration()`. See "Configuration & JMRI" section in the JMRI Monitoring chapter for more details.
+> **Configuration Storage**: Configuration is saved to SPIFFS on first boot (via `factory_reset()` shown in the next section) and persists across restarts. In v0.1, the initial configuration is hardcoded in the constants above. See the next chapter "Configuration & Persistence" (Chapter 4) to understand how configuration storage works, how to edit settings via JMRI, and how `apply_configuration()` fits into the lifecycle.

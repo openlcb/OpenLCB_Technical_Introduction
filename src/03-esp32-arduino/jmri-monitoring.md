@@ -186,13 +186,17 @@ In v0.1, the CDI is generated automatically from the `ConfigDef` structure in `c
 
 When you view node properties in **LccPro → Configure**, JMRI uses this CDI to render the appropriate dialog fields.
 
-**In Chapter 5**, you'll:
+**In Chapter 4** (next chapter), you'll:
+- Understand how configuration is stored in SPIFFS
+- Learn to edit your node's name through JMRI and see changes persist
+- Understand factory_reset() behavior and SNIP static vs. dynamic data
+- Explore how `apply_configuration()` fits into the persistence lifecycle
 - Add configurable parameters (like `EVENT_INTERVAL`) to the CDI
-- Implement `apply_configuration()` to save user changes to SPIFFS
+- Implement `apply_configuration()` to save user changes while the node is running
 - Learn how to version your configuration schema for forward compatibility
-- Test configuration updates through LccPro
+- Test dynamic configuration updates through LccPro
 
-For now, understand that your node is already **capable** of being configured via JMRI - we're just not modifying the configuration yet. The CDI file ensures JMRI knows what configuration options your node supports.
+For now, understand that your node is already **capable** of being configured via JMRI - the CDI file ensures JMRI knows what options your node supports.
 
 ### Troubleshooting JMRI Connection
 
