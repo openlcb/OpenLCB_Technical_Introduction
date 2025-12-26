@@ -27,3 +27,4 @@
   - [Storage Model](./04-configuration/storage-model.md)
   - [Editing in JMRI](./04-configuration/editing-in-jmri.md)
   - [Factory Reset Behavior](./04-configuration/factory-reset.md)
+  - [Adding a Configurable Interval Setting](./04-configuration/adding-interval-setting.md)

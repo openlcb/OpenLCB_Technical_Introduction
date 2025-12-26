@@ -261,3 +261,11 @@ void loop() {
 > **Better approach**: OpenMRNLite provides `Esp32WiFiManager` for a more robust WiFi configuration system, but we're using hardcoded credentials here for simplicity in this learning example.
 
 > **Future note**: WiFi is temporary for learning. When we add CAN transport in a later chapter, we'll remove the WiFi code entirely. This approach helps you understand the differences between transport types.
+
+## Making These Settings Configurable
+
+The code above uses hardcoded values for the event interval (1 second) and SNIP user data (node name and description). In Chapter 4, you'll learn how to make these settings configurable via JMRI without recompiling the firmware.
+
+See Chapter 4's **"Adding a Configurable Interval Setting"** section to extend this example with runtime-editable parameters, and **"Understanding Configuration Updates and Versioning"** to understand the mechanisms that make configuration reliable.
+
+
