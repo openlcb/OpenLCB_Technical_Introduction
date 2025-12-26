@@ -36,10 +36,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-2047feb3.js";
+            window.path_to_searchindex_js = "searchindex-daca769e.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-57ec3f65.js"></script>
+        <script src="toc-e471abdd.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -1258,7 +1258,7 @@ CDI_GROUP_END();
 <li><strong>AsyncBlinkSegment</strong>: Internal configuration area for this node (currently minimal, but available for future expansion)</li>
 </ul>
 <blockquote>
-<p><strong>Configuration Storage</strong>: Configuration is saved to SPIFFS on first boot (via <code>factory_reset()</code> shown in the next section) and persists across restarts. In v0.1, the initial configuration is hardcoded in the constants above. In Chapter 4, we’ll make configuration editable through JMRI and learn how to handle updates via <code>apply_configuration()</code>. See “Configuration &amp; JMRI” section in the JMRI Monitoring chapter for more details.</p>
+<p><strong>Configuration Storage</strong>: Configuration is saved to SPIFFS on first boot (via <code>factory_reset()</code> shown in the next section) and persists across restarts. In v0.1, the initial configuration is hardcoded in the constants above. See the next chapter “Configuration &amp; Persistence” (Chapter 4) to understand how configuration storage works, how to edit settings via JMRI, and how <code>apply_configuration()</code> fits into the lifecycle.</p>
 </blockquote>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="code-implementation-1"><a href="#code-implementation-1" class="header">Code Implementation</a></h1>
@@ -1522,6 +1522,9 @@ void loop() {
 <blockquote>
 <p><strong>Future note</strong>: WiFi is temporary for learning. When we add CAN transport in a later chapter, we’ll remove the WiFi code entirely. This approach helps you understand the differences between transport types.</p>
 </blockquote>
+<h2 id="making-these-settings-configurable"><a class="header" href="#making-these-settings-configurable">Making These Settings Configurable</a></h2>
+<p>The code above uses hardcoded values for the event interval (1 second) and SNIP user data (node name and description). In Chapter 4, you’ll learn how to make these settings configurable via JMRI without recompiling the firmware.</p>
+<p>See Chapter 4’s <strong>“Adding a Configurable Interval Setting”</strong> section to extend this example with runtime-editable parameters, and <strong>“Understanding Configuration Updates and Versioning”</strong> to understand the mechanisms that make configuration reliable.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="code-walkthrough-1"><a href="#code-walkthrough-1" class="header">Code Walkthrough</a></h1>
 <h2 id="code-walkthrough"><a class="header" href="#code-walkthrough">Code Walkthrough</a></h2>
@@ -1618,7 +1621,7 @@ public:
 <li>Foundation ready for <code>apply_configuration()</code> in future chapters when users modify config via JMRI</li>
 </ul>
 <blockquote>
-<p><strong><code>apply_configuration()</code></strong>: Currently returns UPDATED without doing anything. In a real node, this would handle persistence when users modify configuration through JMRI. For v0.1, config is read-only.</p>
+<p><strong><code>apply_configuration()</code></strong>: Currently returns UPDATED without doing anything. In v0.1, the config is read-only (no runtime changes). Chapter 4 explains what this callback does and why it exists. Later sections of Chapter 4 will implement it to handle real configuration changes.</p>
 </blockquote>
 <p><strong>SNIP data</strong>: The node name and description are displayed by JMRI in the node properties dialog, helping identify which ESP32 is which on your network.</p>
 <h3 id="5-wifi-connection"><a class="header" href="#5-wifi-connection">5. WiFi Connection</a></h3>
@@ -2185,14 +2188,18 @@ Produced event: 0x0502010202000001 (state: 1)
 <li><strong>Internal Configuration</strong>: Reserved space for future parameters</li>
 </ul>
 <p>When you view node properties in <strong>LccPro → Configure</strong>, JMRI uses this CDI to render the appropriate dialog fields.</p>
-<p><strong>In Chapter 5</strong>, you’ll:</p>
+<p><strong>In Chapter 4</strong> (next chapter), you’ll:</p>
 <ul>
+<li>Understand how configuration is stored in SPIFFS</li>
+<li>Learn to edit your node’s name through JMRI and see changes persist</li>
+<li>Understand factory_reset() behavior and SNIP static vs. dynamic data</li>
+<li>Explore how <code>apply_configuration()</code> fits into the persistence lifecycle</li>
 <li>Add configurable parameters (like <code>EVENT_INTERVAL</code>) to the CDI</li>
-<li>Implement <code>apply_configuration()</code> to save user changes to SPIFFS</li>
+<li>Implement <code>apply_configuration()</code> to save user changes while the node is running</li>
 <li>Learn how to version your configuration schema for forward compatibility</li>
-<li>Test configuration updates through LccPro</li>
+<li>Test dynamic configuration updates through LccPro</li>
 </ul>
-<p>For now, understand that your node is already <strong>capable</strong> of being configured via JMRI - we’re just not modifying the configuration yet. The CDI file ensures JMRI knows what configuration options your node supports.</p>
+<p>For now, understand that your node is already <strong>capable</strong> of being configured via JMRI - the CDI file ensures JMRI knows what options your node supports.</p>
 <h3 id="troubleshooting-jmri-connection"><a class="header" href="#troubleshooting-jmri-connection">Troubleshooting JMRI Connection</a></h3>
 <p><strong>JMRI shows “Connection failed” or “No route to host”</strong>:</p>
 <ul>
@@ -2246,6 +2253,707 @@ Produced event: 0x0502010202000001 (state: 1)
 <h2 id="whats-next-2"><a class="header" href="#whats-next-2">What’s Next</a></h2>
 <p>You’ve now built your first OpenLCB node with WiFi transport!</p>
 <p>In the next chapter, we’ll cover configuration—how to customize your node’s behavior and settings through the CDI (Configuration Description Information) interface.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="configuration--persistence"><a class="header" href="#configuration--persistence">Configuration &amp; Persistence</a></h1>
+<h2 id="overview-why-configuration-matters"><a class="header" href="#overview-why-configuration-matters">Overview: Why Configuration Matters</a></h2>
+<p>In Chapter 3, we built a working OpenLCB node with a hardcoded node name (<code>async_blink</code>) and fixed event IDs. This is perfect for learning—you can compile once and run immediately. But production nodes need flexibility: different users want different names, different event IDs, different blink intervals to match their layout or preferences.</p>
+<p>This is where <strong>configuration</strong> comes in. OpenLCB provides a standard way to store and modify node settings without recompiling firmware. Through tools like JMRI, users can:</p>
+<ul>
+<li>Edit the node name and description</li>
+<li>Modify event IDs</li>
+<li>Adjust the blink interval (how fast the LED blinks)</li>
+<li>Change other parameters</li>
+</ul>
+<p>All changes persist across reboots, stored safely in the node’s flash memory.</p>
+<h2 id="how-configuration-works-in-openlcb"><a class="header" href="#how-configuration-works-in-openlcb">How Configuration Works in OpenLCB</a></h2>
+<p>Recall from Chapter 3 that our node exposes three key concepts (detailed in the next section):</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Concept</th><th>Purpose</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>ACDI (Automatic Configuration Description Information)</strong></td><td>Standardized data block storing node identity (manufacturer, model, hardware/software version, user name, description)</td></tr>
+<tr><td><strong>SNIP (Simple Node Information Protocol)</strong></td><td>Network protocol that broadcasts ACDI data so other nodes and tools can discover and identify this node</td></tr>
+<tr><td><strong>CDI (Configuration Description Information)</strong></td><td>Schema describing what configuration options the node has and how to edit them via tools like JMRI</td></tr>
+</tbody>
+</table>
+</div>
+<p>In this chapter, we’ll explore:</p>
+<ol>
+<li><strong>Storage Model</strong> — Where configuration lives, how ACDI/SNIP/CDI fit together, and the binary file format</li>
+<li><strong>Editing in JMRI</strong> — How to change node name and persist changes</li>
+<li><strong>Factory Reset Behavior</strong> — What happens on first boot</li>
+<li><strong>Persistence Details</strong> — How data survives reboots and power loss</li>
+<li><strong>Adding Configurable Settings</strong> — Make blink interval editable via JMRI</li>
+<li><strong>Configuration Versioning</strong> — Evolving your schema safely as you add more settings</li>
+</ol>
+<h2 id="what-were-covering"><a class="header" href="#what-were-covering">What We’re Covering</a></h2>
+<p>This chapter combines conceptual understanding with hands-on implementation. We’ll:</p>
+<ul>
+<li><strong>Part 1</strong> (Sections 1-4): Understand how configuration storage works, edit node name via JMRI, see changes persist</li>
+<li><strong>Part 2</strong> (Sections 5-6): Make the blink interval configurable, implement persistence in code, handle schema versioning</li>
+</ul>
+<p>By the end, you’ll have a production-ready configuration system that lets users customize your node’s behavior through JMRI without recompiling.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="storage-model-where-configuration-lives"><a class="header" href="#storage-model-where-configuration-lives">Storage Model: Where Configuration Lives</a></h1>
+<h2 id="the-configuration-file-structure"><a class="header" href="#the-configuration-file-structure">The Configuration File Structure</a></h2>
+<p>When async_blink runs on ESP32, it creates a configuration file in SPIFFS (flash storage) at <code>/spiffs/openlcb_config</code>. This file is organized by <strong>memory offset</strong>—different ranges of bytes store different types of data.</p>
+<pre class="mermaid">graph TD
+    A["Offset 0-127: User Info&lt;br/&gt;Node name, description (editable via JMRI)"]
+    B["Offset 128+: Internal Config&lt;br/&gt;Node-specific settings (currently unused in v0.1)"]
+    C["Metadata: Version, CRC&lt;br/&gt;CANONICAL_VERSION for schema tracking"]
+    
+    A --&gt; B
+    B --&gt; C
+    
+    style A fill:#e1f5ff
+    style B fill:#f3e5f5
+    style C fill:#fff9c4
+</pre>
+
+<h2 id="binary-file-format"><a class="header" href="#binary-file-format">Binary File Format</a></h2>
+<p>The <code>/spiffs/openlcb_config</code> file is <strong>binary</strong>, not text. This is important to understand because:</p>
+<ul>
+<li><strong>Offset-based layout</strong>: Different types of data (strings, integers, metadata) live at specific byte offsets. This requires a binary format where exact byte positions matter.</li>
+<li><strong>Direct serialization</strong>: OpenMRN’s accessors serialize C++ data structures directly into binary form, padding and aligning fields as needed.</li>
+<li><strong>Not human-readable</strong>: It’s raw binary data—you can’t read it as text or edit it directly.</li>
+<li><strong>CRC integrity</strong>: Binary metadata includes checksums to detect corruption.</li>
+</ul>
+<p><strong>Practical implication</strong>: You must use JMRI (or a similar LCC tool) to edit configuration. This is by design—it ensures configuration remains valid and in sync with the firmware’s expectations. The binary format protects against accidental corruption and keeps configuration data safe.</p>
+<h2 id="three-concepts-acdi-snip-and-cdi"><a class="header" href="#three-concepts-acdi-snip-and-cdi">Three Concepts: ACDI, SNIP, and CDI</a></h2>
+<p>When you see these three terms in OpenLCB documentation, here’s what they mean:</p>
+<h3 id="acdi-automatic-configuration-description-information"><a class="header" href="#acdi-automatic-configuration-description-information"><strong>ACDI (Automatic Configuration Description Information)</strong></a></h3>
+<p>ACDI is a <strong>standardized data block</strong> that stores your node’s identity information:</p>
+<ul>
+<li><strong>Static fields</strong>: Manufacturer ID, model, hardware/software versions (compiled into firmware)</li>
+<li><strong>Dynamic/user fields</strong>: Node name and description (stored in SPIFFS, editable via JMRI)</li>
+</ul>
+<p>Think of ACDI as your node’s “business card”—it describes <em>what the node is</em>.</p>
+<h3 id="snip-simple-node-information-protocol"><a class="header" href="#snip-simple-node-information-protocol"><strong>SNIP (Simple Node Information Protocol)</strong></a></h3>
+<p>SNIP is the <strong>protocol</strong> that allows the node to <em>broadcast</em> its ACDI data to the network. When JMRI or another tool connects and asks “who are you?” the node responds with SNIP data (pulled from ACDI).</p>
+<h3 id="cdi-configuration-description-information"><a class="header" href="#cdi-configuration-description-information"><strong>CDI (Configuration Description Information)</strong></a></h3>
+<p>CDI is the <strong>configuration schema</strong>—a blueprint describing:</p>
+<ul>
+<li>What configuration options the node has (event IDs, intervals, etc.)</li>
+<li>Their types (integer, string, event ID, etc.)</li>
+<li>Default values and constraints</li>
+</ul>
+<p>CDI tells tools <em>how to configure the node</em>, separate from identity.</p>
+<h3 id="how-they-work-together"><a class="header" href="#how-they-work-together"><strong>How They Work Together</strong></a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Concept</th><th>Purpose</th><th>Stored Where</th><th>Example</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>ACDI</strong></td><td>Node identity &amp; description</td><td>SPIFFS + firmware</td><td>Manufacturer “OpenMRN”, User name “Kitchen Light”</td></tr>
+<tr><td><strong>SNIP</strong></td><td>Protocol to broadcast ACDI</td><td>(generated from ACDI at runtime)</td><td>“Who are you?” → SNIP response with ACDI</td></tr>
+<tr><td><strong>CDI</strong></td><td>Configuration schema/blueprint</td><td>Compiled in firmware</td><td>“Node has EVENT_INTERVAL config (int, 100-10000ms)”</td></tr>
+</tbody>
+</table>
+</div>
+<p>The config file at <code>/spiffs/openlcb_config</code> stores:</p>
+<ul>
+<li><strong>User ACDI data</strong> (offset 0-127): Node name and description</li>
+<li><strong>Node-specific config</strong> (offset 128+): Settings like event IDs, blink interval, etc.</li>
+</ul>
+<p>OpenMRNLite automatically:</p>
+<ul>
+<li>Responds to SNIP requests using ACDI</li>
+<li>Exposes CDI to configuration tools</li>
+<li>Handles persistence of both ACDI and config data</li>
+</ul>
+<h2 id="understanding-canonical_version"><a class="header" href="#understanding-canonical_version">Understanding CANONICAL_VERSION</a></h2>
+<p>In <code>config.h</code>, you’ll see:</p>
+<pre><code class="language-cpp">static constexpr uint16_t CANONICAL_VERSION = 0x0001;
+</code></pre>
+<p>This version number is <strong>not</strong> for your application—it’s for OpenMRN to track schema changes. Here’s why it matters:</p>
+<ul>
+<li><strong>First Boot</strong>: No config file exists yet. OpenMRN sees <code>CANONICAL_VERSION = 0x0001</code> and initializes a new config file with this version number.</li>
+<li><strong>Later Boots</strong>: OpenMRN reads the version from the config file. If it matches <code>CANONICAL_VERSION</code>, everything is normal—use the config file as-is.</li>
+<li><strong>Version Mismatch</strong>: If you change <code>CANONICAL_VERSION</code> in your code and recompile, OpenMRN detects a mismatch and <strong>triggers a complete factory reset</strong>. This wipes the ENTIRE config file, including SNIP user data at offset 0-127 (your node name and description that users may have customized). Everything is reinitialized to defaults.</li>
+</ul>
+<p><strong>Important</strong>: Users lose their custom node name and any other persisted configuration when CANONICAL_VERSION changes. We won’t change it in this section, but later sections explore how to evolve configuration safely while preserving user data.</p>
+<h2 id="the-cdi-segments"><a class="header" href="#the-cdi-segments">The CDI Segments</a></h2>
+<p>Recall from Chapter 3 that <code>config.h</code> defines configuration segments:</p>
+<pre><code class="language-cpp">CDI_GROUP(ConfigDef, MainCdi());
+  CDI_GROUP_ENTRY(ident, Identification);      // Static SNIP data: manufacturer, model, etc.
+  CDI_GROUP_ENTRY(acdi, Acdi);                 // ACDI protocol marker (tells tools ACDI data exists)
+  CDI_GROUP_ENTRY(userinfo, UserInfoSegment);  // User-editable name/description (configuration tool interface)
+  CDI_GROUP_ENTRY(seg, AsyncBlinkSegment);     // Internal config (offset 128+)
+CDI_GROUP_END();
+</code></pre>
+<p>Each segment serves a specific role:</p>
+<ul>
+<li><strong>ident</strong>: Static manufacturer data (Identification) — read-only in JMRI, compiled into firmware</li>
+<li><strong>acdi</strong>: ACDI protocol marker — signals to configuration tools that ACDI data is available. Does NOT expose data directly; instead acts as a tag for the SNIP protocol handler</li>
+<li><strong>userinfo</strong>: User-editable ACDI fields (User Name, Description) — what JMRI displays as the “User Info” tab for user customization</li>
+<li><strong>seg</strong>: Internal app config, stored at offset 128+</li>
+</ul>
+<p>In JMRI’s LccPro configuration dialog, you’ll see:</p>
+<ol>
+<li><strong>Identification</strong> tab (from ident: manufacturer, model, hardware/software versions)</li>
+<li><strong>User Info</strong> tab (from userinfo: the name and description fields you can customize)</li>
+</ol>
+<p>The <code>acdi</code> entry doesn’t appear as a separate tab—it’s a protocol marker that enables the SNIP data exchange behind the scenes.</p>
+<h2 id="why-offsets-matter"><a class="header" href="#why-offsets-matter">Why Offsets Matter</a></h2>
+<p>The offset-based model gives you precise control over where data lives:</p>
+<pre><code>config.h shows:
+  CDI_GROUP_ENTRY(userinfo, UserInfoSegment, Name("User Info"));
+  CDI_GROUP_ENTRY(seg, AsyncBlinkSegment, Offset(128));
+                                           ↑
+                          Explicit offset for internal config
+</code></pre>
+<p>This means:</p>
+<ul>
+<li>User name/description go to offset 0-127 (SNIP user data, <strong>completely wiped on factory reset</strong> and reinitialized to defaults from config.h)</li>
+<li>Internal config starts at offset 128+ (<strong>completely wiped on factory reset</strong>, replaced with defaults)</li>
+<li>When JMRI edits the user name, it writes directly to offset 0-127</li>
+<li>When factory reset is triggered, both offset 0-127 and offset 128+ are wiped and reinitialized from the firmware defaults</li>
+</ul>
+<blockquote>
+<p><strong>Important:</strong> There are NO offsets preserved during factory reset except for the static SNIP data compiled into firmware (manufacturer, model, hardware/software versions). All config file data, including user customizations at offset 0-127, is lost.</p>
+</blockquote>
+<h2 id="key-takeaway"><a class="header" href="#key-takeaway">Key Takeaway</a></h2>
+<p>Configuration is organized by memory offset in a SPIFFS file. Static data (manufacturer info) lives in firmware; dynamic data (node name) lives in flash. OpenMRN tracks schema with CANONICAL_VERSION to trigger a factory reset when the config schema changes (all-or-nothing reset, no field migration). The CDI segments map C++ structures to these memory offsets, giving JMRI a machine-readable map of what’s configurable.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="editing-configuration-in-jmri"><a class="header" href="#editing-configuration-in-jmri">Editing Configuration in JMRI</a></h1>
+<h2 id="step-by-step-edit-node-name-in-lccpro"><a class="header" href="#step-by-step-edit-node-name-in-lccpro">Step-by-Step: Edit Node Name in LccPro</a></h2>
+<p>One of the most common configuration tasks is renaming a node to something meaningful (e.g., “Test Blink Node” instead of “async_blink”). Here’s how it works:</p>
+<h3 id="1-launch-jmri-and-open-the-lccpro-tool"><a class="header" href="#1-launch-jmri-and-open-the-lccpro-tool">1. Launch JMRI and Open the LccPro Tool</a></h3>
+<p>Start JMRI (5.12 or later) and navigate to:</p>
+<pre><code>Tools → LCC → LccPro
+</code></pre>
+<p>You should see a list of nodes currently on your LCC network. Your ESP32 node appears here, identified by its ACDI manufacturer and model information.</p>
+<p><img src="04-configuration/images/NodeListFirstBoot.png" alt="LccPro main window showing node list with async_blink"></p>
+<h3 id="2-select-your-node"><a class="header" href="#2-select-your-node">2. Select Your Node</a></h3>
+<p>In the node list, click on the node you want to configure (e.g., “async_blink”).</p>
+<p>The details panel below the list now shows information for the selected node:</p>
+<ul>
+<li>Node ID</li>
+<li>Static SNIP Data: Manufacturer (<code>OpenMRN</code>), Model (<code>async_blink</code>), Hardware version (<code>ESP32</code>), Software version (<code>1.00</code>)</li>
+<li>SNIP User Data: User name (currently <code>async_blink</code>), user description (<code>ESP32 Blink demo</code>)</li>
+</ul>
+<p><img src="04-configuration/images/NodeListClickAsyncBlink.png" alt="LccPro node details, ACDI section"></p>
+<h3 id="3-open-the-configuration-editor"><a class="header" href="#3-open-the-configuration-editor">3. Open the Configuration Editor</a></h3>
+<p>Click the <strong>Configure</strong> button (or double-click the node).</p>
+<p>LccPro opens a dialog showing the node’s CDI. You’ll see tabs for different sections:</p>
+<ul>
+<li><strong>Identification</strong> (read-only): Static SNIP data from firmware</li>
+<li><strong>User Info</strong> (editable): SNIP user name and description from config file</li>
+<li><strong>Settings</strong> (if present): Application-specific configuration</li>
+</ul>
+<p><img src="04-configuration/images/ConfigureDialog.png" alt="SCREENSHOT PLACEHOLDER: LccPro Configure dialog, tabs visible"></p>
+<h3 id="4-edit-the-user-name"><a class="header" href="#4-edit-the-user-name">4. Edit the User Name</a></h3>
+<p>Expand the <strong>User Info</strong> tab.</p>
+<p>You’ll see the User Info tab with fields populated with the current values from the node (as shown in the previous step). Change the User Name to something meaningful, like <code>Test Blink Node</code>. You can also edit the description if you’d like.</p>
+<p><img src="04-configuration/images/ConfigureDialogUserNameSet.png" alt="LccPro User Info tab with edited name “Test Blink Node”"></p>
+<h3 id="5-write-the-changes-to-the-node"><a class="header" href="#5-write-the-changes-to-the-node">5. Write the Changes to the Node</a></h3>
+<p>After editing the User Name, you have two options:</p>
+<ul>
+<li><strong>Write individually</strong>: Click the <strong>Write</strong> button next to the User Name field to send just that change to the node</li>
+<li><strong>Write all changes</strong>: Click the <strong>Save Changes</strong> button at the bottom of the dialog to write all modified fields at once</li>
+</ul>
+<p>Either way, LccPro sends the new user name to the ESP32 node via OpenLCB Configuration protocol:</p>
+<pre class="mermaid">sequenceDiagram
+    actor User as You (JMRI)
+    participant JMRI
+    participant ESP32 as ESP32&lt;br/&gt;(OpenMRN)
+    participant SPIFFS
+    
+    User-&gt;&gt;JMRI: Click "Write"&lt;br/&gt;or "Save Changes"
+    JMRI-&gt;&gt;ESP32: Configuration write message&lt;br/&gt;(new user name)
+    ESP32-&gt;&gt;SPIFFS: Write new name&lt;br/&gt;to offset 0-127
+    ESP32-&gt;&gt;JMRI: Configuration write ACK&lt;br/&gt;(success)
+    JMRI-&gt;&gt;User: Changes saved!
+</pre>
+
+<p>For SNIP user data (Name and Description), the changes take effect immediately. There is no separate “apply” step needed.</p>
+<h3 id="6-verify-persistence"><a class="header" href="#6-verify-persistence">6. Verify Persistence</a></h3>
+<p>Once saved, the new name persists across reboots:</p>
+<ol>
+<li>
+<p><strong>Immediate Check in LccPro</strong>: Click the <strong>Refresh</strong> button above the node list. This tells LccPro to ask all nodes for their current information. The node list should now show the updated name <code>Test Blink Node</code> instead of <code>async_blink</code>.</p>
+</li>
+<li>
+<p><strong>Power Cycle Check</strong>: Power off the ESP32, wait a few seconds, power it back on. Reconnect JMRI to the node (or click Refresh again). The name is still <code>Test Blink Node</code>—it was saved to SPIFFS.</p>
+</li>
+</ol>
+<h2 id="what-just-happened"><a class="header" href="#what-just-happened">What Just Happened</a></h2>
+<p>When you edited and saved the name, OpenMRN did this:</p>
+<ol>
+<li><strong>Received</strong> the new value via JMRI’s Configuration write protocol</li>
+<li><strong>Wrote</strong> it to the config file at offset 0-127 (the SNIP user data area)</li>
+<li><strong>Confirmed</strong> the write was successful back to JMRI</li>
+</ol>
+<p>The next time the node boots, it reads this config file from SPIFFS and exposes the updated user name via SNIP protocol. The firmware itself didn’t change—only the data in flash storage.</p>
+<p>SNIP user data (name and description) is part of the OpenLCB standard for node identification. Changes to these fields take effect immediately without needing an explicit “apply” step.</p>
+<h2 id="what-this-enables"><a class="header" href="#what-this-enables">What This Enables</a></h2>
+<p>This workflow shows the power of configuration:</p>
+<ul>
+<li><strong>No recompilation</strong> needed to change the node name</li>
+<li><strong>Persistent</strong> across power cycles</li>
+<li><strong>Standard protocol</strong> (OpenLCB Configuration) that any LCC tool understands</li>
+<li><strong>Centralized</strong> in JMRI—all nodes configured from one place</li>
+</ul>
+<p>Later sections of this chapter extend this pattern to make event IDs, blink interval, and other settings configurable too. The same workflow will apply.</p>
+<h2 id="troubleshooting-name-doesnt-save"><a class="header" href="#troubleshooting-name-doesnt-save">Troubleshooting: Name Doesn’t Save</a></h2>
+<p>If you edit the name in JMRI but it doesn’t save:</p>
+<ol>
+<li><strong>Check Connection</strong>: Ensure JMRI is still connected to the node (green indicator in LccPro)</li>
+<li><strong>Check Permissions</strong>: The node’s CDI must declare the User Info segment as writable. In our example, it is.</li>
+<li><strong>Check SPIFFS</strong>: The ESP32’s SPIFFS must have free space. If SPIFFS is full, writes fail silently. Check serial output for error messages.</li>
+</ol>
+<p>See Chapter 3’s code-walkthrough section for details on how configuration is initialized.</p>
+<h2 id="next-application-specific-configuration"><a class="header" href="#next-application-specific-configuration">Next: Application-Specific Configuration</a></h2>
+<p>This section covered editing SNIP user data (Name and Description), which are standardized fields handled automatically by OpenMRN. When you add application-specific configuration fields (like the blink interval in the next chapter), the workflow changes slightly—you’ll need to use the <strong>Update Complete</strong> button to tell the node to apply your custom configuration changes. See Chapter 4’s <strong>“Adding a Configurable Interval Setting”</strong> section for that workflow.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="factory-reset-behavior"><a class="header" href="#factory-reset-behavior">Factory Reset Behavior</a></h1>
+<h2 id="what-happens-on-first-boot"><a class="header" href="#what-happens-on-first-boot">What Happens on First Boot</a></h2>
+<p>When you flash async_blink to an ESP32 for the first time, the node goes through an initialization sequence. Understanding this sequence is key to understanding configuration.</p>
+<h3 id="before-first-boot"><a class="header" href="#before-first-boot">Before First Boot</a></h3>
+<ul>
+<li>ESP32 has the async_blink firmware loaded</li>
+<li>SPIFFS flash memory is either empty OR contains leftover config from a previous application</li>
+<li>OpenMRN doesn’t know what to expect</li>
+</ul>
+<h3 id="first-boot-factory_reset-is-called"><a class="header" href="#first-boot-factory_reset-is-called">First Boot: factory_reset() is Called</a></h3>
+<p>On startup, main.cpp calls:</p>
+<pre><code class="language-cpp">void init_filesystem() {
+  openlcb::FATFS_INIT();  // Mount SPIFFS
+  
+  // If no valid config file exists, create one
+  if (!CheckFileExists(&amp;driver, CONFIG_FILENAME)) {
+    factory_reset(&amp;driver, CONFIG_FILENAME, &amp;config_file_content, 
+                  0, sizeof(config_file_content));
+  }
+}
+</code></pre>
+<p>The <code>factory_reset()</code> function:</p>
+<ol>
+<li>Creates a new config file at <code>/spiffs/openlcb_config</code></li>
+<li>Initializes all fields with default values</li>
+<li><strong>Writes SNIP user data</strong>: User name = “async_blink”, description = “ESP32 Blink demo”</li>
+<li><strong>Initializes internal config</strong>: Sets up offset 128+ with defaults</li>
+<li><strong>Stores CANONICAL_VERSION</strong>: Version 0x0001 is written to config metadata</li>
+</ol>
+<p>After factory_reset() completes:</p>
+<ul>
+<li>Config file is ready to use</li>
+<li>Node name is “async_blink” (the default from SNIP_NODE_NAME constant)</li>
+<li>JMRI can now edit the user name via the User Info tab</li>
+</ul>
+<h3 id="what-gets-wiped-and-what-doesnt"><a class="header" href="#what-gets-wiped-and-what-doesnt">What Gets Wiped and What Doesn’t</a></h3>
+<p>When <code>factory_reset()</code> is triggered:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Data</th><th>What Happens</th><th>Reason</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Static SNIP Data</strong> (manufacturer, model, hardware/software version)</td><td>Untouched</td><td>Lives in firmware, not in config file</td></tr>
+<tr><td><strong>SNIP User Data</strong> (user name, description)</td><td><strong>Completely wiped</strong></td><td>Reset to defaults from config.h (e.g., “async_blink”)</td></tr>
+<tr><td><strong>Internal Config</strong> (offset 128+)</td><td>Completely wiped</td><td>Reset to application defaults</td></tr>
+<tr><td><strong>User Customizations</strong> (node name set via JMRI)</td><td><strong>Lost</strong></td><td>Factory reset erases all custom edits</td></tr>
+</tbody>
+</table>
+</div>
+<p>This is important to understand: factory reset is <strong>all-or-nothing</strong>. Once triggered, users lose any custom node name or description they may have set through JMRI. There is no selective preservation of custom fields.</p>
+<h2 id="what-persists-across-reboots"><a class="header" href="#what-persists-across-reboots">What Persists Across Reboots</a></h2>
+<p>Once factory_reset() runs and the config file exists, normal boots are much simpler:</p>
+<ol>
+<li>SPIFFS is mounted</li>
+<li>Config file is found → no factory reset needed</li>
+<li>User name and description are read from offset 0-127</li>
+<li>Internal config is read from offset 128+</li>
+<li>Node comes online with the same configuration as before</li>
+</ol>
+<p><strong>This is why editing the node name in JMRI persists across power cycles.</strong></p>
+<h2 id="when-does-factory-reset-trigger-again"><a class="header" href="#when-does-factory-reset-trigger-again">When Does Factory Reset Trigger Again?</a></h2>
+<p>Besides explicitly calling factory_reset() (or pressing a physical button), OpenMRN automatically triggers a reset if:</p>
+<ul>
+<li><strong>Config file is corrupted</strong> (CRC check fails)</li>
+<li><strong>CANONICAL_VERSION mismatch</strong> (firmware version differs from saved config version)</li>
+</ul>
+<p><strong>Important Warning</strong>: If you change <code>CANONICAL_VERSION</code> in your firmware (e.g., to add new configuration fields), the next boot will trigger a factory reset. Users will lose any custom node name or configuration they set through JMRI. This is a breaking change for deployed nodes.</p>
+<h2 id="triggering-a-factory-reset-from-jmri"><a class="header" href="#triggering-a-factory-reset-from-jmri">Triggering a Factory Reset from JMRI</a></h2>
+<p>You can manually trigger a factory reset from the JMRI LccPro configure dialog without recompiling firmware or pressing buttons on the ESP32:</p>
+<ol>
+<li>Open <strong>LccPro</strong> and select your node</li>
+<li>Click <strong>Configure</strong> (or double-click the node)</li>
+<li>In the configure dialog, click the <strong>More…</strong> button</li>
+<li>Select <strong>Factory Reset</strong></li>
+</ol>
+<p>JMRI will send a factory reset command to the node via OpenLCB Configuration protocol. The node will immediately reinitialize its config file with factory defaults. This is useful for:</p>
+<ul>
+<li><strong>Testing</strong>: Quickly reset configuration during development</li>
+<li><strong>Troubleshooting</strong>: Recover from corrupted settings without physical access to the board</li>
+<li><strong>User Support</strong>: Remotely help users restore a node to factory defaults without recompiling</li>
+</ul>
+<h2 id="practical-example-factory-reset-reboot"><a class="header" href="#practical-example-factory-reset-reboot">Practical Example: Factory Reset Reboot</a></h2>
+<p>When you trigger a factory reset (via JMRI or version mismatch), here’s what the serial console shows on the reboot:</p>
+<pre><code>rst:0xc (SW_CPU_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0030,len:1184
+load:0x40078000,len:13232
+load:0x40080400,len:3028
+entry 0x400805e4
+
+=== OpenLCB async_blink ESP32 Example ===
+Node ID: 0x050201020200
+Event 0: 0x0502010202000000
+Event 1: 0x0502010202000001
+
+Initializing SPIFFS...
+SPIFFS initialized successfully
+
+Connecting to WiFi SSID: YourNetwork
+.
+WiFi connected!
+IP Address: 192.168.1.100
+
+Creating CDI configuration descriptor...
+[CDI] Checking /spiffs/cdi.xml...
+[CDI] File /spiffs/cdi.xml appears up-to-date (len 987 vs 987)
+[CDI] Registering CDI with stack...
+Initializing OpenLCB configuration...
+
+Starting OpenLCB stack...
+Starting executor thread...
+Starting TCP Hub on port 12021...
+TCP Hub listening. JMRI can connect to this device on port 12021
+
+OpenLCB node initialization complete!
+Entering run mode - will alternate events every 1 second
+
+Allocating new alias C41 for node 050201020200
+Produced event: 0x0502010202000001 (state: 1)
+Produced event: 0x0502010202000000 (state: 0)
+Produced event: 0x0502010202000001 (state: 1)
+...
+</code></pre>
+<p><strong>Important</strong>: Notice there is <strong>no console message when the reset is triggered</strong>. The reset happens silently from an external trigger. The boot diagnostics (ROM messages about <code>rst:0xc</code>, <code>clock div</code>, etc.) indicate a software reset occurred. Then the normal initialization proceeds.</p>
+<p>After factory reset, your config file is re-initialized with defaults:</p>
+<ul>
+<li><strong>SNIP User Name</strong>: “async_blink” (from <code>SNIP_NODE_NAME</code> constant)</li>
+<li><strong>SNIP User Desc</strong>: “ESP32 Blink demo” (from <code>SNIP_USER_DESCRIPTION</code> constant)</li>
+<li>Any custom node name set via JMRI is <strong>lost</strong></li>
+</ul>
+<h2 id="what-happens-after-factory-reset"><a class="header" href="#what-happens-after-factory-reset">What Happens After Factory Reset</a></h2>
+<p>After factory reset, subsequent boots proceed normally. The config file already exists and is valid, so no factory reset runs again unless:</p>
+<ul>
+<li>The config file becomes corrupted</li>
+<li>The <code>CANONICAL_VERSION</code> in firmware differs from the saved version</li>
+<li>You explicitly trigger another reset via JMRI Configure dialog</li>
+</ul>
+<h2 id="key-takeaway-1"><a class="header" href="#key-takeaway-1">Key Takeaway</a></h2>
+<p><code>factory_reset()</code> runs on first boot or when triggered by JMRI, version mismatch, or config corruption to initialize a valid config file with SNIP defaults. After that, the config persists across every reboot. JMRI can edit the user name, which updates the config file while preserving other settings.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="adding-a-configurable-interval-setting"><a class="header" href="#adding-a-configurable-interval-setting">Adding a Configurable Interval Setting</a></h1>
+<p>In this section, we’ll extend the async_blink example from Chapter 3 to make the blink interval configurable via JMRI. This demonstrates how to:</p>
+<ol>
+<li>Add a new configuration field to the CDI schema</li>
+<li>Implement <code>apply_configuration()</code> to read the field and cache it</li>
+<li>Use the cached value in your application loop</li>
+<li>Test configuration changes in real-time with LccPro</li>
+</ol>
+<h2 id="code-changes-to-configh"><a class="header" href="#code-changes-to-configh">Code Changes to config.h</a></h2>
+<p>Starting from the Chapter 3 version, we’ll add a configurable <code>blink_interval</code> field to the CDI. Because we’re adding a new field to the configuration schema, we must also bump <code>CANONICAL_VERSION</code> (from 0x0001 to 0x0002). When you upload this new code, OpenMRN will detect the version mismatch and trigger a factory reset, which wipes the old config file and initializes it with the new schema.</p>
+<p>Here’s what changes:</p>
+<pre><code class="language-diff">CDI_GROUP(AsyncBlinkSegment, Segment(MemoryConfigDefs::SPACE_CONFIG), Offset(128));
+CDI_GROUP_ENTRY(internal_config, InternalConfigData);
++CDI_GROUP_ENTRY(blink_interval, Uint16ConfigEntry,
++                Default(1000),
++                Min(100),
++                Max(30000),
++                Name("Blink Interval"),
++                Description("Milliseconds between alternating events (100-30000)"));
+CDI_GROUP_END();
+</code></pre>
+<p><strong>What this means:</strong></p>
+<ul>
+<li><code>Uint16ConfigEntry</code>: A 16-bit unsigned integer field</li>
+<li><code>Default(1000)</code>: Initial value is 1000 milliseconds (1 second)</li>
+<li><code>Min(100)</code>, <code>Max(30000)</code>: JMRI will enforce these limits</li>
+<li><code>Name()</code> and <code>Description()</code>: Labels shown in the JMRI configuration dialog</li>
+</ul>
+<p>The field is stored at offset 128+ in the configuration file (after the SNIP user data at offset 0-127).</p>
+<h3 id="bump-canonical_version"><a class="header" href="#bump-canonical_version">Bump CANONICAL_VERSION</a></h3>
+<p>Because we changed the configuration schema (added a new field), we must bump the version number. This tells OpenMRN that the configuration file format has changed. On the next boot, OpenMRN will detect the version mismatch and trigger a factory reset:</p>
+<pre><code class="language-diff">-static constexpr uint16_t CANONICAL_VERSION = 0x0001;
++static constexpr uint16_t CANONICAL_VERSION = 0x0002;
+</code></pre>
+<p>When you upload this new code:</p>
+<ol>
+<li>OpenMRN reads the old config file’s version (0x0001)</li>
+<li>Compares it to the new CANONICAL_VERSION (0x0002)</li>
+<li>Detects a mismatch and triggers factory reset</li>
+<li>Calls your <code>factory_reset()</code> method to write defaults for the new schema</li>
+<li>Calls <code>apply_configuration()</code> to load the newly-initialized config file</li>
+</ol>
+<p>This prevents data corruption from partially-initialized fields. The cost is that users’ old configuration is wiped (factory reset), but the new schema is guaranteed to be valid.</p>
+<p><strong>Full config.h with changes:</strong></p>
+<pre><code class="language-cpp">#ifndef _ASYNC_BLINK_CONFIG_H_
+#define _ASYNC_BLINK_CONFIG_H_
+
+#include "openlcb/ConfigRepresentation.hxx"
+#include "openlcb/MemoryConfig.hxx"
+
+namespace openlcb {
+
+extern const SimpleNodeStaticValues SNIP_STATIC_DATA = {
+    4,               // Version
+    "OpenMRN",       // Manufacturer
+    "async_blink",   // Model
+    "ESP32",         // Hardware version
+    "1.00"           // Software version
+};
+
+static const char SNIP_NODE_NAME[] = "async_blink";
+static const char SNIP_NODE_DESC[] = "ESP32 Blink demo";
+
+/// Version number for the configuration structure
+static constexpr uint16_t CANONICAL_VERSION = 0x0002;
+
+CDI_GROUP(AsyncBlinkSegment, Segment(MemoryConfigDefs::SPACE_CONFIG), Offset(128));
+CDI_GROUP_ENTRY(internal_config, InternalConfigData);
+CDI_GROUP_ENTRY(blink_interval, Uint16ConfigEntry,
+                Default(1000),
+                Min(100),
+                Max(30000),
+                Name("Blink Interval"),
+                Description("Milliseconds between alternating events (100-30000)"));
+CDI_GROUP_END();
+
+CDI_GROUP(ConfigDef, MainCdi());
+CDI_GROUP_ENTRY(ident, Identification);
+CDI_GROUP_ENTRY(acdi, Acdi);
+CDI_GROUP_ENTRY(userinfo, UserInfoSegment, Name("User Info"));
+CDI_GROUP_ENTRY(seg, AsyncBlinkSegment, Name("Settings"));
+CDI_GROUP_END();
+
+} // namespace openlcb
+
+#endif // _ASYNC_BLINK_CONFIG_H_
+</code></pre>
+<h2 id="code-changes-to-maincpp"><a class="header" href="#code-changes-to-maincpp">Code Changes to main.cpp</a></h2>
+<p>Now we’ll modify <code>main.cpp</code> to:</p>
+<ol>
+<li>Add a global cache variable for the interval</li>
+<li>Update <code>apply_configuration()</code> to read the interval from the config file</li>
+<li>Update <code>factory_reset()</code> to write default interval to the config file</li>
+<li>Use the cached value in the loop</li>
+</ol>
+<h3 id="add-the-cache-variable"><a class="header" href="#add-the-cache-variable">Add the Cache Variable</a></h3>
+<pre><code class="language-diff">// State variable to track which event to send
+bool event_state = false;
+
+-// Timing for event production (1 second = 1000 milliseconds)
+-unsigned long last_event_time = 0;
+-const unsigned long EVENT_INTERVAL = 1000;
++// Timing for event production - cached from configuration
++unsigned long last_event_time = 0;
++unsigned long event_interval = 1000;  // Default, will be read from config
+</code></pre>
+<p>This global <code>event_interval</code> variable will be updated whenever the configuration changes.</p>
+<h3 id="update-apply_configuration"><a class="header" href="#update-apply_configuration">Update apply_configuration()</a></h3>
+<p>Replace the stub <code>apply_configuration()</code> method in the <code>FactoryResetHelper</code> class:</p>
+<pre><code class="language-diff">class FactoryResetHelper : public DefaultConfigUpdateListener
+{
+public:
+    UpdateAction apply_configuration(int fd, bool initial_load,
+                                     BarrierNotifiable *done) OVERRIDE
+    {
+        AutoNotify n(done);
+-        // In v0.1, we don't handle runtime config changes yet.
+-        // Real nodes would persist changes here when the user modifies
+-        // configuration through JMRI. See Chapter 5 for implementation.
++        // Read the blink interval from config file and update global variable
++        event_interval = cfg.seg().blink_interval().read(fd);
++        Serial.printf("Configuration updated: blink_interval = %lu ms\n", event_interval);
++        
+         return UPDATED;
+    }
+
+    void factory_reset(int fd) override
+    {
+        // Called on first boot to initialize the configuration file.
+        // Write initial SNIP dynamic data (node name and description).
+         cfg.userinfo().name().write(fd, openlcb::SNIP_NODE_NAME);
+         cfg.userinfo().description().write(fd, openlcb::SNIP_NODE_DESC);
++        
++        // Initialize application settings with defaults
++        cfg.seg().blink_interval().write(fd, 1000);  // Default 1 second
++        Serial.println("Factory reset: wrote default blink_interval = 1000 ms");
+     }
+} factory_reset_helper;
+</code></pre>
+<p><strong>What happens when <code>apply_configuration()</code> is called:</strong></p>
+<ul>
+<li>On <strong>first boot with the new schema</strong> (CANONICAL_VERSION bumped): OpenMRN detects the version mismatch, triggers <code>factory_reset()</code> to write defaults, then calls <code>apply_configuration()</code> to read those freshly-written defaults</li>
+<li>On <strong>JMRI config change</strong>: Reads the new interval value that JMRI just wrote to the config file</li>
+<li><strong>Always returns <code>UPDATED</code></strong>: Tells OpenMRN the change was successfully applied</li>
+</ul>
+<p>The key sequence on first boot with schema changes: <code>factory_reset(fd)</code> is called first (writes 1000 to the file), then <code>apply_configuration(fd)</code> is called (reads 1000 from the file).</p>
+<h3 id="use-the-cached-value-in-loop"><a class="header" href="#use-the-cached-value-in-loop">Use the Cached Value in Loop</a></h3>
+<p>In the <code>loop()</code> function, change the hardcoded constant to use the cached variable:</p>
+<pre><code class="language-diff">void loop() {
+  // CRITICAL: Must call openmrn.loop() frequently to process messages
+  openmrn.loop();
+  
+-  // Check if it's time to produce an event (every 1 second)
++  // Check if it's time to produce an event
+  unsigned long current_time = millis();
+-  if (current_time - last_event_time &gt;= EVENT_INTERVAL) {
++  if (current_time - last_event_time &gt;= event_interval) {
+     // Alternate event state
+     event_state = !event_state;
+</code></pre>
+<p>The loop now uses <code>event_interval</code> (the cached variable) instead of <code>EVENT_INTERVAL</code> (the hardcoded constant). When <code>apply_configuration()</code> updates the global, the loop automatically uses the new value on the next iteration.</p>
+<h3 id="update-the-setup-message"><a class="header" href="#update-the-setup-message">Update the Setup Message</a></h3>
+<p>Also update the startup message to reference the configurable variable:</p>
+<pre><code class="language-diff">void setup() {
+  init_serial();
+  init_filesystem();
+  init_network();
+  init_openlcb_stack();
+  init_tcp_hub();
+  
+  Serial.println("OpenLCB node initialization complete!");
+-  Serial.println("Entering run mode - will alternate events every 1 second\n");
++  Serial.printf("Entering run mode - will alternate events every %lu ms\n", event_interval);
+  
+  last_event_time = millis();
+}
+</code></pre>
+<h2 id="testing-with-lccpro"><a class="header" href="#testing-with-lccpro">Testing with LccPro</a></h2>
+<p>Now that the code is modified, compile, upload to your ESP32, and test:</p>
+<h3 id="step-1-verify-initial-boot-output"><a class="header" href="#step-1-verify-initial-boot-output">Step 1: Verify Initial Boot Output</a></h3>
+<p><strong>Important</strong>: Because we bumped <code>CANONICAL_VERSION</code> from 0x0001 to 0x0002, the first boot with this new code will trigger a factory reset. This wipes the old config file and initializes it with the new schema. You’ll see factory reset messages on the serial output.</p>
+<p>Open the Serial Monitor (or PlatformIO Monitor). You should see:</p>
+<pre><code>Initializing SPIFFS...
+SPIFFS initialized successfully
+
+Connecting to WiFi SSID: Socha_IoT
+.
+WiFi connected!
+IP Address: 192.168.1.100
+
+Creating CDI configuration descriptor...
+[CDI] Checking /spiffs/cdi.xml...
+[CDI] File /spiffs/cdi.xml appears up-to-date (len 1172 vs 1172)
+[CDI] Registering CDI with stack...
+Initializing OpenLCB configuration...
+Factory reset: wrote default blink_interval = 1000 ms
+
+Starting OpenLCB stack...
+Starting executor thread...
+OpenLCB stack initialized successfully
+Configuration updated: blink_interval = 1000 ms
+Starting TCP Hub on port 12021...
+TCP Hub listening. JMRI can connect to tListening on port 12021, fd 48
+his device on port 12021
+OpenLCB node initialization complete!
+Entering run mode - will alternate events every 1000 ms
+Allocating new alias C41 for node 050201020200
+Produced event: 0x0502010202000001 (state: 1)
+</code></pre>
+<p><strong>What to verify:</strong></p>
+<ul>
+<li><code>Factory reset: wrote default blink_interval = 1000 ms</code> — Confirms version mismatch detected and factory reset triggered</li>
+<li><code>Configuration updated: blink_interval = 1000 ms</code> — Confirms apply_configuration() was called and read the default value</li>
+<li><code>Entering run mode - will alternate events every 1000 ms</code> — Confirms event_interval global was set from config</li>
+<li><code>Produced event:</code> messages at ~1 second intervals — Confirms timing is working</li>
+</ul>
+<p>If you see these messages, the configuration system is working correctly. You’re ready to test changing the interval via JMRI.</p>
+<h3 id="step-2-change-interval-in-lccpro"><a class="header" href="#step-2-change-interval-in-lccpro">Step 2: Change Interval in LccPro</a></h3>
+<ol>
+<li>Connect JMRI to your ESP32 node (via TCP on port 12021)</li>
+<li>Open <strong>Tools → LCC → LccPro</strong></li>
+<li>Find your node in the list</li>
+<li>Click <strong>Configure</strong> (or double-click the node)</li>
+<li>Find the <strong>Settings</strong> tab and locate <strong>Blink Interval</strong> field</li>
+<li>Change the value (e.g., from 1000 to 2000 milliseconds)</li>
+<li>Click <strong>Write</strong> to send the new value</li>
+</ol>
+<p><img src="04-configuration/images/ConfigBlinkInterval.png" alt="LccPro Configure dialog with Settings tab, Blink Interval field visible"></p>
+<h3 id="step-3-click-update-complete"><a class="header" href="#step-3-click-update-complete">Step 3: Click Update Complete</a></h3>
+<p>This is the critical step! Unlike SNIP user data (Name and Description, which take effect immediately), application-specific configuration fields like blink_interval need an explicit <strong>Update Complete</strong> step.</p>
+<p>Here’s why: When you click <strong>Write</strong>, JMRI sends the new value to the ESP32 and it’s saved to SPIFFS. But OpenMRN doesn’t immediately call your <code>apply_configuration()</code> method. This allows you to make multiple writes in JMRI (e.g., change interval AND add other settings) before the node processes them all together.</p>
+<p>When you click <strong>Update Complete</strong>, you’re telling the node: “All changes are sent; now apply them.” OpenMRN then calls your <code>apply_configuration()</code> method, which reads the new interval from the config file and updates your global cache variable.</p>
+<p>Click the <strong>Update Complete</strong> button at the bottom of the Configure dialog.</p>
+<p><img src="04-configuration/images/ConfigUpdateComplete.png" alt="LccPro Configure dialog showing Update Complete button"></p>
+<h3 id="step-4-observe-the-change"><a class="header" href="#step-4-observe-the-change">Step 4: Observe the Change</a></h3>
+<p>Check the Serial Monitor. You should see:</p>
+<pre><code>Produced event: 0x0502010202000000 (state: 0)
+Produced event: 0x0502010202000001 (state: 1)
+Configuration updated: blink_interval = 2000 ms
+Produced event: 0x0502010202000000 (state: 0)
+Produced event: 0x0502010202000001 (state: 1)
+</code></pre>
+<p>The node’s event frequency has changed <strong>without recompiling or rebooting</strong>. The new interval is now cached in the global variable and will persist across power cycles (the new value is saved to SPIFFS).</p>
+<h3 id="step-5-verify-persistence"><a class="header" href="#step-5-verify-persistence">Step 5: Verify Persistence</a></h3>
+<p>Power off the ESP32, wait a few seconds, then power it back on. Open Serial Monitor again:</p>
+<pre><code>Creating CDI configuration descriptor...
+[CDI] Checking /spiffs/cdi.xml...
+[CDI] File /spiffs/cdi.xml appears up-to-date (len 1172 vs 1172)
+[CDI] Registering CDI with stack...
+Initializing OpenLCB configuration...
+
+Starting OpenLCB stack...
+Starting executor thread...
+OpenLCB stack initialized successfully
+Starting TCP Hub on port 12021...
+Configuration updated: blink_interval = 2000 ms
+TCP Hub listening. JMRI can connect to this device on port 12021
+OpenListening on port 12021, fd 48
+LCB node initialization complete!
+Entering run mode - will alternate events every 2000 ms
+Allocating new alias C41 for node 050201020200
+Produced event: 0x0502010202000001 (state: 1)
+</code></pre>
+<p><strong>What to verify:</strong></p>
+<ul>
+<li><code>Configuration updated: blink_interval = 2000 ms</code> — The new value was read from the persisted config file</li>
+<li><code>Entering run mode - will alternate events every 2000 ms</code> — The cached interval reflects the new value you set</li>
+</ul>
+<p>The interval persists even after power cycling!</p>
+<h2 id="how-this-works-the-configuration-lifecycle"><a class="header" href="#how-this-works-the-configuration-lifecycle">How This Works: The Configuration Lifecycle</a></h2>
+<pre class="mermaid">graph TD
+    A["ESP32 Boots"]
+    B["ConfigUpdateFlow opens config file"]
+    C["apply_configuration called with initial_load=true"]
+    D["Reads blink_interval from file, updates event_interval global"]
+    E["Loop runs using event_interval"]
+    F["User changes interval in JMRI"]
+    G["JMRI sends config write to ESP32"]
+    H["ESP32 writes new value to config file"]
+    I["apply_configuration called with initial_load=false"]
+    J["Reads new blink_interval, updates event_interval global"]
+    K["Loop uses new interval on next iteration"]
+    
+    A --&gt; B --&gt; C --&gt; D --&gt; E
+    F --&gt; G --&gt; H --&gt; I --&gt; J --&gt; K
+    K -.-&gt;|next config change| F
+</pre>
+
+<p>The key insight: <strong>apply_configuration() is called automatically by OpenMRN whenever configuration changes</strong> (at boot, when JMRI updates it, or when factory reset is triggered). You don’t need to manually check for changes or read the config file in your loop—the framework handles it for you.</p>
+<h2 id="summary"><a class="header" href="#summary">Summary</a></h2>
+<p>You now have a fully functional configurable OpenLCB node running on ESP32 with WiFi/TCP transport:</p>
+<ul>
+<li><strong>Configuration storage</strong>: Values persisted to SPIFFS across power cycles</li>
+<li><strong>JMRI integration</strong>: Seamless configuration editing via LccPro</li>
+<li><strong>Dynamic updates</strong>: Changes applied without recompiling or rebooting</li>
+<li><strong>Versioning</strong>: Safe schema evolution via <code>CANONICAL_VERSION</code></li>
+<li><strong>Factory reset</strong>: Automatic initialization of new schema fields</li>
+</ul>
+<p>This completes the WiFi/TCP foundation for Chapter 3 and demonstrates configuration best practices covered in Chapter 4.</p>
+<h2 id="whats-next-can-transport"><a class="header" href="#whats-next-can-transport">What’s Next: CAN Transport</a></h2>
+<p>In the next chapter, you’ll replace WiFi/TCP with CAN hardware transport. This is the native transport that LCC nodes use in production systems. You’ll modify the async_blink example to use CAN instead of WiFi while keeping the same configuration and event handling code.</p>
+<p>The configuration system you’ve learned in this chapter—CDI, versioning, persistence—works identically regardless of transport. Only the communication layer changes.</p>
 
                     </main>
 

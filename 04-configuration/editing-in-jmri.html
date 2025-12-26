@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Node Startup Sequence - OpenLCB Programmer&#x27;s Guide</title>
+        <title>Editing in JMRI - OpenLCB Programmer&#x27;s Guide</title>
 
 
         <!-- Custom HTML head -->
@@ -174,172 +174,106 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="node-startup-sequence"><a class="header" href="#node-startup-sequence">Node Startup Sequence</a></h1>
-<p>When an OpenLCB node powers up or resets, it goes through a defined startup sequence to join the network. Understanding this sequence is essential to building your own nodes.</p>
-<blockquote>
-<p><strong>Note for Library Users</strong>: If you’re using OpenMRNLite or other OpenLCB libraries, all of the mechanics described in this chapter are handled automatically for you. You don’t need to implement alias reservation, collision detection, or recovery—the library does it all in the background.</p>
-<p>This chapter exists to help you <strong>understand how it works</strong>, which is valuable knowledge when debugging network issues or designing advanced features. However, if you just want to build a working node with async_blink_esp32, you can skip straight to Chapter 3 without missing anything essential. The library takes care of it.</p>
-</blockquote>
-<h2 id="what-happens-during-startup"><a class="header" href="#what-happens-during-startup">What Happens During Startup</a></h2>
-<p>Every node follows this sequence:</p>
-<ol>
-<li>
-<p><strong>Check ID (CID)</strong>: The node sends four CID frames containing its 6-byte unique Node ID, spread across the frames. This allows the node to check if anyone else is using its desired alias.</p>
-</li>
-<li>
-<p><strong>Reserve ID (RID)</strong>: If no other node objects, the node sends an RID frame to reserve its chosen 12-bit alias for the Node ID.</p>
-</li>
-<li>
-<p><strong>Alias Map Definition (AMD)</strong>: The node announces the mapping between its full 6-byte Node ID and the 12-bit alias it just reserved.</p>
-</li>
-<li>
-<p><strong>Initialized (Init Complete)</strong>: The node sends an “Initialized” message telling the network it’s now fully online and reachable.</p>
-</li>
-</ol>
+                        <h1 id="editing-configuration-in-jmri"><a class="header" href="#editing-configuration-in-jmri">Editing Configuration in JMRI</a></h1>
+<h2 id="step-by-step-edit-node-name-in-lccpro"><a class="header" href="#step-by-step-edit-node-name-in-lccpro">Step-by-Step: Edit Node Name in LccPro</a></h2>
+<p>One of the most common configuration tasks is renaming a node to something meaningful (e.g., “Test Blink Node” instead of “async_blink”). Here’s how it works:</p>
+<h3 id="1-launch-jmri-and-open-the-lccpro-tool"><a class="header" href="#1-launch-jmri-and-open-the-lccpro-tool">1. Launch JMRI and Open the LccPro Tool</a></h3>
+<p>Start JMRI (5.12 or later) and navigate to:</p>
+<pre><code>Tools → LCC → LccPro
+</code></pre>
+<p>You should see a list of nodes currently on your LCC network. Your ESP32 node appears here, identified by its ACDI manufacturer and model information.</p>
+<p><img src="images/NodeListFirstBoot.png" alt="LccPro main window showing node list with async_blink"></p>
+<h3 id="2-select-your-node"><a class="header" href="#2-select-your-node">2. Select Your Node</a></h3>
+<p>In the node list, click on the node you want to configure (e.g., “async_blink”).</p>
+<p>The details panel below the list now shows information for the selected node:</p>
+<ul>
+<li>Node ID</li>
+<li>Static SNIP Data: Manufacturer (<code>OpenMRN</code>), Model (<code>async_blink</code>), Hardware version (<code>ESP32</code>), Software version (<code>1.00</code>)</li>
+<li>SNIP User Data: User name (currently <code>async_blink</code>), user description (<code>ESP32 Blink demo</code>)</li>
+</ul>
+<p><img src="images/NodeListClickAsyncBlink.png" alt="LccPro node details, ACDI section"></p>
+<h3 id="3-open-the-configuration-editor"><a class="header" href="#3-open-the-configuration-editor">3. Open the Configuration Editor</a></h3>
+<p>Click the <strong>Configure</strong> button (or double-click the node).</p>
+<p>LccPro opens a dialog showing the node’s CDI. You’ll see tabs for different sections:</p>
+<ul>
+<li><strong>Identification</strong> (read-only): Static SNIP data from firmware</li>
+<li><strong>User Info</strong> (editable): SNIP user name and description from config file</li>
+<li><strong>Settings</strong> (if present): Application-specific configuration</li>
+</ul>
+<p><img src="images/ConfigureDialog.png" alt="SCREENSHOT PLACEHOLDER: LccPro Configure dialog, tabs visible"></p>
+<h3 id="4-edit-the-user-name"><a class="header" href="#4-edit-the-user-name">4. Edit the User Name</a></h3>
+<p>Expand the <strong>User Info</strong> tab.</p>
+<p>You’ll see the User Info tab with fields populated with the current values from the node (as shown in the previous step). Change the User Name to something meaningful, like <code>Test Blink Node</code>. You can also edit the description if you’d like.</p>
+<p><img src="images/ConfigureDialogUserNameSet.png" alt="LccPro User Info tab with edited name “Test Blink Node”"></p>
+<h3 id="5-write-the-changes-to-the-node"><a class="header" href="#5-write-the-changes-to-the-node">5. Write the Changes to the Node</a></h3>
+<p>After editing the User Name, you have two options:</p>
+<ul>
+<li><strong>Write individually</strong>: Click the <strong>Write</strong> button next to the User Name field to send just that change to the node</li>
+<li><strong>Write all changes</strong>: Click the <strong>Save Changes</strong> button at the bottom of the dialog to write all modified fields at once</li>
+</ul>
+<p>Either way, LccPro sends the new user name to the ESP32 node via OpenLCB Configuration protocol:</p>
 <pre class="mermaid">sequenceDiagram
-    participant Node as New Node
-    participant Bus as OpenLCB Network
-    participant Others as Other Nodes
+    actor User as You (JMRI)
+    participant JMRI
+    participant ESP32 as ESP32&lt;br/&gt;(OpenMRN)
+    participant SPIFFS
     
-    Note over Node: Power On / Reset
-    
-    Node-&gt;&gt;Bus: CID Frame 1 (Node ID bytes 0-1)
-    Node-&gt;&gt;Bus: CID Frame 2 (Node ID bytes 2-3)
-    Node-&gt;&gt;Bus: CID Frame 3 (Node ID bytes 4-5)
-    Node-&gt;&gt;Bus: CID Frame 4 (checks alias)
-    
-    Note over Node,Others: Wait for conflicts (200ms)
-    
-    Node-&gt;&gt;Bus: RID (Reserve alias)
-    Node-&gt;&gt;Bus: AMD (Map Node ID to alias)
-    Node-&gt;&gt;Bus: Initialized Complete
-    
-    Note over Node: Now reachable on network
-    
-    Node-&gt;&gt;Bus: Producer Identified (events)
-    Node-&gt;&gt;Bus: Consumer Identified (events)
+    User-&gt;&gt;JMRI: Click "Write"&lt;br/&gt;or "Save Changes"
+    JMRI-&gt;&gt;ESP32: Configuration write message&lt;br/&gt;(new user name)
+    ESP32-&gt;&gt;SPIFFS: Write new name&lt;br/&gt;to offset 0-127
+    ESP32-&gt;&gt;JMRI: Configuration write ACK&lt;br/&gt;(success)
+    JMRI-&gt;&gt;User: Changes saved!
 </pre>
 
-<h2 id="why-use-aliases"><a class="header" href="#why-use-aliases">Why Use Aliases?</a></h2>
-<p>OpenLCB uses 6-byte Node IDs to ensure every device in the world has a unique identifier. However, CAN bus headers only have 29 bits available. To fit the sender information plus message type, OpenLCB uses temporary 12-bit aliases that represent the full Node ID during a session.</p>
-<p>This alias negotiation happens every time a node starts up. The aliases are not permanent—they’re regenerated each time the node powers on.</p>
-<h2 id="node-participation"><a class="header" href="#node-participation">Node Participation</a></h2>
-<p>Other nodes on the network listen during this startup sequence. If another node is already using the alias the new node wants, it will send a conflict message, forcing the new node to pick a different alias. This ensures all active nodes have unique aliases.</p>
-<h2 id="multi-node-network-behavior"><a class="header" href="#multi-node-network-behavior">Multi-Node Network Behavior</a></h2>
-<p>The startup sequence isn’t just about a single node announcing itself—it’s a conversation with the entire network:</p>
-<p><strong>Other nodes participate by:</strong></p>
-<ul>
-<li><strong>Listening</strong> to all CID frames to check for alias conflicts</li>
-<li><strong>Responding</strong> with conflict messages if their alias is being claimed</li>
-<li><strong>Recording</strong> the Node ID to alias mapping from AMD frames</li>
-<li><strong>Acknowledging</strong> new nodes with responses to queries</li>
-</ul>
-<p>This cooperative behavior ensures:</p>
-<ul>
-<li>No two nodes ever use the same alias simultaneously</li>
-<li>Nodes can discover each other’s capabilities</li>
-<li>Gateways and bridges can manage routing efficiently</li>
-<li>Network monitoring tools (like JMRI) can track all active nodes</li>
-</ul>
-<p>When your node starts up, it’s not alone—the entire network is watching and ready to help it join successfully.</p>
-<h2 id="what-happens-when-things-go-wrong"><a class="header" href="#what-happens-when-things-go-wrong">What Happens When Things Go Wrong</a></h2>
-<p>The startup sequence above describes the happy path—when everything works perfectly on the first try. In practice, nodes must be prepared to handle conflicts and retries.</p>
-<h3 id="alias-collision-detection"><a class="header" href="#alias-collision-detection">Alias Collision Detection</a></h3>
-<p>If another node on the network is already using the alias your node wants to reserve, that other node will respond to your CID frames with a Reserve ID (RID) frame. This signals a collision:</p>
-<ul>
-<li>
-<p><strong>During CID phase</strong>: If you receive an RID while sending your CID frames, your chosen alias is already in use. Your node must:</p>
-<ul>
-<li>Abandon the current alias</li>
-<li>Generate a new tentative alias</li>
-<li>Start the entire CID → wait → RID sequence over from the beginning</li>
-</ul>
-</li>
-<li>
-<p><strong>During the 200ms wait</strong>: If another node transmits any non-CID frame using your tentative alias, you know there’s a collision and must restart.</p>
-</li>
-</ul>
-<p>Here’s what the collision and recovery process looks like:</p>
-<pre class="mermaid">sequenceDiagram
-    participant Node as New Node
-    participant Bus as OpenLCB Network
-    participant Other as Node Already Online
-    
-    Note over Node: Generate Alias ABC
-    
-    Node-&gt;&gt;Bus: CID Frame 1 (with alias ABC)
-    Other-&gt;&gt;Bus: RID (Collision!)
-    Node-&gt;&gt;Node: Detect Collision
-    
-    Note over Node: Collision detected!&lt;br/&gt;Generate New Alias DEF
-    
-    Node-&gt;&gt;Bus: CID Frame 1 (with alias DEF)
-    Node-&gt;&gt;Bus: CID Frame 2 (with alias DEF)
-    Node-&gt;&gt;Bus: CID Frame 3 (with alias DEF)
-    Node-&gt;&gt;Bus: CID Frame 4 (with alias DEF)
-    
-    Note over Node,Other: Wait for conflicts (200ms)
-    Note over Other: No conflict, silent
-    
-    Node-&gt;&gt;Bus: RID (Reserve alias DEF)
-    Node-&gt;&gt;Bus: AMD (Map Node ID to alias DEF)
-    Node-&gt;&gt;Bus: Initialized Complete
-    
-    Note over Node: Now reachable with alias DEF
-</pre>
-
-<p>Your node’s alias generation algorithm (described in section 6.3 of S-9.7.2.1) ensures that each collision produces a different alias candidate, so nodes won’t get stuck in a loop trying the same alias repeatedly.</p>
-<h3 id="amd-and-alias-validation"><a class="header" href="#amd-and-alias-validation">AMD and Alias Validation</a></h3>
-<p>Once you’ve successfully reserved an alias and sent your AMD (Alias Map Definition) frame, the alias mapping is established. However, your node must remain vigilant:</p>
-<ul>
-<li>
-<p><strong>Alias Mapping Enquiry (AME)</strong>: Other nodes can query your alias at any time using an AME frame. Your node is expected to respond with another AMD frame confirming the mapping.</p>
-</li>
-<li>
-<p><strong>Duplicate Node ID Detection</strong>: If your node receives an AMD frame from another node claiming to have the same 6-byte Node ID as you, this indicates a serious problem—two nodes with identical IDs exist on the network. Your node should:</p>
-<ul>
-<li>Signal this condition to the user (LED blink pattern, log message, etc.)</li>
-<li>Optionally transition back to the Inhibited state</li>
-<li>Restart the alias reservation process with error handling</li>
-</ul>
-</li>
-</ul>
-<h3 id="collision-recovery-in-your-code"><a class="header" href="#collision-recovery-in-your-code">Collision Recovery in Your Code</a></h3>
-<p>When implementing your node:</p>
+<p>For SNIP user data (Name and Description), the changes take effect immediately. There is no separate “apply” step needed.</p>
+<h3 id="6-verify-persistence"><a class="header" href="#6-verify-persistence">6. Verify Persistence</a></h3>
+<p>Once saved, the new name persists across reboots:</p>
 <ol>
-<li><strong>Always expect CID collisions</strong> - Your initial alias choice might conflict; be prepared to generate alternatives</li>
-<li><strong>Implement retry logic</strong> - After detecting a collision during the CID phase, generate a new alias and restart</li>
-<li><strong>Validate on receipt</strong> - When receiving AMD frames from other nodes, check for duplicate Node IDs</li>
-<li><strong>Handle AME queries</strong> - Always respond to AME frames with AMD frames to maintain alias mappings</li>
+<li>
+<p><strong>Immediate Check in LccPro</strong>: Click the <strong>Refresh</strong> button above the node list. This tells LccPro to ask all nodes for their current information. The node list should now show the updated name <code>Test Blink Node</code> instead of <code>async_blink</code>.</p>
+</li>
+<li>
+<p><strong>Power Cycle Check</strong>: Power off the ESP32, wait a few seconds, power it back on. Reconnect JMRI to the node (or click Refresh again). The name is still <code>Test Blink Node</code>—it was saved to SPIFFS.</p>
+</li>
 </ol>
-<p>Most of this is handled transparently by OpenMRNLite, but understanding these scenarios helps when debugging network startup issues.</p>
-<blockquote>
-<p><strong>Note</strong>: For implementation details on alias collision handling and retry algorithms, see the async_blink_esp32 example code in Chapter 3, which demonstrates how OpenMRNLite handles these scenarios automatically.</p>
-</blockquote>
-<h2 id="references"><a class="header" href="#references">References</a></h2>
-<p>For detailed protocol specifications, see:</p>
-<p><strong>CAN Frame Transfer (Node Startup Sequence)</strong></p>
+<h2 id="what-just-happened"><a class="header" href="#what-just-happened">What Just Happened</a></h2>
+<p>When you edited and saved the name, OpenMRN did this:</p>
+<ol>
+<li><strong>Received</strong> the new value via JMRI’s Configuration write protocol</li>
+<li><strong>Wrote</strong> it to the config file at offset 0-127 (the SNIP user data area)</li>
+<li><strong>Confirmed</strong> the write was successful back to JMRI</li>
+</ol>
+<p>The next time the node boots, it reads this config file from SPIFFS and exposes the updated user name via SNIP protocol. The firmware itself didn’t change—only the data in flash storage.</p>
+<p>SNIP user data (name and description) is part of the OpenLCB standard for node identification. Changes to these fields take effect immediately without needing an explicit “apply” step.</p>
+<h2 id="what-this-enables"><a class="header" href="#what-this-enables">What This Enables</a></h2>
+<p>This workflow shows the power of configuration:</p>
 <ul>
-<li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/LCC/S/s-9.7.2.1-canframetransfer-2024-07-22.pdf">S-9.7.2.1 CAN Frame Transfer Standard</a> - Normative specification for CID, RID, AMD frames and the 200ms wait requirement (section 6.2.1)</li>
-<li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/LCC/TN/tn-9.7.2.1-canframetransfer-2024-07-22.pdf">TN-9.7.2.1 CAN Frame Transfer Technical Note</a> - Background and examples</li>
+<li><strong>No recompilation</strong> needed to change the node name</li>
+<li><strong>Persistent</strong> across power cycles</li>
+<li><strong>Standard protocol</strong> (OpenLCB Configuration) that any LCC tool understands</li>
+<li><strong>Centralized</strong> in JMRI—all nodes configured from one place</li>
 </ul>
-<p><strong>Message Network (Initialization Complete)</strong></p>
-<ul>
-<li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/LCC/S/s-9.7.3-messagenetwork-2024-07-22.pdf">S-9.7.3 Message Network Standard</a> - Normative specification for Initialization Complete message (section 3.3.1) and message network protocol</li>
-</ul>
-<blockquote>
-<p><strong>Note</strong>: Future chapters will dive deeper into how the alias generation algorithm works and how to handle collisions in your code.</p>
-</blockquote>
+<p>Later sections of this chapter extend this pattern to make event IDs, blink interval, and other settings configurable too. The same workflow will apply.</p>
+<h2 id="troubleshooting-name-doesnt-save"><a class="header" href="#troubleshooting-name-doesnt-save">Troubleshooting: Name Doesn’t Save</a></h2>
+<p>If you edit the name in JMRI but it doesn’t save:</p>
+<ol>
+<li><strong>Check Connection</strong>: Ensure JMRI is still connected to the node (green indicator in LccPro)</li>
+<li><strong>Check Permissions</strong>: The node’s CDI must declare the User Info segment as writable. In our example, it is.</li>
+<li><strong>Check SPIFFS</strong>: The ESP32’s SPIFFS must have free space. If SPIFFS is full, writes fail silently. Check serial output for error messages.</li>
+</ol>
+<p>See Chapter 3’s code-walkthrough section for details on how configuration is initialized.</p>
+<h2 id="next-application-specific-configuration"><a class="header" href="#next-application-specific-configuration">Next: Application-Specific Configuration</a></h2>
+<p>This section covered editing SNIP user data (Name and Description), which are standardized fields handled automatically by OpenMRN. When you add application-specific configuration fields (like the blink interval in the next chapter), the workflow changes slightly—you’ll need to use the <strong>Update Complete</strong> button to tell the node to apply your custom configuration changes. See Chapter 4’s <strong>“Adding a Configurable Interval Setting”</strong> section for that workflow.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../01-intro/intro_can.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../04-configuration/storage-model.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../01-intro/intro_ab_events.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../04-configuration/factory-reset.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -349,11 +283,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../01-intro/intro_can.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../04-configuration/storage-model.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../01-intro/intro_ab_events.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../04-configuration/factory-reset.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>

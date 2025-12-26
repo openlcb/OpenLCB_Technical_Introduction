@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Node Startup Sequence - OpenLCB Programmer&#x27;s Guide</title>
+        <title>Storage Model - OpenLCB Programmer&#x27;s Guide</title>
 
 
         <!-- Custom HTML head -->
@@ -174,172 +174,137 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="node-startup-sequence"><a class="header" href="#node-startup-sequence">Node Startup Sequence</a></h1>
-<p>When an OpenLCB node powers up or resets, it goes through a defined startup sequence to join the network. Understanding this sequence is essential to building your own nodes.</p>
-<blockquote>
-<p><strong>Note for Library Users</strong>: If you’re using OpenMRNLite or other OpenLCB libraries, all of the mechanics described in this chapter are handled automatically for you. You don’t need to implement alias reservation, collision detection, or recovery—the library does it all in the background.</p>
-<p>This chapter exists to help you <strong>understand how it works</strong>, which is valuable knowledge when debugging network issues or designing advanced features. However, if you just want to build a working node with async_blink_esp32, you can skip straight to Chapter 3 without missing anything essential. The library takes care of it.</p>
-</blockquote>
-<h2 id="what-happens-during-startup"><a class="header" href="#what-happens-during-startup">What Happens During Startup</a></h2>
-<p>Every node follows this sequence:</p>
-<ol>
-<li>
-<p><strong>Check ID (CID)</strong>: The node sends four CID frames containing its 6-byte unique Node ID, spread across the frames. This allows the node to check if anyone else is using its desired alias.</p>
-</li>
-<li>
-<p><strong>Reserve ID (RID)</strong>: If no other node objects, the node sends an RID frame to reserve its chosen 12-bit alias for the Node ID.</p>
-</li>
-<li>
-<p><strong>Alias Map Definition (AMD)</strong>: The node announces the mapping between its full 6-byte Node ID and the 12-bit alias it just reserved.</p>
-</li>
-<li>
-<p><strong>Initialized (Init Complete)</strong>: The node sends an “Initialized” message telling the network it’s now fully online and reachable.</p>
-</li>
-</ol>
-<pre class="mermaid">sequenceDiagram
-    participant Node as New Node
-    participant Bus as OpenLCB Network
-    participant Others as Other Nodes
+                        <h1 id="storage-model-where-configuration-lives"><a class="header" href="#storage-model-where-configuration-lives">Storage Model: Where Configuration Lives</a></h1>
+<h2 id="the-configuration-file-structure"><a class="header" href="#the-configuration-file-structure">The Configuration File Structure</a></h2>
+<p>When async_blink runs on ESP32, it creates a configuration file in SPIFFS (flash storage) at <code>/spiffs/openlcb_config</code>. This file is organized by <strong>memory offset</strong>—different ranges of bytes store different types of data.</p>
+<pre class="mermaid">graph TD
+    A["Offset 0-127: User Info&lt;br/&gt;Node name, description (editable via JMRI)"]
+    B["Offset 128+: Internal Config&lt;br/&gt;Node-specific settings (currently unused in v0.1)"]
+    C["Metadata: Version, CRC&lt;br/&gt;CANONICAL_VERSION for schema tracking"]
     
-    Note over Node: Power On / Reset
+    A --&gt; B
+    B --&gt; C
     
-    Node-&gt;&gt;Bus: CID Frame 1 (Node ID bytes 0-1)
-    Node-&gt;&gt;Bus: CID Frame 2 (Node ID bytes 2-3)
-    Node-&gt;&gt;Bus: CID Frame 3 (Node ID bytes 4-5)
-    Node-&gt;&gt;Bus: CID Frame 4 (checks alias)
-    
-    Note over Node,Others: Wait for conflicts (200ms)
-    
-    Node-&gt;&gt;Bus: RID (Reserve alias)
-    Node-&gt;&gt;Bus: AMD (Map Node ID to alias)
-    Node-&gt;&gt;Bus: Initialized Complete
-    
-    Note over Node: Now reachable on network
-    
-    Node-&gt;&gt;Bus: Producer Identified (events)
-    Node-&gt;&gt;Bus: Consumer Identified (events)
+    style A fill:#e1f5ff
+    style B fill:#f3e5f5
+    style C fill:#fff9c4
 </pre>
 
-<h2 id="why-use-aliases"><a class="header" href="#why-use-aliases">Why Use Aliases?</a></h2>
-<p>OpenLCB uses 6-byte Node IDs to ensure every device in the world has a unique identifier. However, CAN bus headers only have 29 bits available. To fit the sender information plus message type, OpenLCB uses temporary 12-bit aliases that represent the full Node ID during a session.</p>
-<p>This alias negotiation happens every time a node starts up. The aliases are not permanent—they’re regenerated each time the node powers on.</p>
-<h2 id="node-participation"><a class="header" href="#node-participation">Node Participation</a></h2>
-<p>Other nodes on the network listen during this startup sequence. If another node is already using the alias the new node wants, it will send a conflict message, forcing the new node to pick a different alias. This ensures all active nodes have unique aliases.</p>
-<h2 id="multi-node-network-behavior"><a class="header" href="#multi-node-network-behavior">Multi-Node Network Behavior</a></h2>
-<p>The startup sequence isn’t just about a single node announcing itself—it’s a conversation with the entire network:</p>
-<p><strong>Other nodes participate by:</strong></p>
+<h2 id="binary-file-format"><a class="header" href="#binary-file-format">Binary File Format</a></h2>
+<p>The <code>/spiffs/openlcb_config</code> file is <strong>binary</strong>, not text. This is important to understand because:</p>
 <ul>
-<li><strong>Listening</strong> to all CID frames to check for alias conflicts</li>
-<li><strong>Responding</strong> with conflict messages if their alias is being claimed</li>
-<li><strong>Recording</strong> the Node ID to alias mapping from AMD frames</li>
-<li><strong>Acknowledging</strong> new nodes with responses to queries</li>
+<li><strong>Offset-based layout</strong>: Different types of data (strings, integers, metadata) live at specific byte offsets. This requires a binary format where exact byte positions matter.</li>
+<li><strong>Direct serialization</strong>: OpenMRN’s accessors serialize C++ data structures directly into binary form, padding and aligning fields as needed.</li>
+<li><strong>Not human-readable</strong>: It’s raw binary data—you can’t read it as text or edit it directly.</li>
+<li><strong>CRC integrity</strong>: Binary metadata includes checksums to detect corruption.</li>
 </ul>
-<p>This cooperative behavior ensures:</p>
+<p><strong>Practical implication</strong>: You must use JMRI (or a similar LCC tool) to edit configuration. This is by design—it ensures configuration remains valid and in sync with the firmware’s expectations. The binary format protects against accidental corruption and keeps configuration data safe.</p>
+<h2 id="three-concepts-acdi-snip-and-cdi"><a class="header" href="#three-concepts-acdi-snip-and-cdi">Three Concepts: ACDI, SNIP, and CDI</a></h2>
+<p>When you see these three terms in OpenLCB documentation, here’s what they mean:</p>
+<h3 id="acdi-automatic-configuration-description-information"><a class="header" href="#acdi-automatic-configuration-description-information"><strong>ACDI (Automatic Configuration Description Information)</strong></a></h3>
+<p>ACDI is a <strong>standardized data block</strong> that stores your node’s identity information:</p>
 <ul>
-<li>No two nodes ever use the same alias simultaneously</li>
-<li>Nodes can discover each other’s capabilities</li>
-<li>Gateways and bridges can manage routing efficiently</li>
-<li>Network monitoring tools (like JMRI) can track all active nodes</li>
+<li><strong>Static fields</strong>: Manufacturer ID, model, hardware/software versions (compiled into firmware)</li>
+<li><strong>Dynamic/user fields</strong>: Node name and description (stored in SPIFFS, editable via JMRI)</li>
 </ul>
-<p>When your node starts up, it’s not alone—the entire network is watching and ready to help it join successfully.</p>
-<h2 id="what-happens-when-things-go-wrong"><a class="header" href="#what-happens-when-things-go-wrong">What Happens When Things Go Wrong</a></h2>
-<p>The startup sequence above describes the happy path—when everything works perfectly on the first try. In practice, nodes must be prepared to handle conflicts and retries.</p>
-<h3 id="alias-collision-detection"><a class="header" href="#alias-collision-detection">Alias Collision Detection</a></h3>
-<p>If another node on the network is already using the alias your node wants to reserve, that other node will respond to your CID frames with a Reserve ID (RID) frame. This signals a collision:</p>
+<p>Think of ACDI as your node’s “business card”—it describes <em>what the node is</em>.</p>
+<h3 id="snip-simple-node-information-protocol"><a class="header" href="#snip-simple-node-information-protocol"><strong>SNIP (Simple Node Information Protocol)</strong></a></h3>
+<p>SNIP is the <strong>protocol</strong> that allows the node to <em>broadcast</em> its ACDI data to the network. When JMRI or another tool connects and asks “who are you?” the node responds with SNIP data (pulled from ACDI).</p>
+<h3 id="cdi-configuration-description-information"><a class="header" href="#cdi-configuration-description-information"><strong>CDI (Configuration Description Information)</strong></a></h3>
+<p>CDI is the <strong>configuration schema</strong>—a blueprint describing:</p>
 <ul>
-<li>
-<p><strong>During CID phase</strong>: If you receive an RID while sending your CID frames, your chosen alias is already in use. Your node must:</p>
+<li>What configuration options the node has (event IDs, intervals, etc.)</li>
+<li>Their types (integer, string, event ID, etc.)</li>
+<li>Default values and constraints</li>
+</ul>
+<p>CDI tells tools <em>how to configure the node</em>, separate from identity.</p>
+<h3 id="how-they-work-together"><a class="header" href="#how-they-work-together"><strong>How They Work Together</strong></a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Concept</th><th>Purpose</th><th>Stored Where</th><th>Example</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>ACDI</strong></td><td>Node identity &amp; description</td><td>SPIFFS + firmware</td><td>Manufacturer “OpenMRN”, User name “Kitchen Light”</td></tr>
+<tr><td><strong>SNIP</strong></td><td>Protocol to broadcast ACDI</td><td>(generated from ACDI at runtime)</td><td>“Who are you?” → SNIP response with ACDI</td></tr>
+<tr><td><strong>CDI</strong></td><td>Configuration schema/blueprint</td><td>Compiled in firmware</td><td>“Node has EVENT_INTERVAL config (int, 100-10000ms)”</td></tr>
+</tbody>
+</table>
+</div>
+<p>The config file at <code>/spiffs/openlcb_config</code> stores:</p>
 <ul>
-<li>Abandon the current alias</li>
-<li>Generate a new tentative alias</li>
-<li>Start the entire CID → wait → RID sequence over from the beginning</li>
+<li><strong>User ACDI data</strong> (offset 0-127): Node name and description</li>
+<li><strong>Node-specific config</strong> (offset 128+): Settings like event IDs, blink interval, etc.</li>
 </ul>
-</li>
-<li>
-<p><strong>During the 200ms wait</strong>: If another node transmits any non-CID frame using your tentative alias, you know there’s a collision and must restart.</p>
-</li>
-</ul>
-<p>Here’s what the collision and recovery process looks like:</p>
-<pre class="mermaid">sequenceDiagram
-    participant Node as New Node
-    participant Bus as OpenLCB Network
-    participant Other as Node Already Online
-    
-    Note over Node: Generate Alias ABC
-    
-    Node-&gt;&gt;Bus: CID Frame 1 (with alias ABC)
-    Other-&gt;&gt;Bus: RID (Collision!)
-    Node-&gt;&gt;Node: Detect Collision
-    
-    Note over Node: Collision detected!&lt;br/&gt;Generate New Alias DEF
-    
-    Node-&gt;&gt;Bus: CID Frame 1 (with alias DEF)
-    Node-&gt;&gt;Bus: CID Frame 2 (with alias DEF)
-    Node-&gt;&gt;Bus: CID Frame 3 (with alias DEF)
-    Node-&gt;&gt;Bus: CID Frame 4 (with alias DEF)
-    
-    Note over Node,Other: Wait for conflicts (200ms)
-    Note over Other: No conflict, silent
-    
-    Node-&gt;&gt;Bus: RID (Reserve alias DEF)
-    Node-&gt;&gt;Bus: AMD (Map Node ID to alias DEF)
-    Node-&gt;&gt;Bus: Initialized Complete
-    
-    Note over Node: Now reachable with alias DEF
-</pre>
-
-<p>Your node’s alias generation algorithm (described in section 6.3 of S-9.7.2.1) ensures that each collision produces a different alias candidate, so nodes won’t get stuck in a loop trying the same alias repeatedly.</p>
-<h3 id="amd-and-alias-validation"><a class="header" href="#amd-and-alias-validation">AMD and Alias Validation</a></h3>
-<p>Once you’ve successfully reserved an alias and sent your AMD (Alias Map Definition) frame, the alias mapping is established. However, your node must remain vigilant:</p>
+<p>OpenMRNLite automatically:</p>
 <ul>
-<li>
-<p><strong>Alias Mapping Enquiry (AME)</strong>: Other nodes can query your alias at any time using an AME frame. Your node is expected to respond with another AMD frame confirming the mapping.</p>
-</li>
-<li>
-<p><strong>Duplicate Node ID Detection</strong>: If your node receives an AMD frame from another node claiming to have the same 6-byte Node ID as you, this indicates a serious problem—two nodes with identical IDs exist on the network. Your node should:</p>
+<li>Responds to SNIP requests using ACDI</li>
+<li>Exposes CDI to configuration tools</li>
+<li>Handles persistence of both ACDI and config data</li>
+</ul>
+<h2 id="understanding-canonical_version"><a class="header" href="#understanding-canonical_version">Understanding CANONICAL_VERSION</a></h2>
+<p>In <code>config.h</code>, you’ll see:</p>
+<pre><code class="language-cpp">static constexpr uint16_t CANONICAL_VERSION = 0x0001;
+</code></pre>
+<p>This version number is <strong>not</strong> for your application—it’s for OpenMRN to track schema changes. Here’s why it matters:</p>
 <ul>
-<li>Signal this condition to the user (LED blink pattern, log message, etc.)</li>
-<li>Optionally transition back to the Inhibited state</li>
-<li>Restart the alias reservation process with error handling</li>
+<li><strong>First Boot</strong>: No config file exists yet. OpenMRN sees <code>CANONICAL_VERSION = 0x0001</code> and initializes a new config file with this version number.</li>
+<li><strong>Later Boots</strong>: OpenMRN reads the version from the config file. If it matches <code>CANONICAL_VERSION</code>, everything is normal—use the config file as-is.</li>
+<li><strong>Version Mismatch</strong>: If you change <code>CANONICAL_VERSION</code> in your code and recompile, OpenMRN detects a mismatch and <strong>triggers a complete factory reset</strong>. This wipes the ENTIRE config file, including SNIP user data at offset 0-127 (your node name and description that users may have customized). Everything is reinitialized to defaults.</li>
 </ul>
-</li>
+<p><strong>Important</strong>: Users lose their custom node name and any other persisted configuration when CANONICAL_VERSION changes. We won’t change it in this section, but later sections explore how to evolve configuration safely while preserving user data.</p>
+<h2 id="the-cdi-segments"><a class="header" href="#the-cdi-segments">The CDI Segments</a></h2>
+<p>Recall from Chapter 3 that <code>config.h</code> defines configuration segments:</p>
+<pre><code class="language-cpp">CDI_GROUP(ConfigDef, MainCdi());
+  CDI_GROUP_ENTRY(ident, Identification);      // Static SNIP data: manufacturer, model, etc.
+  CDI_GROUP_ENTRY(acdi, Acdi);                 // ACDI protocol marker (tells tools ACDI data exists)
+  CDI_GROUP_ENTRY(userinfo, UserInfoSegment);  // User-editable name/description (configuration tool interface)
+  CDI_GROUP_ENTRY(seg, AsyncBlinkSegment);     // Internal config (offset 128+)
+CDI_GROUP_END();
+</code></pre>
+<p>Each segment serves a specific role:</p>
+<ul>
+<li><strong>ident</strong>: Static manufacturer data (Identification) — read-only in JMRI, compiled into firmware</li>
+<li><strong>acdi</strong>: ACDI protocol marker — signals to configuration tools that ACDI data is available. Does NOT expose data directly; instead acts as a tag for the SNIP protocol handler</li>
+<li><strong>userinfo</strong>: User-editable ACDI fields (User Name, Description) — what JMRI displays as the “User Info” tab for user customization</li>
+<li><strong>seg</strong>: Internal app config, stored at offset 128+</li>
 </ul>
-<h3 id="collision-recovery-in-your-code"><a class="header" href="#collision-recovery-in-your-code">Collision Recovery in Your Code</a></h3>
-<p>When implementing your node:</p>
+<p>In JMRI’s LccPro configuration dialog, you’ll see:</p>
 <ol>
-<li><strong>Always expect CID collisions</strong> - Your initial alias choice might conflict; be prepared to generate alternatives</li>
-<li><strong>Implement retry logic</strong> - After detecting a collision during the CID phase, generate a new alias and restart</li>
-<li><strong>Validate on receipt</strong> - When receiving AMD frames from other nodes, check for duplicate Node IDs</li>
-<li><strong>Handle AME queries</strong> - Always respond to AME frames with AMD frames to maintain alias mappings</li>
+<li><strong>Identification</strong> tab (from ident: manufacturer, model, hardware/software versions)</li>
+<li><strong>User Info</strong> tab (from userinfo: the name and description fields you can customize)</li>
 </ol>
-<p>Most of this is handled transparently by OpenMRNLite, but understanding these scenarios helps when debugging network startup issues.</p>
-<blockquote>
-<p><strong>Note</strong>: For implementation details on alias collision handling and retry algorithms, see the async_blink_esp32 example code in Chapter 3, which demonstrates how OpenMRNLite handles these scenarios automatically.</p>
-</blockquote>
-<h2 id="references"><a class="header" href="#references">References</a></h2>
-<p>For detailed protocol specifications, see:</p>
-<p><strong>CAN Frame Transfer (Node Startup Sequence)</strong></p>
+<p>The <code>acdi</code> entry doesn’t appear as a separate tab—it’s a protocol marker that enables the SNIP data exchange behind the scenes.</p>
+<h2 id="why-offsets-matter"><a class="header" href="#why-offsets-matter">Why Offsets Matter</a></h2>
+<p>The offset-based model gives you precise control over where data lives:</p>
+<pre><code>config.h shows:
+  CDI_GROUP_ENTRY(userinfo, UserInfoSegment, Name("User Info"));
+  CDI_GROUP_ENTRY(seg, AsyncBlinkSegment, Offset(128));
+                                           ↑
+                          Explicit offset for internal config
+</code></pre>
+<p>This means:</p>
 <ul>
-<li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/LCC/S/s-9.7.2.1-canframetransfer-2024-07-22.pdf">S-9.7.2.1 CAN Frame Transfer Standard</a> - Normative specification for CID, RID, AMD frames and the 200ms wait requirement (section 6.2.1)</li>
-<li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/LCC/TN/tn-9.7.2.1-canframetransfer-2024-07-22.pdf">TN-9.7.2.1 CAN Frame Transfer Technical Note</a> - Background and examples</li>
-</ul>
-<p><strong>Message Network (Initialization Complete)</strong></p>
-<ul>
-<li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/LCC/S/s-9.7.3-messagenetwork-2024-07-22.pdf">S-9.7.3 Message Network Standard</a> - Normative specification for Initialization Complete message (section 3.3.1) and message network protocol</li>
+<li>User name/description go to offset 0-127 (SNIP user data, <strong>completely wiped on factory reset</strong> and reinitialized to defaults from config.h)</li>
+<li>Internal config starts at offset 128+ (<strong>completely wiped on factory reset</strong>, replaced with defaults)</li>
+<li>When JMRI edits the user name, it writes directly to offset 0-127</li>
+<li>When factory reset is triggered, both offset 0-127 and offset 128+ are wiped and reinitialized from the firmware defaults</li>
 </ul>
 <blockquote>
-<p><strong>Note</strong>: Future chapters will dive deeper into how the alias generation algorithm works and how to handle collisions in your code.</p>
+<p><strong>Important:</strong> There are NO offsets preserved during factory reset except for the static SNIP data compiled into firmware (manufacturer, model, hardware/software versions). All config file data, including user customizations at offset 0-127, is lost.</p>
 </blockquote>
+<h2 id="key-takeaway"><a class="header" href="#key-takeaway">Key Takeaway</a></h2>
+<p>Configuration is organized by memory offset in a SPIFFS file. Static data (manufacturer info) lives in firmware; dynamic data (node name) lives in flash. OpenMRN tracks schema with CANONICAL_VERSION to trigger a factory reset when the config schema changes (all-or-nothing reset, no field migration). The CDI segments map C++ structures to these memory offsets, giving JMRI a machine-readable map of what’s configurable.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../01-intro/intro_can.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../04-configuration/overview.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../01-intro/intro_ab_events.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../04-configuration/editing-in-jmri.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -349,11 +314,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../01-intro/intro_can.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../04-configuration/overview.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../01-intro/intro_ab_events.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../04-configuration/editing-in-jmri.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>

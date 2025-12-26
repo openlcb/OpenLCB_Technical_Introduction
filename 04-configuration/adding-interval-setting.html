@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Build and Upload - OpenLCB Programmer&#x27;s Guide</title>
+        <title>Adding a Configurable Interval Setting - OpenLCB Programmer&#x27;s Guide</title>
 
 
         <!-- Custom HTML head -->
@@ -174,203 +174,317 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h2 id="building-and-uploading-to-esp32"><a class="header" href="#building-and-uploading-to-esp32">Building and Uploading to ESP32</a></h2>
-<p>Now that you have the complete code, let’s build it, upload it to your ESP32, and verify it works through the serial monitor.</p>
-<h3 id="building-the-project"><a class="header" href="#building-the-project">Building the Project</a></h3>
+                        <h1 id="adding-a-configurable-interval-setting"><a class="header" href="#adding-a-configurable-interval-setting">Adding a Configurable Interval Setting</a></h1>
+<p>In this section, we’ll extend the async_blink example from Chapter 3 to make the blink interval configurable via JMRI. This demonstrates how to:</p>
 <ol>
-<li>
-<p><strong>Save the modified main.cpp file</strong> (<code>Ctrl+S</code> / <code>Cmd+S</code>)</p>
-</li>
-<li>
-<p><strong>Open the PlatformIO sidebar</strong>:</p>
-<ul>
-<li>Click the PlatformIO icon (alien head) in VS Code’s left sidebar</li>
-<li>Or use the bottom toolbar’s checkmark icon (Build)</li>
-</ul>
-</li>
-<li>
-<p><strong>Build the project</strong>:</p>
-<ul>
-<li>In PROJECT TASKS → <strong>esp32doit-devkit-v1</strong>, click <strong>Build</strong></li>
-<li>Or click the checkmark (✓) icon in the bottom toolbar</li>
-<li>Or press <code>Ctrl+Alt+B</code> / <code>Cmd+Alt+B</code></li>
-</ul>
-</li>
-<li>
-<p><strong>Watch the build output</strong>:</p>
-<pre><code>Building in release mode
-Compiling .pio/build/esp32doit-devkit-v1/src/main.cpp.o
-Linking .pio/build/esp32doit-devkit-v1/firmware.elf
-Building .pio/build/esp32doit-devkit-v1/firmware.bin
-========================= [SUCCESS] Took 5.23 seconds =========================
+<li>Add a new configuration field to the CDI schema</li>
+<li>Implement <code>apply_configuration()</code> to read the field and cache it</li>
+<li>Use the cached value in your application loop</li>
+<li>Test configuration changes in real-time with LccPro</li>
+</ol>
+<h2 id="code-changes-to-configh"><a class="header" href="#code-changes-to-configh">Code Changes to config.h</a></h2>
+<p>Starting from the Chapter 3 version, we’ll add a configurable <code>blink_interval</code> field to the CDI. Because we’re adding a new field to the configuration schema, we must also bump <code>CANONICAL_VERSION</code> (from 0x0001 to 0x0002). When you upload this new code, OpenMRN will detect the version mismatch and trigger a factory reset, which wipes the old config file and initializes it with the new schema.</p>
+<p>Here’s what changes:</p>
+<pre><code class="language-diff">CDI_GROUP(AsyncBlinkSegment, Segment(MemoryConfigDefs::SPACE_CONFIG), Offset(128));
+CDI_GROUP_ENTRY(internal_config, InternalConfigData);
++CDI_GROUP_ENTRY(blink_interval, Uint16ConfigEntry,
++                Default(1000),
++                Min(100),
++                Max(30000),
++                Name("Blink Interval"),
++                Description("Milliseconds between alternating events (100-30000)"));
+CDI_GROUP_END();
 </code></pre>
-</li>
-</ol>
-<p>The first build takes longer because it compiles OpenMRNLite. Subsequent builds are much faster.</p>
-<p><strong>If the build fails</strong>, check:</p>
+<p><strong>What this means:</strong></p>
 <ul>
-<li>WiFi credentials are properly quoted (strings)</li>
-<li>All braces <code>{}</code> and parentheses <code>()</code> match</li>
-<li><code>#include &lt;OpenMRNLite.h&gt;</code> is present</li>
-<li><code>lib_deps</code> in <code>platformio.ini</code> includes OpenMRNLite</li>
+<li><code>Uint16ConfigEntry</code>: A 16-bit unsigned integer field</li>
+<li><code>Default(1000)</code>: Initial value is 1000 milliseconds (1 second)</li>
+<li><code>Min(100)</code>, <code>Max(30000)</code>: JMRI will enforce these limits</li>
+<li><code>Name()</code> and <code>Description()</code>: Labels shown in the JMRI configuration dialog</li>
 </ul>
-<h3 id="connecting-your-esp32"><a class="header" href="#connecting-your-esp32">Connecting Your ESP32</a></h3>
-<ol>
-<li>
-<p><strong>Connect the ESP32 to your computer</strong> via USB cable</p>
-<ul>
-<li>Use a <strong>data cable</strong>, not a charge-only cable</li>
-<li>The ESP32 should power on (onboard LED may light up)</li>
-</ul>
-</li>
-<li>
-<p><strong>Identify the COM port</strong> (Windows) or device path (Mac/Linux):</p>
-<ul>
-<li>PlatformIO usually auto-detects the port</li>
-<li>Windows: <code>COM3</code>, <code>COM4</code>, etc.</li>
-<li>Mac: <code>/dev/cu.usbserial-*</code> or <code>/dev/cu.wchusbserial*</code></li>
-<li>Linux: <code>/dev/ttyUSB0</code> or <code>/dev/ttyACM0</code></li>
-</ul>
-</li>
-<li>
-<p><strong>If the port isn’t detected</strong>, you may need to install a USB driver:</p>
-<ul>
-<li><strong>CP2102</strong>: Download from <a href="https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers">Silicon Labs</a></li>
-<li><strong>CH340</strong>: Download from <a href="http://www.wch-ic.com/downloads/CH341SER_EXE.html">WCH</a></li>
-<li>Most modern operating systems include these drivers</li>
-</ul>
-</li>
-</ol>
-<h3 id="uploading-the-firmware-and-opening-the-monitor"><a class="header" href="#uploading-the-firmware-and-opening-the-monitor">Uploading the Firmware and Opening the Monitor</a></h3>
-<ol>
-<li>
-<p><strong>Upload the firmware and automatically open the serial monitor</strong>:</p>
-<ul>
-<li>In PROJECT TASKS → <strong>esp32doit-devkit-v1</strong>, click <strong>Upload and Monitor</strong></li>
-<li>Or press <code>Ctrl+Alt+U</code> then <code>Ctrl+Alt+S</code> / <code>Cmd+Alt+U</code> then <code>Cmd+Alt+S</code></li>
-</ul>
-</li>
-<li>
-<p><strong>Watch the upload process</strong>:</p>
-<pre><code>Configuring upload protocol...
-Looking for upload port...
-Auto-detected: COM3
-Uploading .pio/build/esp32doit-devkit-v1/firmware.bin
-esptool.py v4.5.1
-Connecting........__
-Chip is ESP32-D0WDQ6 (revision 1)
-Writing at 0x00010000... (100 %)
-Wrote 876544 bytes (543210 compressed) at 0x00010000 in 48.2 seconds
-Leaving...
-Hard resetting via RTS pin...
-========================= [SUCCESS] Took 52.91 seconds =========================
+<p>The field is stored at offset 128+ in the configuration file (after the SNIP user data at offset 0-127).</p>
+<h3 id="bump-canonical_version"><a class="header" href="#bump-canonical_version">Bump CANONICAL_VERSION</a></h3>
+<p>Because we changed the configuration schema (added a new field), we must bump the version number. This tells OpenMRN that the configuration file format has changed. On the next boot, OpenMRN will detect the version mismatch and trigger a factory reset:</p>
+<pre><code class="language-diff">-static constexpr uint16_t CANONICAL_VERSION = 0x0001;
++static constexpr uint16_t CANONICAL_VERSION = 0x0002;
 </code></pre>
-</li>
-<li>
-<p><strong>The ESP32 will automatically reboot</strong> and start running your code</p>
-</li>
+<p>When you upload this new code:</p>
+<ol>
+<li>OpenMRN reads the old config file’s version (0x0001)</li>
+<li>Compares it to the new CANONICAL_VERSION (0x0002)</li>
+<li>Detects a mismatch and triggers factory reset</li>
+<li>Calls your <code>factory_reset()</code> method to write defaults for the new schema</li>
+<li>Calls <code>apply_configuration()</code> to load the newly-initialized config file</li>
 </ol>
-<p><strong>If upload fails</strong>:</p>
-<ul>
-<li><strong>“Serial port not found”</strong>: Check USB cable connection, try different USB port</li>
-<li><strong>“Failed to connect”</strong>: Hold the BOOT button while clicking “Upload and Monitor”, release after “Connecting…” appears</li>
-<li><strong>Permission denied (Linux)</strong>: Add your user to the <code>dialout</code> group: <code>sudo usermod -a -G dialout $USER</code>, then log out and back in</li>
-</ul>
-<p><strong>If you missed the startup sequence</strong>, press the <strong>RESET</strong> button on your ESP32 board to restart it and the serial monitor will display the output again.</p>
-<h3 id="verifying-the-output"><a class="header" href="#verifying-the-output">Verifying the Output</a></h3>
-<p>On first run, you should see output like this:</p>
-<pre><code>=== OpenLCB async_blink ESP32 Example ===
-Node ID: 0x050201020200
-Event 0: 0x0502010202000000
-Event 1: 0x0502010202000001
+<p>This prevents data corruption from partially-initialized fields. The cost is that users’ old configuration is wiped (factory reset), but the new schema is guaranteed to be valid.</p>
+<p><strong>Full config.h with changes:</strong></p>
+<pre><code class="language-cpp">#ifndef _ASYNC_BLINK_CONFIG_H_
+#define _ASYNC_BLINK_CONFIG_H_
 
-Initializing SPIFFS...
-E (523) SPIFFS: mount failed, -10025
+#include "openlcb/ConfigRepresentation.hxx"
+#include "openlcb/MemoryConfig.hxx"
+
+namespace openlcb {
+
+extern const SimpleNodeStaticValues SNIP_STATIC_DATA = {
+    4,               // Version
+    "OpenMRN",       // Manufacturer
+    "async_blink",   // Model
+    "ESP32",         // Hardware version
+    "1.00"           // Software version
+};
+
+static const char SNIP_NODE_NAME[] = "async_blink";
+static const char SNIP_NODE_DESC[] = "ESP32 Blink demo";
+
+/// Version number for the configuration structure
+static constexpr uint16_t CANONICAL_VERSION = 0x0002;
+
+CDI_GROUP(AsyncBlinkSegment, Segment(MemoryConfigDefs::SPACE_CONFIG), Offset(128));
+CDI_GROUP_ENTRY(internal_config, InternalConfigData);
+CDI_GROUP_ENTRY(blink_interval, Uint16ConfigEntry,
+                Default(1000),
+                Min(100),
+                Max(30000),
+                Name("Blink Interval"),
+                Description("Milliseconds between alternating events (100-30000)"));
+CDI_GROUP_END();
+
+CDI_GROUP(ConfigDef, MainCdi());
+CDI_GROUP_ENTRY(ident, Identification);
+CDI_GROUP_ENTRY(acdi, Acdi);
+CDI_GROUP_ENTRY(userinfo, UserInfoSegment, Name("User Info"));
+CDI_GROUP_ENTRY(seg, AsyncBlinkSegment, Name("Settings"));
+CDI_GROUP_END();
+
+} // namespace openlcb
+
+#endif // _ASYNC_BLINK_CONFIG_H_
+</code></pre>
+<h2 id="code-changes-to-maincpp"><a class="header" href="#code-changes-to-maincpp">Code Changes to main.cpp</a></h2>
+<p>Now we’ll modify <code>main.cpp</code> to:</p>
+<ol>
+<li>Add a global cache variable for the interval</li>
+<li>Update <code>apply_configuration()</code> to read the interval from the config file</li>
+<li>Update <code>factory_reset()</code> to write default interval to the config file</li>
+<li>Use the cached value in the loop</li>
+</ol>
+<h3 id="add-the-cache-variable"><a class="header" href="#add-the-cache-variable">Add the Cache Variable</a></h3>
+<pre><code class="language-diff">// State variable to track which event to send
+bool event_state = false;
+
+-// Timing for event production (1 second = 1000 milliseconds)
+-unsigned long last_event_time = 0;
+-const unsigned long EVENT_INTERVAL = 1000;
++// Timing for event production - cached from configuration
++unsigned long last_event_time = 0;
++unsigned long event_interval = 1000;  // Default, will be read from config
+</code></pre>
+<p>This global <code>event_interval</code> variable will be updated whenever the configuration changes.</p>
+<h3 id="update-apply_configuration"><a class="header" href="#update-apply_configuration">Update apply_configuration()</a></h3>
+<p>Replace the stub <code>apply_configuration()</code> method in the <code>FactoryResetHelper</code> class:</p>
+<pre><code class="language-diff">class FactoryResetHelper : public DefaultConfigUpdateListener
+{
+public:
+    UpdateAction apply_configuration(int fd, bool initial_load,
+                                     BarrierNotifiable *done) OVERRIDE
+    {
+        AutoNotify n(done);
+-        // In v0.1, we don't handle runtime config changes yet.
+-        // Real nodes would persist changes here when the user modifies
+-        // configuration through JMRI. See Chapter 5 for implementation.
++        // Read the blink interval from config file and update global variable
++        event_interval = cfg.seg().blink_interval().read(fd);
++        Serial.printf("Configuration updated: blink_interval = %lu ms\n", event_interval);
++        
+         return UPDATED;
+    }
+
+    void factory_reset(int fd) override
+    {
+        // Called on first boot to initialize the configuration file.
+        // Write initial SNIP dynamic data (node name and description).
+         cfg.userinfo().name().write(fd, openlcb::SNIP_NODE_NAME);
+         cfg.userinfo().description().write(fd, openlcb::SNIP_NODE_DESC);
++        
++        // Initialize application settings with defaults
++        cfg.seg().blink_interval().write(fd, 1000);  // Default 1 second
++        Serial.println("Factory reset: wrote default blink_interval = 1000 ms");
+     }
+} factory_reset_helper;
+</code></pre>
+<p><strong>What happens when <code>apply_configuration()</code> is called:</strong></p>
+<ul>
+<li>On <strong>first boot with the new schema</strong> (CANONICAL_VERSION bumped): OpenMRN detects the version mismatch, triggers <code>factory_reset()</code> to write defaults, then calls <code>apply_configuration()</code> to read those freshly-written defaults</li>
+<li>On <strong>JMRI config change</strong>: Reads the new interval value that JMRI just wrote to the config file</li>
+<li><strong>Always returns <code>UPDATED</code></strong>: Tells OpenMRN the change was successfully applied</li>
+</ul>
+<p>The key sequence on first boot with schema changes: <code>factory_reset(fd)</code> is called first (writes 1000 to the file), then <code>apply_configuration(fd)</code> is called (reads 1000 from the file).</p>
+<h3 id="use-the-cached-value-in-loop"><a class="header" href="#use-the-cached-value-in-loop">Use the Cached Value in Loop</a></h3>
+<p>In the <code>loop()</code> function, change the hardcoded constant to use the cached variable:</p>
+<pre><code class="language-diff">void loop() {
+  // CRITICAL: Must call openmrn.loop() frequently to process messages
+  openmrn.loop();
+  
+-  // Check if it's time to produce an event (every 1 second)
++  // Check if it's time to produce an event
+  unsigned long current_time = millis();
+-  if (current_time - last_event_time &gt;= EVENT_INTERVAL) {
++  if (current_time - last_event_time &gt;= event_interval) {
+     // Alternate event state
+     event_state = !event_state;
+</code></pre>
+<p>The loop now uses <code>event_interval</code> (the cached variable) instead of <code>EVENT_INTERVAL</code> (the hardcoded constant). When <code>apply_configuration()</code> updates the global, the loop automatically uses the new value on the next iteration.</p>
+<h3 id="update-the-setup-message"><a class="header" href="#update-the-setup-message">Update the Setup Message</a></h3>
+<p>Also update the startup message to reference the configurable variable:</p>
+<pre><code class="language-diff">void setup() {
+  init_serial();
+  init_filesystem();
+  init_network();
+  init_openlcb_stack();
+  init_tcp_hub();
+  
+  Serial.println("OpenLCB node initialization complete!");
+-  Serial.println("Entering run mode - will alternate events every 1 second\n");
++  Serial.printf("Entering run mode - will alternate events every %lu ms\n", event_interval);
+  
+  last_event_time = millis();
+}
+</code></pre>
+<h2 id="testing-with-lccpro"><a class="header" href="#testing-with-lccpro">Testing with LccPro</a></h2>
+<p>Now that the code is modified, compile, upload to your ESP32, and test:</p>
+<h3 id="step-1-verify-initial-boot-output"><a class="header" href="#step-1-verify-initial-boot-output">Step 1: Verify Initial Boot Output</a></h3>
+<p><strong>Important</strong>: Because we bumped <code>CANONICAL_VERSION</code> from 0x0001 to 0x0002, the first boot with this new code will trigger a factory reset. This wipes the old config file and initializes it with the new schema. You’ll see factory reset messages on the serial output.</p>
+<p>Open the Serial Monitor (or PlatformIO Monitor). You should see:</p>
+<pre><code>Initializing SPIFFS...
 SPIFFS initialized successfully
 
-Connecting to WiFi SSID: YourNetwork
-.....
+Connecting to WiFi SSID: Socha_IoT
+.
 WiFi connected!
 IP Address: 192.168.1.100
 
 Creating CDI configuration descriptor...
 [CDI] Checking /spiffs/cdi.xml...
-[CDI] File /spiffs/cdi.xml does not exist
-[CDI] Updating /spiffs/cdi.xml (len 987)
+[CDI] File /spiffs/cdi.xml appears up-to-date (len 1172 vs 1172)
 [CDI] Registering CDI with stack...
 Initializing OpenLCB configuration...
-Creating config file /spiffs/openlcb_config
+Factory reset: wrote default blink_interval = 1000 ms
 
 Starting OpenLCB stack...
 Starting executor thread...
+OpenLCB stack initialized successfully
+Configuration updated: blink_interval = 1000 ms
 Starting TCP Hub on port 12021...
-TCP Hub listening. JMRI can connect to this device on port 12021
-
+TCP Hub listening. JMRI can connect to tListening on port 12021, fd 48
+his device on port 12021
 OpenLCB node initialization complete!
-Entering run mode - will alternate events every 1 second
-
-Produced event: 0x0502010202000000 (state: 0)
+Entering run mode - will alternate events every 1000 ms
+Allocating new alias C41 for node 050201020200
 Produced event: 0x0502010202000001 (state: 1)
-Produced event: 0x0502010202000000 (state: 0)
-Produced event: 0x0502010202000001 (state: 1)
-...
 </code></pre>
-<p><strong>First Run Note</strong>: The initial startup (especially the “Creating CDI configuration” and “Creating config file” steps) takes 20-30 seconds due to SPIFFS filesystem formatting. The SPIFFS mount error is normal—the filesystem doesn’t exist yet, but it’s automatically created. Don’t interrupt the ESP32 during this time. Subsequent boots skip formatting and start much faster.</p>
-<p><strong>What to verify</strong>:</p>
+<p><strong>What to verify:</strong></p>
 <ul>
-<li>✅ SPIFFS initializes successfully</li>
-<li>✅ WiFi connects successfully (shows your network name and IP address)</li>
-<li>✅ OpenLCB stack initializes</li>
-<li>✅ Events alternate between <code>...00</code> and <code>...01</code> every second</li>
-<li>✅ State toggles between <code>0</code> and <code>1</code></li>
+<li><code>Factory reset: wrote default blink_interval = 1000 ms</code> — Confirms version mismatch detected and factory reset triggered</li>
+<li><code>Configuration updated: blink_interval = 1000 ms</code> — Confirms apply_configuration() was called and read the default value</li>
+<li><code>Entering run mode - will alternate events every 1000 ms</code> — Confirms event_interval global was set from config</li>
+<li><code>Produced event:</code> messages at ~1 second intervals — Confirms timing is working</li>
 </ul>
-<h3 id="understanding-what-you-see"><a class="header" href="#understanding-what-you-see">Understanding What You See</a></h3>
-<p>This output confirms your ESP32 is:</p>
+<p>If you see these messages, the configuration system is working correctly. You’re ready to test changing the interval via JMRI.</p>
+<h3 id="step-2-change-interval-in-lccpro"><a class="header" href="#step-2-change-interval-in-lccpro">Step 2: Change Interval in LccPro</a></h3>
 <ol>
-<li><strong>Connected to WiFi</strong>: The IP address shows it’s on your network</li>
-<li><strong>Running the OpenLCB stack</strong>: Node initialization completed successfully</li>
-<li><strong>Producing events</strong>: The alternating event IDs prove the event production logic works</li>
-<li><strong>Ready for network communication</strong>: The node is broadcasting these events on the OpenLCB network (you’ll verify this with JMRI next)</li>
+<li>Connect JMRI to your ESP32 node (via TCP on port 12021)</li>
+<li>Open <strong>Tools → LCC → LccPro</strong></li>
+<li>Find your node in the list</li>
+<li>Click <strong>Configure</strong> (or double-click the node)</li>
+<li>Find the <strong>Settings</strong> tab and locate <strong>Blink Interval</strong> field</li>
+<li>Change the value (e.g., from 1000 to 2000 milliseconds)</li>
+<li>Click <strong>Write</strong> to send the new value</li>
 </ol>
-<p><strong>Congratulations!</strong> You have a working OpenLCB node. The events are being broadcast over WiFi/TCP, but you can’t see them on the network yet - that’s what JMRI will show you in the next section.</p>
-<h3 id="common-issues"><a class="header" href="#common-issues">Common Issues</a></h3>
-<p><strong>WiFi won’t connect</strong> (stuck on dots):</p>
+<p><img src="images/ConfigBlinkInterval.png" alt="LccPro Configure dialog with Settings tab, Blink Interval field visible"></p>
+<h3 id="step-3-click-update-complete"><a class="header" href="#step-3-click-update-complete">Step 3: Click Update Complete</a></h3>
+<p>This is the critical step! Unlike SNIP user data (Name and Description, which take effect immediately), application-specific configuration fields like blink_interval need an explicit <strong>Update Complete</strong> step.</p>
+<p>Here’s why: When you click <strong>Write</strong>, JMRI sends the new value to the ESP32 and it’s saved to SPIFFS. But OpenMRN doesn’t immediately call your <code>apply_configuration()</code> method. This allows you to make multiple writes in JMRI (e.g., change interval AND add other settings) before the node processes them all together.</p>
+<p>When you click <strong>Update Complete</strong>, you’re telling the node: “All changes are sent; now apply them.” OpenMRN then calls your <code>apply_configuration()</code> method, which reads the new interval from the config file and updates your global cache variable.</p>
+<p>Click the <strong>Update Complete</strong> button at the bottom of the Configure dialog.</p>
+<p><img src="images/ConfigUpdateComplete.png" alt="LccPro Configure dialog showing Update Complete button"></p>
+<h3 id="step-4-observe-the-change"><a class="header" href="#step-4-observe-the-change">Step 4: Observe the Change</a></h3>
+<p>Check the Serial Monitor. You should see:</p>
+<pre><code>Produced event: 0x0502010202000000 (state: 0)
+Produced event: 0x0502010202000001 (state: 1)
+Configuration updated: blink_interval = 2000 ms
+Produced event: 0x0502010202000000 (state: 0)
+Produced event: 0x0502010202000001 (state: 1)
+</code></pre>
+<p>The node’s event frequency has changed <strong>without recompiling or rebooting</strong>. The new interval is now cached in the global variable and will persist across power cycles (the new value is saved to SPIFFS).</p>
+<h3 id="step-5-verify-persistence"><a class="header" href="#step-5-verify-persistence">Step 5: Verify Persistence</a></h3>
+<p>Power off the ESP32, wait a few seconds, then power it back on. Open Serial Monitor again:</p>
+<pre><code>Creating CDI configuration descriptor...
+[CDI] Checking /spiffs/cdi.xml...
+[CDI] File /spiffs/cdi.xml appears up-to-date (len 1172 vs 1172)
+[CDI] Registering CDI with stack...
+Initializing OpenLCB configuration...
+
+Starting OpenLCB stack...
+Starting executor thread...
+OpenLCB stack initialized successfully
+Starting TCP Hub on port 12021...
+Configuration updated: blink_interval = 2000 ms
+TCP Hub listening. JMRI can connect to this device on port 12021
+OpenListening on port 12021, fd 48
+LCB node initialization complete!
+Entering run mode - will alternate events every 2000 ms
+Allocating new alias C41 for node 050201020200
+Produced event: 0x0502010202000001 (state: 1)
+</code></pre>
+<p><strong>What to verify:</strong></p>
 <ul>
-<li>Verify WiFi credentials in code are correct</li>
-<li>Check ESP32 is within range of your access point</li>
-<li>Confirm your network is 2.4GHz (not 5GHz only)</li>
-<li>Some corporate/school networks block device connections</li>
+<li><code>Configuration updated: blink_interval = 2000 ms</code> — The new value was read from the persisted config file</li>
+<li><code>Entering run mode - will alternate events every 2000 ms</code> — The cached interval reflects the new value you set</li>
 </ul>
-<p><strong>No serial output at all</strong>:</p>
+<p>The interval persists even after power cycling!</p>
+<h2 id="how-this-works-the-configuration-lifecycle"><a class="header" href="#how-this-works-the-configuration-lifecycle">How This Works: The Configuration Lifecycle</a></h2>
+<pre class="mermaid">graph TD
+    A["ESP32 Boots"]
+    B["ConfigUpdateFlow opens config file"]
+    C["apply_configuration called with initial_load=true"]
+    D["Reads blink_interval from file, updates event_interval global"]
+    E["Loop runs using event_interval"]
+    F["User changes interval in JMRI"]
+    G["JMRI sends config write to ESP32"]
+    H["ESP32 writes new value to config file"]
+    I["apply_configuration called with initial_load=false"]
+    J["Reads new blink_interval, updates event_interval global"]
+    K["Loop uses new interval on next iteration"]
+    
+    A --&gt; B --&gt; C --&gt; D --&gt; E
+    F --&gt; G --&gt; H --&gt; I --&gt; J --&gt; K
+    K -.-&gt;|next config change| F
+</pre>
+
+<p>The key insight: <strong>apply_configuration() is called automatically by OpenMRN whenever configuration changes</strong> (at boot, when JMRI updates it, or when factory reset is triggered). You don’t need to manually check for changes or read the config file in your loop—the framework handles it for you.</p>
+<h2 id="summary"><a class="header" href="#summary">Summary</a></h2>
+<p>You now have a fully functional configurable OpenLCB node running on ESP32 with WiFi/TCP transport:</p>
 <ul>
-<li>Verify <code>monitor_speed = 115200</code> is in your <code>platformio.ini</code> file</li>
-<li>Try pressing RESET button on ESP32</li>
-<li>Verify the serial monitor is connected to the correct port</li>
+<li><strong>Configuration storage</strong>: Values persisted to SPIFFS across power cycles</li>
+<li><strong>JMRI integration</strong>: Seamless configuration editing via LccPro</li>
+<li><strong>Dynamic updates</strong>: Changes applied without recompiling or rebooting</li>
+<li><strong>Versioning</strong>: Safe schema evolution via <code>CANONICAL_VERSION</code></li>
+<li><strong>Factory reset</strong>: Automatic initialization of new schema fields</li>
 </ul>
-<p><strong>Output is garbled/random characters</strong>:</p>
-<ul>
-<li>Wrong baud rate - ensure <code>monitor_speed = 115200</code> is in <code>platformio.ini</code></li>
-<li>If you already added it, stop and restart the serial monitor</li>
-<li>Bad USB cable or connection</li>
-</ul>
-<p><strong>“Brownout detector triggered” errors</strong>:</p>
-<ul>
-<li>Insufficient power from USB port</li>
-<li>Try a different USB port or powered USB hub</li>
-<li>This usually doesn’t prevent operation, just a warning</li>
-</ul>
+<p>This completes the WiFi/TCP foundation for Chapter 3 and demonstrates configuration best practices covered in Chapter 4.</p>
+<h2 id="whats-next-can-transport"><a class="header" href="#whats-next-can-transport">What’s Next: CAN Transport</a></h2>
+<p>In the next chapter, you’ll replace WiFi/TCP with CAN hardware transport. This is the native transport that LCC nodes use in production systems. You’ll modify the async_blink example to use CAN instead of WiFi while keeping the same configuration and event handling code.</p>
+<p>The configuration system you’ve learned in this chapter—CDI, versioning, persistence—works identically regardless of transport. Only the communication layer changes.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../03-esp32-arduino/code-walkthrough.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../04-configuration/factory-reset.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../03-esp32-arduino/jmri-monitoring.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
-                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -378,13 +492,10 @@ Produced event: 0x0502010202000001 (state: 1)
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../03-esp32-arduino/code-walkthrough.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../04-configuration/factory-reset.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../03-esp32-arduino/jmri-monitoring.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
-                    </a>
             </nav>
 
         </div>

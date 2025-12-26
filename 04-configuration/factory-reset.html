@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Node Startup Sequence - OpenLCB Programmer&#x27;s Guide</title>
+        <title>Factory Reset Behavior - OpenLCB Programmer&#x27;s Guide</title>
 
 
         <!-- Custom HTML head -->
@@ -174,172 +174,158 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="node-startup-sequence"><a class="header" href="#node-startup-sequence">Node Startup Sequence</a></h1>
-<p>When an OpenLCB node powers up or resets, it goes through a defined startup sequence to join the network. Understanding this sequence is essential to building your own nodes.</p>
-<blockquote>
-<p><strong>Note for Library Users</strong>: If you’re using OpenMRNLite or other OpenLCB libraries, all of the mechanics described in this chapter are handled automatically for you. You don’t need to implement alias reservation, collision detection, or recovery—the library does it all in the background.</p>
-<p>This chapter exists to help you <strong>understand how it works</strong>, which is valuable knowledge when debugging network issues or designing advanced features. However, if you just want to build a working node with async_blink_esp32, you can skip straight to Chapter 3 without missing anything essential. The library takes care of it.</p>
-</blockquote>
-<h2 id="what-happens-during-startup"><a class="header" href="#what-happens-during-startup">What Happens During Startup</a></h2>
-<p>Every node follows this sequence:</p>
+                        <h1 id="factory-reset-behavior"><a class="header" href="#factory-reset-behavior">Factory Reset Behavior</a></h1>
+<h2 id="what-happens-on-first-boot"><a class="header" href="#what-happens-on-first-boot">What Happens on First Boot</a></h2>
+<p>When you flash async_blink to an ESP32 for the first time, the node goes through an initialization sequence. Understanding this sequence is key to understanding configuration.</p>
+<h3 id="before-first-boot"><a class="header" href="#before-first-boot">Before First Boot</a></h3>
+<ul>
+<li>ESP32 has the async_blink firmware loaded</li>
+<li>SPIFFS flash memory is either empty OR contains leftover config from a previous application</li>
+<li>OpenMRN doesn’t know what to expect</li>
+</ul>
+<h3 id="first-boot-factory_reset-is-called"><a class="header" href="#first-boot-factory_reset-is-called">First Boot: factory_reset() is Called</a></h3>
+<p>On startup, main.cpp calls:</p>
+<pre><code class="language-cpp">void init_filesystem() {
+  openlcb::FATFS_INIT();  // Mount SPIFFS
+  
+  // If no valid config file exists, create one
+  if (!CheckFileExists(&amp;driver, CONFIG_FILENAME)) {
+    factory_reset(&amp;driver, CONFIG_FILENAME, &amp;config_file_content, 
+                  0, sizeof(config_file_content));
+  }
+}
+</code></pre>
+<p>The <code>factory_reset()</code> function:</p>
 <ol>
-<li>
-<p><strong>Check ID (CID)</strong>: The node sends four CID frames containing its 6-byte unique Node ID, spread across the frames. This allows the node to check if anyone else is using its desired alias.</p>
-</li>
-<li>
-<p><strong>Reserve ID (RID)</strong>: If no other node objects, the node sends an RID frame to reserve its chosen 12-bit alias for the Node ID.</p>
-</li>
-<li>
-<p><strong>Alias Map Definition (AMD)</strong>: The node announces the mapping between its full 6-byte Node ID and the 12-bit alias it just reserved.</p>
-</li>
-<li>
-<p><strong>Initialized (Init Complete)</strong>: The node sends an “Initialized” message telling the network it’s now fully online and reachable.</p>
-</li>
+<li>Creates a new config file at <code>/spiffs/openlcb_config</code></li>
+<li>Initializes all fields with default values</li>
+<li><strong>Writes SNIP user data</strong>: User name = “async_blink”, description = “ESP32 Blink demo”</li>
+<li><strong>Initializes internal config</strong>: Sets up offset 128+ with defaults</li>
+<li><strong>Stores CANONICAL_VERSION</strong>: Version 0x0001 is written to config metadata</li>
 </ol>
-<pre class="mermaid">sequenceDiagram
-    participant Node as New Node
-    participant Bus as OpenLCB Network
-    participant Others as Other Nodes
-    
-    Note over Node: Power On / Reset
-    
-    Node-&gt;&gt;Bus: CID Frame 1 (Node ID bytes 0-1)
-    Node-&gt;&gt;Bus: CID Frame 2 (Node ID bytes 2-3)
-    Node-&gt;&gt;Bus: CID Frame 3 (Node ID bytes 4-5)
-    Node-&gt;&gt;Bus: CID Frame 4 (checks alias)
-    
-    Note over Node,Others: Wait for conflicts (200ms)
-    
-    Node-&gt;&gt;Bus: RID (Reserve alias)
-    Node-&gt;&gt;Bus: AMD (Map Node ID to alias)
-    Node-&gt;&gt;Bus: Initialized Complete
-    
-    Note over Node: Now reachable on network
-    
-    Node-&gt;&gt;Bus: Producer Identified (events)
-    Node-&gt;&gt;Bus: Consumer Identified (events)
-</pre>
-
-<h2 id="why-use-aliases"><a class="header" href="#why-use-aliases">Why Use Aliases?</a></h2>
-<p>OpenLCB uses 6-byte Node IDs to ensure every device in the world has a unique identifier. However, CAN bus headers only have 29 bits available. To fit the sender information plus message type, OpenLCB uses temporary 12-bit aliases that represent the full Node ID during a session.</p>
-<p>This alias negotiation happens every time a node starts up. The aliases are not permanent—they’re regenerated each time the node powers on.</p>
-<h2 id="node-participation"><a class="header" href="#node-participation">Node Participation</a></h2>
-<p>Other nodes on the network listen during this startup sequence. If another node is already using the alias the new node wants, it will send a conflict message, forcing the new node to pick a different alias. This ensures all active nodes have unique aliases.</p>
-<h2 id="multi-node-network-behavior"><a class="header" href="#multi-node-network-behavior">Multi-Node Network Behavior</a></h2>
-<p>The startup sequence isn’t just about a single node announcing itself—it’s a conversation with the entire network:</p>
-<p><strong>Other nodes participate by:</strong></p>
+<p>After factory_reset() completes:</p>
 <ul>
-<li><strong>Listening</strong> to all CID frames to check for alias conflicts</li>
-<li><strong>Responding</strong> with conflict messages if their alias is being claimed</li>
-<li><strong>Recording</strong> the Node ID to alias mapping from AMD frames</li>
-<li><strong>Acknowledging</strong> new nodes with responses to queries</li>
+<li>Config file is ready to use</li>
+<li>Node name is “async_blink” (the default from SNIP_NODE_NAME constant)</li>
+<li>JMRI can now edit the user name via the User Info tab</li>
 </ul>
-<p>This cooperative behavior ensures:</p>
-<ul>
-<li>No two nodes ever use the same alias simultaneously</li>
-<li>Nodes can discover each other’s capabilities</li>
-<li>Gateways and bridges can manage routing efficiently</li>
-<li>Network monitoring tools (like JMRI) can track all active nodes</li>
-</ul>
-<p>When your node starts up, it’s not alone—the entire network is watching and ready to help it join successfully.</p>
-<h2 id="what-happens-when-things-go-wrong"><a class="header" href="#what-happens-when-things-go-wrong">What Happens When Things Go Wrong</a></h2>
-<p>The startup sequence above describes the happy path—when everything works perfectly on the first try. In practice, nodes must be prepared to handle conflicts and retries.</p>
-<h3 id="alias-collision-detection"><a class="header" href="#alias-collision-detection">Alias Collision Detection</a></h3>
-<p>If another node on the network is already using the alias your node wants to reserve, that other node will respond to your CID frames with a Reserve ID (RID) frame. This signals a collision:</p>
-<ul>
-<li>
-<p><strong>During CID phase</strong>: If you receive an RID while sending your CID frames, your chosen alias is already in use. Your node must:</p>
-<ul>
-<li>Abandon the current alias</li>
-<li>Generate a new tentative alias</li>
-<li>Start the entire CID → wait → RID sequence over from the beginning</li>
-</ul>
-</li>
-<li>
-<p><strong>During the 200ms wait</strong>: If another node transmits any non-CID frame using your tentative alias, you know there’s a collision and must restart.</p>
-</li>
-</ul>
-<p>Here’s what the collision and recovery process looks like:</p>
-<pre class="mermaid">sequenceDiagram
-    participant Node as New Node
-    participant Bus as OpenLCB Network
-    participant Other as Node Already Online
-    
-    Note over Node: Generate Alias ABC
-    
-    Node-&gt;&gt;Bus: CID Frame 1 (with alias ABC)
-    Other-&gt;&gt;Bus: RID (Collision!)
-    Node-&gt;&gt;Node: Detect Collision
-    
-    Note over Node: Collision detected!&lt;br/&gt;Generate New Alias DEF
-    
-    Node-&gt;&gt;Bus: CID Frame 1 (with alias DEF)
-    Node-&gt;&gt;Bus: CID Frame 2 (with alias DEF)
-    Node-&gt;&gt;Bus: CID Frame 3 (with alias DEF)
-    Node-&gt;&gt;Bus: CID Frame 4 (with alias DEF)
-    
-    Note over Node,Other: Wait for conflicts (200ms)
-    Note over Other: No conflict, silent
-    
-    Node-&gt;&gt;Bus: RID (Reserve alias DEF)
-    Node-&gt;&gt;Bus: AMD (Map Node ID to alias DEF)
-    Node-&gt;&gt;Bus: Initialized Complete
-    
-    Note over Node: Now reachable with alias DEF
-</pre>
-
-<p>Your node’s alias generation algorithm (described in section 6.3 of S-9.7.2.1) ensures that each collision produces a different alias candidate, so nodes won’t get stuck in a loop trying the same alias repeatedly.</p>
-<h3 id="amd-and-alias-validation"><a class="header" href="#amd-and-alias-validation">AMD and Alias Validation</a></h3>
-<p>Once you’ve successfully reserved an alias and sent your AMD (Alias Map Definition) frame, the alias mapping is established. However, your node must remain vigilant:</p>
-<ul>
-<li>
-<p><strong>Alias Mapping Enquiry (AME)</strong>: Other nodes can query your alias at any time using an AME frame. Your node is expected to respond with another AMD frame confirming the mapping.</p>
-</li>
-<li>
-<p><strong>Duplicate Node ID Detection</strong>: If your node receives an AMD frame from another node claiming to have the same 6-byte Node ID as you, this indicates a serious problem—two nodes with identical IDs exist on the network. Your node should:</p>
-<ul>
-<li>Signal this condition to the user (LED blink pattern, log message, etc.)</li>
-<li>Optionally transition back to the Inhibited state</li>
-<li>Restart the alias reservation process with error handling</li>
-</ul>
-</li>
-</ul>
-<h3 id="collision-recovery-in-your-code"><a class="header" href="#collision-recovery-in-your-code">Collision Recovery in Your Code</a></h3>
-<p>When implementing your node:</p>
+<h3 id="what-gets-wiped-and-what-doesnt"><a class="header" href="#what-gets-wiped-and-what-doesnt">What Gets Wiped and What Doesn’t</a></h3>
+<p>When <code>factory_reset()</code> is triggered:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Data</th><th>What Happens</th><th>Reason</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Static SNIP Data</strong> (manufacturer, model, hardware/software version)</td><td>Untouched</td><td>Lives in firmware, not in config file</td></tr>
+<tr><td><strong>SNIP User Data</strong> (user name, description)</td><td><strong>Completely wiped</strong></td><td>Reset to defaults from config.h (e.g., “async_blink”)</td></tr>
+<tr><td><strong>Internal Config</strong> (offset 128+)</td><td>Completely wiped</td><td>Reset to application defaults</td></tr>
+<tr><td><strong>User Customizations</strong> (node name set via JMRI)</td><td><strong>Lost</strong></td><td>Factory reset erases all custom edits</td></tr>
+</tbody>
+</table>
+</div>
+<p>This is important to understand: factory reset is <strong>all-or-nothing</strong>. Once triggered, users lose any custom node name or description they may have set through JMRI. There is no selective preservation of custom fields.</p>
+<h2 id="what-persists-across-reboots"><a class="header" href="#what-persists-across-reboots">What Persists Across Reboots</a></h2>
+<p>Once factory_reset() runs and the config file exists, normal boots are much simpler:</p>
 <ol>
-<li><strong>Always expect CID collisions</strong> - Your initial alias choice might conflict; be prepared to generate alternatives</li>
-<li><strong>Implement retry logic</strong> - After detecting a collision during the CID phase, generate a new alias and restart</li>
-<li><strong>Validate on receipt</strong> - When receiving AMD frames from other nodes, check for duplicate Node IDs</li>
-<li><strong>Handle AME queries</strong> - Always respond to AME frames with AMD frames to maintain alias mappings</li>
+<li>SPIFFS is mounted</li>
+<li>Config file is found → no factory reset needed</li>
+<li>User name and description are read from offset 0-127</li>
+<li>Internal config is read from offset 128+</li>
+<li>Node comes online with the same configuration as before</li>
 </ol>
-<p>Most of this is handled transparently by OpenMRNLite, but understanding these scenarios helps when debugging network startup issues.</p>
-<blockquote>
-<p><strong>Note</strong>: For implementation details on alias collision handling and retry algorithms, see the async_blink_esp32 example code in Chapter 3, which demonstrates how OpenMRNLite handles these scenarios automatically.</p>
-</blockquote>
-<h2 id="references"><a class="header" href="#references">References</a></h2>
-<p>For detailed protocol specifications, see:</p>
-<p><strong>CAN Frame Transfer (Node Startup Sequence)</strong></p>
+<p><strong>This is why editing the node name in JMRI persists across power cycles.</strong></p>
+<h2 id="when-does-factory-reset-trigger-again"><a class="header" href="#when-does-factory-reset-trigger-again">When Does Factory Reset Trigger Again?</a></h2>
+<p>Besides explicitly calling factory_reset() (or pressing a physical button), OpenMRN automatically triggers a reset if:</p>
 <ul>
-<li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/LCC/S/s-9.7.2.1-canframetransfer-2024-07-22.pdf">S-9.7.2.1 CAN Frame Transfer Standard</a> - Normative specification for CID, RID, AMD frames and the 200ms wait requirement (section 6.2.1)</li>
-<li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/LCC/TN/tn-9.7.2.1-canframetransfer-2024-07-22.pdf">TN-9.7.2.1 CAN Frame Transfer Technical Note</a> - Background and examples</li>
+<li><strong>Config file is corrupted</strong> (CRC check fails)</li>
+<li><strong>CANONICAL_VERSION mismatch</strong> (firmware version differs from saved config version)</li>
 </ul>
-<p><strong>Message Network (Initialization Complete)</strong></p>
+<p><strong>Important Warning</strong>: If you change <code>CANONICAL_VERSION</code> in your firmware (e.g., to add new configuration fields), the next boot will trigger a factory reset. Users will lose any custom node name or configuration they set through JMRI. This is a breaking change for deployed nodes.</p>
+<h2 id="triggering-a-factory-reset-from-jmri"><a class="header" href="#triggering-a-factory-reset-from-jmri">Triggering a Factory Reset from JMRI</a></h2>
+<p>You can manually trigger a factory reset from the JMRI LccPro configure dialog without recompiling firmware or pressing buttons on the ESP32:</p>
+<ol>
+<li>Open <strong>LccPro</strong> and select your node</li>
+<li>Click <strong>Configure</strong> (or double-click the node)</li>
+<li>In the configure dialog, click the <strong>More…</strong> button</li>
+<li>Select <strong>Factory Reset</strong></li>
+</ol>
+<p>JMRI will send a factory reset command to the node via OpenLCB Configuration protocol. The node will immediately reinitialize its config file with factory defaults. This is useful for:</p>
 <ul>
-<li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/LCC/S/s-9.7.3-messagenetwork-2024-07-22.pdf">S-9.7.3 Message Network Standard</a> - Normative specification for Initialization Complete message (section 3.3.1) and message network protocol</li>
+<li><strong>Testing</strong>: Quickly reset configuration during development</li>
+<li><strong>Troubleshooting</strong>: Recover from corrupted settings without physical access to the board</li>
+<li><strong>User Support</strong>: Remotely help users restore a node to factory defaults without recompiling</li>
 </ul>
-<blockquote>
-<p><strong>Note</strong>: Future chapters will dive deeper into how the alias generation algorithm works and how to handle collisions in your code.</p>
-</blockquote>
+<h2 id="practical-example-factory-reset-reboot"><a class="header" href="#practical-example-factory-reset-reboot">Practical Example: Factory Reset Reboot</a></h2>
+<p>When you trigger a factory reset (via JMRI or version mismatch), here’s what the serial console shows on the reboot:</p>
+<pre><code>rst:0xc (SW_CPU_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0030,len:1184
+load:0x40078000,len:13232
+load:0x40080400,len:3028
+entry 0x400805e4
+
+=== OpenLCB async_blink ESP32 Example ===
+Node ID: 0x050201020200
+Event 0: 0x0502010202000000
+Event 1: 0x0502010202000001
+
+Initializing SPIFFS...
+SPIFFS initialized successfully
+
+Connecting to WiFi SSID: YourNetwork
+.
+WiFi connected!
+IP Address: 192.168.1.100
+
+Creating CDI configuration descriptor...
+[CDI] Checking /spiffs/cdi.xml...
+[CDI] File /spiffs/cdi.xml appears up-to-date (len 987 vs 987)
+[CDI] Registering CDI with stack...
+Initializing OpenLCB configuration...
+
+Starting OpenLCB stack...
+Starting executor thread...
+Starting TCP Hub on port 12021...
+TCP Hub listening. JMRI can connect to this device on port 12021
+
+OpenLCB node initialization complete!
+Entering run mode - will alternate events every 1 second
+
+Allocating new alias C41 for node 050201020200
+Produced event: 0x0502010202000001 (state: 1)
+Produced event: 0x0502010202000000 (state: 0)
+Produced event: 0x0502010202000001 (state: 1)
+...
+</code></pre>
+<p><strong>Important</strong>: Notice there is <strong>no console message when the reset is triggered</strong>. The reset happens silently from an external trigger. The boot diagnostics (ROM messages about <code>rst:0xc</code>, <code>clock div</code>, etc.) indicate a software reset occurred. Then the normal initialization proceeds.</p>
+<p>After factory reset, your config file is re-initialized with defaults:</p>
+<ul>
+<li><strong>SNIP User Name</strong>: “async_blink” (from <code>SNIP_NODE_NAME</code> constant)</li>
+<li><strong>SNIP User Desc</strong>: “ESP32 Blink demo” (from <code>SNIP_USER_DESCRIPTION</code> constant)</li>
+<li>Any custom node name set via JMRI is <strong>lost</strong></li>
+</ul>
+<h2 id="what-happens-after-factory-reset"><a class="header" href="#what-happens-after-factory-reset">What Happens After Factory Reset</a></h2>
+<p>After factory reset, subsequent boots proceed normally. The config file already exists and is valid, so no factory reset runs again unless:</p>
+<ul>
+<li>The config file becomes corrupted</li>
+<li>The <code>CANONICAL_VERSION</code> in firmware differs from the saved version</li>
+<li>You explicitly trigger another reset via JMRI Configure dialog</li>
+</ul>
+<h2 id="key-takeaway"><a class="header" href="#key-takeaway">Key Takeaway</a></h2>
+<p><code>factory_reset()</code> runs on first boot or when triggered by JMRI, version mismatch, or config corruption to initialize a valid config file with SNIP defaults. After that, the config persists across every reboot. JMRI can edit the user name, which updates the config file while preserving other settings.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../01-intro/intro_can.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../04-configuration/editing-in-jmri.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../01-intro/intro_ab_events.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../04-configuration/adding-interval-setting.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -349,11 +335,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../01-intro/intro_can.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../04-configuration/editing-in-jmri.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../01-intro/intro_ab_events.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../04-configuration/adding-interval-setting.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>

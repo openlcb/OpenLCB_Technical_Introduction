@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-2047feb3.js";
+            window.path_to_searchindex_js = "../searchindex-daca769e.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-57ec3f65.js"></script>
+        <script src="../toc-e471abdd.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -268,7 +268,7 @@ public:
 <li>Foundation ready for <code>apply_configuration()</code> in future chapters when users modify config via JMRI</li>
 </ul>
 <blockquote>
-<p><strong><code>apply_configuration()</code></strong>: Currently returns UPDATED without doing anything. In a real node, this would handle persistence when users modify configuration through JMRI. For v0.1, config is read-only.</p>
+<p><strong><code>apply_configuration()</code></strong>: Currently returns UPDATED without doing anything. In v0.1, the config is read-only (no runtime changes). Chapter 4 explains what this callback does and why it exists. Later sections of Chapter 4 will implement it to handle real configuration changes.</p>
 </blockquote>
 <p><strong>SNIP data</strong>: The node name and description are displayed by JMRI in the node properties dialog, helping identify which ESP32 is which on your network.</p>
 <h3 id="5-wifi-connection"><a class="header" href="#5-wifi-connection">5. WiFi Connection</a></h3>
