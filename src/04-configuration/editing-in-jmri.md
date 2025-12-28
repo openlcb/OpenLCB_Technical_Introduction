@@ -68,6 +68,10 @@ sequenceDiagram
     JMRI->>User: Changes saved!
 ```
 
+Here's what the actual LCC traffic looks like when you save the user name. This trace captured from an LCC monitor shows the Datagram messages exchanged:
+
+![LCC Datagram messages showing configuration write when saving user name](images/SaveNameTraffic.png)
+
 For SNIP user data (Name and Description), the changes take effect immediately. There is no separate "apply" step needed.
 
 ### 6. Verify Persistence

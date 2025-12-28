@@ -264,6 +264,19 @@ If you see these messages, the configuration system is working correctly. You're
 
 ![LccPro Configure dialog with Settings tab, Blink Interval field visible](images/ConfigBlinkInterval.png)
 
+### Step 2.5: Monitor the LCC Traffic
+
+When you click **Write**, JMRI sends the new interval value to the ESP32 as a Datagram message. Here's what the LCC traffic looks like:
+
+![LCC Datagram traffic when writing the new interval value](images/Write2000Interval.png)
+
+In this capture, you can see the write message:
+```
+S: 02.01.12.1A.9C.2C - 05.02.01.02.02.00 Datagram: (8) 20.01.00.00.00.84.07.D0
+```
+
+The last two bytes `07.D0` are the hex representation of 2000 (decimal)—this is the new interval value being written to the node.
+
 ### Step 3: Click Update Complete
 
 This is the critical step! Unlike SNIP user data (Name and Description, which take effect immediately), application-specific configuration fields like blink_interval need an explicit **Update Complete** step.
@@ -275,6 +288,12 @@ When you click **Update Complete**, you're telling the node: "All changes are se
 Click the **Update Complete** button at the bottom of the Configure dialog.
 
 ![LccPro Configure dialog showing Update Complete button](images/ConfigUpdateComplete.png)
+
+When you click **Update Complete**, the node sends an acknowledgment message. Here's what the LCC traffic shows:
+
+![LCC traffic when Update Complete is sent to the node](images/UpdateComplete.png)
+
+The `20.A8` Datagram is the Update Complete message from JMRI to the node, followed by the node's acknowledgment.
 
 ### Step 4: Observe the Change
 
