@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>CAN - OpenLCB Programmer&#x27;s Guide</title>
+        <title>TWAI Bus Diagnostics and Troubleshooting - OpenLCB Programmer&#x27;s Guide</title>
 
 
         <!-- Custom HTML head -->
@@ -174,48 +174,170 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="introduction-to-can"><a class="header" href="#introduction-to-can">Introduction to CAN</a></h1>
-<p>Controller Area Network (CAN) is a standard that was initially created in 1981 by Bosch, and has since been used for factory automation and communication networks in cars, to name just a few uses. Today there are hundreds of billions of devices using CAN bus in daily use.</p>
-<p>As a result, there are a number of relatively inexpensive ICs available that fully implement the CAN specifications out of the box. By using CAN controllers and drivers, you do not have to write highly time-sensitive code. Instead, you can focus on implementing support for the messages in the application layers, which is a “relatively” simple task compared with implementing a transport layer.</p>
-<h2 id="can-messages"><a class="header" href="#can-messages">CAN Messages</a></h2>
-<p>CAN transmits messages, called <em>frames</em> on the bus. Every other device (node) on the bus can (and must) listen to all of the traffic on the bus. One of the interesting and useful aspects of CAN is how it handles collisions, which is through arbitration.</p>
-<p>CAN frames, in the form used by OpenLCB, consist of a 29-bit header followed by zero or more bytes of data. This is using the <em>extended frame format</em>, also know as CAN 2.0 B.</p>
-<p><img src="../images/can_bits.jpg" alt="CAN Format"></p>
-<h3 id="arbitration"><a class="header" href="#arbitration">Arbitration</a></h3>
-<p>Arbitration is the process used to ensure that only one message is being transmitted at one time. If two nodes are trying to transmit different messages at the same time, one of those two will pass through the bus unharmed, while the other node will realize it lost the arbitration and attempt to re-transmit right after the first message is completed. This allows nearly 100% utilization of the bandwidth, because the node(s) that lost the arbitration will immediately stop, thereby not corrupting the frame that is being transmitted by the winner of the arbitration. This guarantees forward progress. In contrast, old style Ethernet (and LocoNet, btw.) uses a more complex scheme, where a collision destroys the frame, then nodes have to back off, wait a random period, then attempt to transmit again, thus wasting bandwidth.</p>
-<p>The arbitration phase relies on drivers only pulling the bus low. If two nodes attempt to put different bit values on the bus at the same time, the 0 will always win. Here is a chart that shows how this works:</p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Node 1</th><th>Node 2</th><th>Bus Value</th></tr>
-</thead>
-<tbody>
-<tr><td>0</td><td>0</td><td>0</td></tr>
-<tr><td>0</td><td>1</td><td>0</td></tr>
-<tr><td>1</td><td>0</td><td>0</td></tr>
-<tr><td>1</td><td>1</td><td>1</td></tr>
-</tbody>
-</table>
-</div>
+                        <h1 id="twai-bus-diagnostics-and-troubleshooting"><a class="header" href="#twai-bus-diagnostics-and-troubleshooting">TWAI Bus Diagnostics and Troubleshooting</a></h1>
 <blockquote>
-<p>Dominant and recessive are the normal terms used because a ‘1’ bit (recessive) does NOT drive the bus. It allows the terminators to ‘drive’ the bus by pulling the two bus lines to a common voltage. (2.5V) On the other hand a ‘0’ bit (dominant) drives the bus to both high and low. (CANH goes to 5V and CANL goes to 0V) The bus drivers can always over power the terminators, and that is how the zero bit always dominates over the one bit. It also explains why at least some termination is required. The termination values are also chosen to suppress cable reflections, but that is actually only an issue on long lines. Also note that this explains the complexity of our RR-CirKits terminators. You can attach a logic analyzer to one of our terminators because it creates a logic level image of the bus (to drive the activity LED). You cannot connect a logic analyzer directly to the CAN bus, because it does not contain a logic level signal on either line.</p>
-<p>Normally two nodes will happily send identical data until one node or the other transmits a zero bit during the other node’s one bit. At that point the recessive node notices that it transmitted a one bit,but received a zero bit back from the bus. This tells the recessive node that it is in conflict and must immediately stop transmitting. No other nodes can observe that this happened. This requirement for an immediate (within a fraction of the bit time) response is what limits the CAN bus segment lengths.</p>
-<p>– Dick Bronson, RR Cirkits</p>
+<p><strong>Skip this section?</strong> If you’re not interested in the details of ESP-TWAI message interpretation, you can jump to the next section for a quicker path forward.</p>
 </blockquote>
-<p>Arbitration uses the 29-bit header value as a priority value to gain access to the bus, where lower values have higher priority. This mechanism provides very high utilization of the bus’ bandwidth because one node will always win a collision and keep transmitting. In contrast, Ethernet uses a more complex scheme where nodes have to back off, wait a random period, then attempt to transmit again, thus wasting bandwidth.</p>
-<p>For arbitration to work sucessfully, each message sent by a node needs to use a unique 29-bit ID. The details for this are handled by the OpenLCB specifications, and are different for different types of messages.</p>
+<p>As your ESP32 runs, it periodically prints <strong>TWAI status messages</strong> to the serial monitor. These messages tell you how the CAN bus is performing and help diagnose wiring or connection issues.</p>
+<h2 id="understanding-twai-status-output"><a class="header" href="#understanding-twai-status-output">Understanding TWAI Status Output</a></h2>
+<p>A typical TWAI status line looks like this:</p>
+<pre><code>ESP-TWAI: RX:42 (pending:0,overrun:0,discard:0,missed:0,lost:0) TX:156 (pending:0,suc:156,fail:0) Bus (arb-loss:0,err:0,state:Running)
+</code></pre>
+<p>Let’s break this down into sections:</p>
+<h3 id="rx-statistics-received-messages"><a class="header" href="#rx-statistics-received-messages">RX Statistics (Received Messages)</a></h3>
+<pre><code>RX:42 (pending:0, overrun:0, discard:0, missed:0, lost:0)
+</code></pre>
+<ul>
+<li><strong>RX:42</strong> — Total CAN messages successfully received so far</li>
+<li><strong>pending</strong> — Messages waiting to be processed (should be 0 if keep up)</li>
+<li><strong>overrun</strong> — Messages lost because the receiver buffer filled (bad if &gt; 0; indicates you’re receiving faster than you can process)</li>
+<li><strong>discard</strong> — Messages intentionally dropped (typically 0 for our use case)</li>
+<li><strong>missed</strong> — CAN frames that arrived but were never read (indicates software latency)</li>
+<li><strong>lost</strong> — Messages lost due to hardware buffer overflow (very bad; indicates severe timing issues)</li>
+</ul>
+<p><strong>Healthy RX</strong>: All zero or very low pending count, overrun and lost at 0.</p>
+<h3 id="tx-statistics-transmitted-messages"><a class="header" href="#tx-statistics-transmitted-messages">TX Statistics (Transmitted Messages)</a></h3>
+<pre><code>TX:156 (pending:0, suc:156, fail:0)
+</code></pre>
+<ul>
+<li><strong>TX:156</strong> — Total CAN messages transmitted</li>
+<li><strong>pending</strong> — Messages queued but not yet sent (should be 0 under normal conditions)</li>
+<li><strong>suc:156</strong> — Successfully transmitted frames (acknowledged by the bus)</li>
+<li><strong>fail:0</strong> — Frames that failed to transmit</li>
+</ul>
+<p><strong>Healthy TX</strong>: <code>fail</code> should be 0 (or very low). If <code>fail</code> is high, the bus is not responding to your transmissions.</p>
+<h3 id="bus-status"><a class="header" href="#bus-status">Bus Status</a></h3>
+<pre><code>Bus (arb-loss:0, err:0, state:Running)
+</code></pre>
+<ul>
+<li><strong>arb-loss</strong> — Arbitration losses (you tried to transmit but another node had priority). Normal and okay in multi-node networks.</li>
+<li><strong>err</strong> — Bus errors (bad wiring, termination issues, electrical noise). Should be 0 or very low.</li>
+<li><strong>state</strong> — CAN controller state:
+<ul>
+<li><code>Running</code> — Healthy, actively on the bus</li>
+<li><code>Error-Active</code> — Minor errors but still transmitting</li>
+<li><code>Error-Passive</code> — Many errors; not transmitting reliably</li>
+<li><code>Bus-Off</code> — Fatal errors; controller shut down</li>
+</ul>
+</li>
+</ul>
+<p><strong>Healthy state</strong>: <code>Running</code> with <code>err:0</code>.</p>
+<h2 id="common-scenarios-and-diagnostics"><a class="header" href="#common-scenarios-and-diagnostics">Common Scenarios and Diagnostics</a></h2>
+<h3 id="scenario-1-everything-looks-good"><a class="header" href="#scenario-1-everything-looks-good">Scenario 1: Everything Looks Good</a></h3>
+<pre><code>ESP-TWAI: RX:42 (pending:0,overrun:0,discard:0,missed:0,lost:0) TX:156 (pending:0,suc:156,fail:0) Bus (arb-loss:0,err:0,state:Running)
+</code></pre>
+<p><strong>Meaning</strong>: Your CAN bus is working perfectly!</p>
+<ul>
+<li>✅ Messages are being received and transmitted</li>
+<li>✅ No errors or overflows</li>
+<li>✅ Bus is in good health</li>
+</ul>
+<p><strong>Action</strong>: Proceed with JMRI configuration and network testing.</p>
+<h3 id="scenario-2-high-tx-fail-count-rx0"><a class="header" href="#scenario-2-high-tx-fail-count-rx0">Scenario 2: High TX Fail Count, RX:0</a></h3>
+<pre><code>ESP-TWAI: RX:0 (pending:0,overrun:0,discard:0,missed:0,lost:0) TX:16 (pending:16,suc:0,fail:16) Bus (arb-loss:0,err:14642,state:Running)
+</code></pre>
+<p><strong>Meaning</strong>: You’re transmitting messages, but <strong>the bus isn’t responding</strong>. All transmissions are failing.</p>
+<p><strong>Likely causes</strong>:</p>
+<ul>
+<li>CAN transceiver not connected to the bus (CANH/CANL wires missing or loose)</li>
+<li>No device on the other end of the bus to acknowledge frames</li>
+<li>RR-CirKits modules not powered</li>
+<li>Wrong GPIO pins (though you’d see a different error earlier)</li>
+</ul>
+<p><strong>Diagnostics checklist</strong>:</p>
+<ul>
+<li><input disabled="" type="checkbox"> CANH and CANL physically connected to RR-CirKits Buffer?</li>
+<li><input disabled="" type="checkbox"> Buffer powered on and USB connected to computer?</li>
+<li><input disabled="" type="checkbox"> LCC Power-Point powered on (provides 12V to the bus)?</li>
+<li><input disabled="" type="checkbox"> Breadboard connections to GPIO4/GPIO5 solid?</li>
+<li><input disabled="" type="checkbox"> Terminating resistors in place (one 120Ω at each bus end)?</li>
+</ul>
+<p><strong>Fix</strong>: Verify your breadboard wiring and CAN bus connections step-by-step.</p>
+<h3 id="scenario-3-climbing-error-count-no-tx-failure"><a class="header" href="#scenario-3-climbing-error-count-no-tx-failure">Scenario 3: Climbing Error Count, No TX Failure</a></h3>
+<pre><code>ESP-TWAI: RX:0 (pending:0,overrun:0,discard:0,missed:0,lost:0) TX:42 (pending:0,suc:42,fail:0) Bus (arb-loss:0,err:1823,state:Running)
+</code></pre>
+<p><strong>Meaning</strong>: You’re transmitting successfully, but the <strong>error count is rising rapidly</strong>.</p>
+<p><strong>Likely causes</strong>:</p>
+<ul>
+<li>Wiring issues (CANH/CANL shorted, loose connections, incorrect transceiver pins)</li>
+<li>Termination problem (missing one of the two 120Ω resistors, or double-terminated)</li>
+<li>Electrical noise interfering with the signal</li>
+<li>CAN signal not reaching the transceiver correctly</li>
+</ul>
+<p><strong>Diagnostics checklist</strong>:</p>
+<ul>
+<li><input disabled="" type="checkbox"> Are CANH and CANL shorted together anywhere?</li>
+<li><input disabled="" type="checkbox"> Is the 120Ω resistor between CANH and CANL (SN65HVD230 only)?</li>
+<li><input disabled="" type="checkbox"> Do you have exactly <strong>one 120Ω termination at each end</strong> of the bus? Not zero, not two per end.</li>
+<li><input disabled="" type="checkbox"> Are the CANH/CANL wires twisted together and away from power lines?</li>
+<li><input disabled="" type="checkbox"> Did you use the correct GPIO pins (4 for RX, 5 for TX)?</li>
+</ul>
+<p><strong>Quick test</strong>: Try temporarily removing any termination resistor you added and see if error count drops. If so, you likely have double-termination.</p>
+<h3 id="scenario-4-rx-messages-but-tx-issues"><a class="header" href="#scenario-4-rx-messages-but-tx-issues">Scenario 4: RX Messages but TX Issues</a></h3>
+<pre><code>ESP-TWAI: RX:128 (pending:0,overrun:0,discard:0,missed:0,lost:0) TX:8 (pending:4,suc:2,fail:2) Bus (arb-loss:2,err:0,state:Running)
+</code></pre>
+<p><strong>Meaning</strong>: Your node is receiving messages fine, but <strong>transmissions are inconsistent</strong>.</p>
+<p><strong>Likely causes</strong>:</p>
+<ul>
+<li>CAN bus is congested (many devices transmitting)</li>
+<li>GPIO5 (TXD) connection is loose or poor quality</li>
+<li>Transceiver VCC or GND connection is marginal</li>
+</ul>
+<p><strong>Diagnostics checklist</strong>:</p>
+<ul>
+<li><input disabled="" type="checkbox"> GPIO5 jumper wire firmly inserted and not bent?</li>
+<li><input disabled="" type="checkbox"> Breadboard power (VCC/GND) clean and stable?</li>
+<li><input disabled="" type="checkbox"> Other nodes on the bus active? (If yes, arbitration is expected.)</li>
+</ul>
+<p><strong>Action</strong>: Check GPIO5 connection first; if that’s solid, it’s likely normal CAN bus contention.</p>
+<h3 id="scenario-5-rx-overrun"><a class="header" href="#scenario-5-rx-overrun">Scenario 5: RX Overrun</a></h3>
+<pre><code>ESP-TWAI: RX:512 (pending:42,overrun:18,discard:0,missed:0,lost:0) TX:0 (pending:0,suc:0,fail:0) Bus (arb-loss:0,err:0,state:Running)
+</code></pre>
+<p><strong>Meaning</strong>: The <strong>RX buffer is filling faster than your software can process messages</strong>.</p>
+<p><strong>Likely causes</strong>:</p>
+<ul>
+<li>Another device is flooding the bus with messages</li>
+<li>Your node’s event processing is blocking too long</li>
+<li>CAN message rate is too high for the ESP32 to keep up</li>
+</ul>
+<p><strong>This is rare for typical LCC networks.</strong></p>
+<p><strong>Action</strong>: Check if other nodes on the bus are producing excessive traffic. If not, review your application code for blocking operations in <code>loop()</code>.</p>
+<h2 id="quick-diagnostic-flowchart"><a class="header" href="#quick-diagnostic-flowchart">Quick Diagnostic Flowchart</a></h2>
+<pre class="mermaid">graph TD
+    A[Start: Fresh serial monitor output] --&gt; B{Is RX:0?}
+    B --&gt;|Yes| C[Check: CANH/CANL connected to bus?]
+    C --&gt; D[Power-Point on?]
+    D --&gt; E[Likely: Transceiver not on bus yet]
+    B --&gt;|No| F[RX messages received ✓]
+    F --&gt; G{Is TX suc &gt; 0?}
+    G --&gt;|Yes| H[Transmissions working ✓]
+    H --&gt; I{Is err count climbing fast?}
+    I --&gt;|Yes| J[Check termination, wiring]
+    I --&gt;|No| K[Everything looks healthy ✓]
+    G --&gt;|No| L{TX fail &gt; 0?}
+    L --&gt;|Yes| M[Bus not responding&lt;br/&gt;Check Buffer/Power-Point]
+    L --&gt;|No| N[No transmissions attempted yet&lt;br/&gt;Wait a moment]
+</pre>
+
+<h2 id="a-note-on-harmless-high-error-counts"><a class="header" href="#a-note-on-harmless-high-error-counts">A Note on Harmless High Error Counts</a></h2>
+<p>If your node is isolated (not connected to the RR-CirKits Buffer-USB yet), you might see high error counts. This is expected behavior:</p>
+<ul>
+<li>Your node tries to transmit</li>
+<li>No other device acknowledges the frame</li>
+<li>TWAI marks it as a bus error</li>
+<li>Error counter climbs</li>
+</ul>
+<p><strong>This is not a problem</strong>—it means your node is <em>trying</em> to communicate, and the hardware is working. Once you connect to the Buffer-USB (which will acknowledge frames), the error count will stabilize.</p>
+<p><strong>Next Chapter</strong>: <a href="../06-io/overview.html">Using the ESP32’s I/O</a></p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../01-intro/node_architecture.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../05-can/05-jmri-configuration.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../01-intro/intro_async_blink.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
-                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -223,13 +345,10 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../01-intro/node_architecture.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../05-can/05-jmri-configuration.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../01-intro/intro_async_blink.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
-                    </a>
             </nav>
 
         </div>

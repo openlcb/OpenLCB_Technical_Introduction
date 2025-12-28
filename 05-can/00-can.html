@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>CAN - OpenLCB Programmer&#x27;s Guide</title>
+        <title>Switching to CAN Hardware - OpenLCB Programmer&#x27;s Guide</title>
 
 
         <!-- Custom HTML head -->
@@ -174,46 +174,59 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="introduction-to-can"><a class="header" href="#introduction-to-can">Introduction to CAN</a></h1>
-<p>Controller Area Network (CAN) is a standard that was initially created in 1981 by Bosch, and has since been used for factory automation and communication networks in cars, to name just a few uses. Today there are hundreds of billions of devices using CAN bus in daily use.</p>
-<p>As a result, there are a number of relatively inexpensive ICs available that fully implement the CAN specifications out of the box. By using CAN controllers and drivers, you do not have to write highly time-sensitive code. Instead, you can focus on implementing support for the messages in the application layers, which is a “relatively” simple task compared with implementing a transport layer.</p>
-<h2 id="can-messages"><a class="header" href="#can-messages">CAN Messages</a></h2>
-<p>CAN transmits messages, called <em>frames</em> on the bus. Every other device (node) on the bus can (and must) listen to all of the traffic on the bus. One of the interesting and useful aspects of CAN is how it handles collisions, which is through arbitration.</p>
-<p>CAN frames, in the form used by OpenLCB, consist of a 29-bit header followed by zero or more bytes of data. This is using the <em>extended frame format</em>, also know as CAN 2.0 B.</p>
-<p><img src="../images/can_bits.jpg" alt="CAN Format"></p>
-<h3 id="arbitration"><a class="header" href="#arbitration">Arbitration</a></h3>
-<p>Arbitration is the process used to ensure that only one message is being transmitted at one time. If two nodes are trying to transmit different messages at the same time, one of those two will pass through the bus unharmed, while the other node will realize it lost the arbitration and attempt to re-transmit right after the first message is completed. This allows nearly 100% utilization of the bandwidth, because the node(s) that lost the arbitration will immediately stop, thereby not corrupting the frame that is being transmitted by the winner of the arbitration. This guarantees forward progress. In contrast, old style Ethernet (and LocoNet, btw.) uses a more complex scheme, where a collision destroys the frame, then nodes have to back off, wait a random period, then attempt to transmit again, thus wasting bandwidth.</p>
-<p>The arbitration phase relies on drivers only pulling the bus low. If two nodes attempt to put different bit values on the bus at the same time, the 0 will always win. Here is a chart that shows how this works:</p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Node 1</th><th>Node 2</th><th>Bus Value</th></tr>
-</thead>
-<tbody>
-<tr><td>0</td><td>0</td><td>0</td></tr>
-<tr><td>0</td><td>1</td><td>0</td></tr>
-<tr><td>1</td><td>0</td><td>0</td></tr>
-<tr><td>1</td><td>1</td><td>1</td></tr>
-</tbody>
-</table>
-</div>
+                        <h1 id="switching-to-can-transport-from-wifi-to-hardware"><a class="header" href="#switching-to-can-transport-from-wifi-to-hardware">Switching to CAN Transport: From WiFi to Hardware</a></h1>
+<p>This chapter transitions your OpenLCB node from WiFi/TCP transport (Chapter 3) to CAN bus transport—the standard physical layer for most OpenLCB networks. You’ll keep the same node code and configuration, but swap out the network interface for a hardware CAN connection via an external transceiver and a CAN bus interface module (such as RR-CirKits LCC Buffer-USB, or any compatible USB-to-CAN adapter).</p>
+<h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
+<p>In Chapter 3, we built a working OpenLCB node that communicated over WiFi via a TCP Hub. While powerful for learning and for embedded systems with network connectivity, WiFi-based OpenLCB is not the standard deployment model. Real OpenLCB networks rely on <strong>CAN (Controller Area Network)</strong>, a robust, deterministic protocol designed for automotive and industrial control systems.</p>
+<p>The good news: <strong>the OpenLCB node code barely changes</strong>. What does change is how the hardware communicates with the rest of your LCC network.</p>
+<h3 id="what-youll-learn"><a class="header" href="#what-youll-learn">What You’ll Learn</a></h3>
+<ul>
+<li>How CAN transceivers work and why they need external power</li>
+<li>The <code>Esp32HardwareTwai</code> class and why it’s named that (technical context for readers using other tools)</li>
+<li>Wiring an ESP32 to a CAN transceiver on a breadboard</li>
+<li>Configuring JMRI to connect via a CAN bus interface module instead of TCP</li>
+<li>Diagnosing CAN bus issues using TWAI status messages</li>
+<li>Verifying your node works the same way on CAN as it did on WiFi</li>
+</ul>
+<h3 id="chapter-structure"><a class="header" href="#chapter-structure">Chapter Structure</a></h3>
+<p>This chapter assumes you’ve completed Chapters 3 and 4 (WiFi node and configuration). You’ll need:</p>
+<ul>
+<li><strong>Hardware</strong>:
+<ul>
+<li>CAN transceiver (SN65HVD230 or MCP2551)</li>
+<li>CAN bus interface module (e.g., RR-CirKits LCC Buffer-USB, or any USB-to-CAN adapter compatible with JMRI)</li>
+<li>CAN bus power supply (e.g. RR-CirKits LCC Power-Point or equivalent)</li>
+<li>120Ω terminating resistors</li>
+<li>breadboard</li>
+<li>jumpers</li>
+</ul>
+</li>
+<li><strong>Time</strong>: ~1–2 hours depending on your familiarity with breadboard wiring</li>
+<li><strong>Existing knowledge</strong>: Node code from Chapter 3, JMRI basics from Chapter 3, configuration fundamentals from Chapter 4</li>
+</ul>
+<p>The sections guide you through:</p>
+<ol>
+<li><strong>Understanding CAN Transceivers</strong> — Open-collector design, power requirements, transceiver options</li>
+<li><strong>Hardware Wiring</strong> — Fritzing diagram and step-by-step breadboard setup</li>
+<li><strong>Code Changes</strong> — Minimal modifications to switch from WiFi to CAN</li>
+<li><strong>The Esp32HardwareTwai Class</strong> — Why it’s named that, and what’s coming in future Arduino cores</li>
+<li><strong>JMRI Reconfiguration</strong> — Disabling TCP, enabling RR-CirKits connection</li>
+<li><strong>TWAI Bus Diagnostics</strong> — Reading and interpreting status messages for troubleshooting</li>
+<li><strong>Verification</strong> — Confirming your node works the same way on CAN as it did on WiFi</li>
+</ol>
 <blockquote>
-<p>Dominant and recessive are the normal terms used because a ‘1’ bit (recessive) does NOT drive the bus. It allows the terminators to ‘drive’ the bus by pulling the two bus lines to a common voltage. (2.5V) On the other hand a ‘0’ bit (dominant) drives the bus to both high and low. (CANH goes to 5V and CANL goes to 0V) The bus drivers can always over power the terminators, and that is how the zero bit always dominates over the one bit. It also explains why at least some termination is required. The termination values are also chosen to suppress cable reflections, but that is actually only an issue on long lines. Also note that this explains the complexity of our RR-CirKits terminators. You can attach a logic analyzer to one of our terminators because it creates a logic level image of the bus (to drive the activity LED). You cannot connect a logic analyzer directly to the CAN bus, because it does not contain a logic level signal on either line.</p>
-<p>Normally two nodes will happily send identical data until one node or the other transmits a zero bit during the other node’s one bit. At that point the recessive node notices that it transmitted a one bit,but received a zero bit back from the bus. This tells the recessive node that it is in conflict and must immediately stop transmitting. No other nodes can observe that this happened. This requirement for an immediate (within a fraction of the bit time) response is what limits the CAN bus segment lengths.</p>
-<p>– Dick Bronson, RR Cirkits</p>
+<p><strong>Key Insight</strong>: Your OpenLCB node is <strong>transport-agnostic</strong>. The application logic (producing events every 2 seconds) is completely separate from the physical layer (WiFi vs. CAN). This is the power of good architecture—change the transport, keep the application.</p>
 </blockquote>
-<p>Arbitration uses the 29-bit header value as a priority value to gain access to the bus, where lower values have higher priority. This mechanism provides very high utilization of the bus’ bandwidth because one node will always win a collision and keep transmitting. In contrast, Ethernet uses a more complex scheme where nodes have to back off, wait a random period, then attempt to transmit again, thus wasting bandwidth.</p>
-<p>For arbitration to work sucessfully, each message sent by a node needs to use a unique 29-bit ID. The details for this are handled by the OpenLCB specifications, and are different for different types of messages.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../01-intro/node_architecture.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../04-configuration/adding-interval-setting.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../01-intro/intro_async_blink.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../05-can/01-can-transceivers.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -223,11 +236,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../01-intro/node_architecture.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../04-configuration/adding-interval-setting.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../01-intro/intro_async_blink.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../05-can/01-can-transceivers.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>

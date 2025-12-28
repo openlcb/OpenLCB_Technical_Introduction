@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>CAN - OpenLCB Programmer&#x27;s Guide</title>
+        <title>The Esp32HardwareTwai Class: Arduino Cores and the Name Change - OpenLCB Programmer&#x27;s Guide</title>
 
 
         <!-- Custom HTML head -->
@@ -174,46 +174,59 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="introduction-to-can"><a class="header" href="#introduction-to-can">Introduction to CAN</a></h1>
-<p>Controller Area Network (CAN) is a standard that was initially created in 1981 by Bosch, and has since been used for factory automation and communication networks in cars, to name just a few uses. Today there are hundreds of billions of devices using CAN bus in daily use.</p>
-<p>As a result, there are a number of relatively inexpensive ICs available that fully implement the CAN specifications out of the box. By using CAN controllers and drivers, you do not have to write highly time-sensitive code. Instead, you can focus on implementing support for the messages in the application layers, which is a “relatively” simple task compared with implementing a transport layer.</p>
-<h2 id="can-messages"><a class="header" href="#can-messages">CAN Messages</a></h2>
-<p>CAN transmits messages, called <em>frames</em> on the bus. Every other device (node) on the bus can (and must) listen to all of the traffic on the bus. One of the interesting and useful aspects of CAN is how it handles collisions, which is through arbitration.</p>
-<p>CAN frames, in the form used by OpenLCB, consist of a 29-bit header followed by zero or more bytes of data. This is using the <em>extended frame format</em>, also know as CAN 2.0 B.</p>
-<p><img src="../images/can_bits.jpg" alt="CAN Format"></p>
-<h3 id="arbitration"><a class="header" href="#arbitration">Arbitration</a></h3>
-<p>Arbitration is the process used to ensure that only one message is being transmitted at one time. If two nodes are trying to transmit different messages at the same time, one of those two will pass through the bus unharmed, while the other node will realize it lost the arbitration and attempt to re-transmit right after the first message is completed. This allows nearly 100% utilization of the bandwidth, because the node(s) that lost the arbitration will immediately stop, thereby not corrupting the frame that is being transmitted by the winner of the arbitration. This guarantees forward progress. In contrast, old style Ethernet (and LocoNet, btw.) uses a more complex scheme, where a collision destroys the frame, then nodes have to back off, wait a random period, then attempt to transmit again, thus wasting bandwidth.</p>
-<p>The arbitration phase relies on drivers only pulling the bus low. If two nodes attempt to put different bit values on the bus at the same time, the 0 will always win. Here is a chart that shows how this works:</p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Node 1</th><th>Node 2</th><th>Bus Value</th></tr>
-</thead>
-<tbody>
-<tr><td>0</td><td>0</td><td>0</td></tr>
-<tr><td>0</td><td>1</td><td>0</td></tr>
-<tr><td>1</td><td>0</td><td>0</td></tr>
-<tr><td>1</td><td>1</td><td>1</td></tr>
-</tbody>
-</table>
-</div>
+                        <h1 id="the-esp32hardwaretwai-class-arduino-cores-and-the-name-change"><a class="header" href="#the-esp32hardwaretwai-class-arduino-cores-and-the-name-change">The Esp32HardwareTwai Class: Arduino Cores and the Name Change</a></h1>
+<p>When you look at different OpenMRNLite examples online, you might see both <code>Esp32HardwareTwai</code> and <code>Esp32Can</code> used for CAN on the ESP32. What’s the difference, and which one should you use? The answer depends on your <strong>Arduino core version and development environment</strong>.</p>
+<p><strong>Note</strong>: This chapter uses <strong>PlatformIO with Arduino Core v2.x</strong>. As mentioned in Chapter 2, at the time of writing (December 2025), newer Arduino core versions are not yet available in PlatformIO. The information below about Arduino Core v3 is primarily for readers using the <strong>Arduino IDE</strong> or <strong>Arduino Maker Workshop</strong> (which use the Arduino CLI and can access newer core versions).</p>
+<h2 id="why-the-class-name-changed"><a class="header" href="#why-the-class-name-changed">Why the Class Name Changed</a></h2>
+<h3 id="the-short-answer"><a class="header" href="#the-short-answer">The Short Answer</a></h3>
+<p>Espressif (the company that makes the ESP32) changed the underlying <strong>driver naming</strong> between ESP-IDF v4.x and v5.x:</p>
+<ul>
+<li><strong>ESP-IDF v4.x</strong> (used by Arduino Core v2): Driver was called <strong>TWAI</strong> (Two-Wire Automotive Interface)</li>
+<li><strong>ESP-IDF v5.x</strong> (used by Arduino Core v3): Driver is now called <strong>CAN</strong></li>
+</ul>
+<p>OpenMRNLite updated its class names to match the Arduino core version:</p>
+<ul>
+<li><strong>OpenMRNLite 2.0.x - 2.1.x</strong> (Arduino Core v2) → <code>Esp32HardwareTwai</code></li>
+<li><strong>OpenMRNLite 2.2.0+</strong> (released August 2025, Arduino Core v3) → <code>Esp32Can</code></li>
+</ul>
+<p><strong>Important</strong>: OpenMRNLite v2.2.0 marked a significant shift—the v2.x line switched from Arduino Core v2 to Arduino Core v3. If you’re using an older version of OpenMRNLite (2.1.x or earlier), use <code>Esp32HardwareTwai</code>. If you’re on v2.2.0 or later, use <code>Esp32Can</code>.</p>
+<p>It’s the same hardware, same functionality, but the class name and Arduino core changed.</p>
+<h3 id="why-did-espressif-rename-it"><a class="header" href="#why-did-espressif-rename-it">Why Did Espressif Rename It?</a></h3>
+<p>Espressif originally named the ESP32’s CAN-like peripheral <strong>TWAI</strong> (Two-Wire Automotive Interface) because the hardware does not implement the <em>full</em> CAN 2.0 specification. The ESP32’s controller is a simplified CAN implementation with reduced filtering and feature support—it’s “CAN-compatible” but not fully CAN-compliant. Espressif chose the name TWAI to avoid implying full CAN compliance and to give themselves flexibility for future chips with different CAN-like peripherals.</p>
+<p>As developers overwhelmingly referred to the peripheral as “CAN” and because it works reliably with standard CAN transceivers and protocols, OpenMRNLite (and other libraries) later adopted the more familiar <code>Esp32Can</code> naming. The hardware itself never changed—only the naming conventions evolved to match developer expectations.</p>
+<h2 id="what-youre-using-today"><a class="header" href="#what-youre-using-today">What You’re Using Today</a></h2>
+<p>This chapter uses <strong>Arduino Core v2.x</strong> (as defined in your <code>platformio.ini</code>):</p>
+<pre><code class="language-ini">platform = espressif32@6.12.0  # This version uses Arduino Core v2
+lib_deps = openmrn/OpenMRNLite@2.0.0
+</code></pre>
+<p>This means you use:</p>
+<pre><code class="language-cpp">Esp32HardwareTwai can_driver(CAN_RX_PIN, CAN_TX_PIN);
+can_driver.hw_init();
+openmrn.add_can_port_select("/dev/twai/twai0");
+</code></pre>
+<h2 id="if-youre-using-arduino-ide-or-arduino-maker-workshop"><a class="header" href="#if-youre-using-arduino-ide-or-arduino-maker-workshop">If You’re Using Arduino IDE or Arduino Maker Workshop</a></h2>
+<p>If you’re using Arduino Core v3 through the Arduino IDE or Arduino Maker Workshop (instead of PlatformIO), the code changes are straightforward:</p>
+<pre><code class="language-cpp">// Arduino Core v3 (Arduino IDE / Maker Workshop only)
+Esp32Can can_driver(CAN_RX_PIN, CAN_TX_PIN);  // Note: "Esp32Can", not "Esp32HardwareTwai"
+can_driver.hw_init();
+openmrn.add_can_port(&amp;can_driver);
+</code></pre>
+<p>You’d also need to upgrade OpenMRNLite to v2.2.0 or later. The hardware and functionality remain identical—only the class name and library version change.</p>
 <blockquote>
-<p>Dominant and recessive are the normal terms used because a ‘1’ bit (recessive) does NOT drive the bus. It allows the terminators to ‘drive’ the bus by pulling the two bus lines to a common voltage. (2.5V) On the other hand a ‘0’ bit (dominant) drives the bus to both high and low. (CANH goes to 5V and CANL goes to 0V) The bus drivers can always over power the terminators, and that is how the zero bit always dominates over the one bit. It also explains why at least some termination is required. The termination values are also chosen to suppress cable reflections, but that is actually only an issue on long lines. Also note that this explains the complexity of our RR-CirKits terminators. You can attach a logic analyzer to one of our terminators because it creates a logic level image of the bus (to drive the activity LED). You cannot connect a logic analyzer directly to the CAN bus, because it does not contain a logic level signal on either line.</p>
-<p>Normally two nodes will happily send identical data until one node or the other transmits a zero bit during the other node’s one bit. At that point the recessive node notices that it transmitted a one bit,but received a zero bit back from the bus. This tells the recessive node that it is in conflict and must immediately stop transmitting. No other nodes can observe that this happened. This requirement for an immediate (within a fraction of the bit time) response is what limits the CAN bus segment lengths.</p>
-<p>– Dick Bronson, RR Cirkits</p>
+<p><strong>Key Takeaway</strong>: For <strong>PlatformIO users</strong> (this guide), use <code>Esp32HardwareTwai</code> with Arduino Core v2.x. We won’t be upgrading in future chapters—PlatformIO v6.12.0 is stable and well-supported.</p>
+<p>For <strong>Arduino IDE users</strong> considering an upgrade: The changes are straightforward (class name, device path, library version), but you should only upgrade if you have a specific reason (newer board support, bug fixes, etc.). The current Arduino Core v2.x works reliably for OpenLCB CAN nodes.</p>
 </blockquote>
-<p>Arbitration uses the 29-bit header value as a priority value to gain access to the bus, where lower values have higher priority. This mechanism provides very high utilization of the bus’ bandwidth because one node will always win a collision and keep transmitting. In contrast, Ethernet uses a more complex scheme where nodes have to back off, wait a random period, then attempt to transmit again, thus wasting bandwidth.</p>
-<p>For arbitration to work sucessfully, each message sent by a node needs to use a unique 29-bit ID. The details for this are handled by the OpenLCB specifications, and are different for different types of messages.</p>
+<p><strong>Next</strong>: Configure JMRI to connect via CAN instead of WiFi.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../01-intro/node_architecture.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../05-can/03-code-changes.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../01-intro/intro_async_blink.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../05-can/05-jmri-configuration.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -223,11 +236,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../01-intro/node_architecture.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../05-can/03-code-changes.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../01-intro/intro_async_blink.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../05-can/05-jmri-configuration.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>

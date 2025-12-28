@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>CAN - OpenLCB Programmer&#x27;s Guide</title>
+        <title>Configuring JMRI for CAN: RR-CirKits LCC Buffer-USB - OpenLCB Programmer&#x27;s Guide</title>
 
 
         <!-- Custom HTML head -->
@@ -174,46 +174,146 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="introduction-to-can"><a class="header" href="#introduction-to-can">Introduction to CAN</a></h1>
-<p>Controller Area Network (CAN) is a standard that was initially created in 1981 by Bosch, and has since been used for factory automation and communication networks in cars, to name just a few uses. Today there are hundreds of billions of devices using CAN bus in daily use.</p>
-<p>As a result, there are a number of relatively inexpensive ICs available that fully implement the CAN specifications out of the box. By using CAN controllers and drivers, you do not have to write highly time-sensitive code. Instead, you can focus on implementing support for the messages in the application layers, which is a “relatively” simple task compared with implementing a transport layer.</p>
-<h2 id="can-messages"><a class="header" href="#can-messages">CAN Messages</a></h2>
-<p>CAN transmits messages, called <em>frames</em> on the bus. Every other device (node) on the bus can (and must) listen to all of the traffic on the bus. One of the interesting and useful aspects of CAN is how it handles collisions, which is through arbitration.</p>
-<p>CAN frames, in the form used by OpenLCB, consist of a 29-bit header followed by zero or more bytes of data. This is using the <em>extended frame format</em>, also know as CAN 2.0 B.</p>
-<p><img src="../images/can_bits.jpg" alt="CAN Format"></p>
-<h3 id="arbitration"><a class="header" href="#arbitration">Arbitration</a></h3>
-<p>Arbitration is the process used to ensure that only one message is being transmitted at one time. If two nodes are trying to transmit different messages at the same time, one of those two will pass through the bus unharmed, while the other node will realize it lost the arbitration and attempt to re-transmit right after the first message is completed. This allows nearly 100% utilization of the bandwidth, because the node(s) that lost the arbitration will immediately stop, thereby not corrupting the frame that is being transmitted by the winner of the arbitration. This guarantees forward progress. In contrast, old style Ethernet (and LocoNet, btw.) uses a more complex scheme, where a collision destroys the frame, then nodes have to back off, wait a random period, then attempt to transmit again, thus wasting bandwidth.</p>
-<p>The arbitration phase relies on drivers only pulling the bus low. If two nodes attempt to put different bit values on the bus at the same time, the 0 will always win. Here is a chart that shows how this works:</p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Node 1</th><th>Node 2</th><th>Bus Value</th></tr>
-</thead>
-<tbody>
-<tr><td>0</td><td>0</td><td>0</td></tr>
-<tr><td>0</td><td>1</td><td>0</td></tr>
-<tr><td>1</td><td>0</td><td>0</td></tr>
-<tr><td>1</td><td>1</td><td>1</td></tr>
-</tbody>
-</table>
-</div>
-<blockquote>
-<p>Dominant and recessive are the normal terms used because a ‘1’ bit (recessive) does NOT drive the bus. It allows the terminators to ‘drive’ the bus by pulling the two bus lines to a common voltage. (2.5V) On the other hand a ‘0’ bit (dominant) drives the bus to both high and low. (CANH goes to 5V and CANL goes to 0V) The bus drivers can always over power the terminators, and that is how the zero bit always dominates over the one bit. It also explains why at least some termination is required. The termination values are also chosen to suppress cable reflections, but that is actually only an issue on long lines. Also note that this explains the complexity of our RR-CirKits terminators. You can attach a logic analyzer to one of our terminators because it creates a logic level image of the bus (to drive the activity LED). You cannot connect a logic analyzer directly to the CAN bus, because it does not contain a logic level signal on either line.</p>
-<p>Normally two nodes will happily send identical data until one node or the other transmits a zero bit during the other node’s one bit. At that point the recessive node notices that it transmitted a one bit,but received a zero bit back from the bus. This tells the recessive node that it is in conflict and must immediately stop transmitting. No other nodes can observe that this happened. This requirement for an immediate (within a fraction of the bit time) response is what limits the CAN bus segment lengths.</p>
-<p>– Dick Bronson, RR Cirkits</p>
-</blockquote>
-<p>Arbitration uses the 29-bit header value as a priority value to gain access to the bus, where lower values have higher priority. This mechanism provides very high utilization of the bus’ bandwidth because one node will always win a collision and keep transmitting. In contrast, Ethernet uses a more complex scheme where nodes have to back off, wait a random period, then attempt to transmit again, thus wasting bandwidth.</p>
-<p>For arbitration to work sucessfully, each message sent by a node needs to use a unique 29-bit ID. The details for this are handled by the OpenLCB specifications, and are different for different types of messages.</p>
+                        <h1 id="configuring-jmri-for-can-using-a-can-bus-interface-module"><a class="header" href="#configuring-jmri-for-can-using-a-can-bus-interface-module">Configuring JMRI for CAN: Using a CAN Bus Interface Module</a></h1>
+<p>In Chapter 3, JMRI connected to your ESP32 node via a TCP Hub on port 12021 (WiFi). Now that your node is on a CAN bus, JMRI needs a different path to reach it: through a <strong>CAN bus interface module</strong> (such as RR-CirKits LCC Buffer-USB, PEAK PCAN-USB, or similar) connected to the same CAN bus.</p>
+<h2 id="hardware-setup"><a class="header" href="#hardware-setup">Hardware Setup</a></h2>
+<p>Before configuring JMRI, make sure your physical setup is in place and looks something like the following:</p>
+<pre class="mermaid">graph LR
+    T["120Ω Terminator"] --&gt; A["RR-CirKits&lt;br/&gt; LCC Power-Point"]
+    A --&gt; B["RR-CirKits&lt;br/&gt; LCC Buffer-USB"]
+    B --&gt; C["Your ESP32 Node&lt;br/&gt;(120Ω terminator added)"]
+    B --&gt; D["LccPro/JMRI&lt;br/&gt;(USB)"]
+</pre>
+
+<p>The interface module acts as a “gateway” that translates between the CAN bus and JMRI’s protocol. Examples include RR-CirKits LCC Buffer-USB, PEAK PCAN-USB, or any other CAN interface compatible with JMRI. Note that 120Ω terminators are required at the physical ends of the CAN bus.</p>
+<h2 id="disabling-the-wifi-connection-from-chapter-3"><a class="header" href="#disabling-the-wifi-connection-from-chapter-3">Disabling the WiFi Connection from Chapter 3</a></h2>
+<p>If you still have your Chapter 3 WiFi-based node running, you’ll want to disable or remove that JMRI connection:</p>
+<h3 id="in-jmri"><a class="header" href="#in-jmri">In JMRI</a></h3>
+<ol>
+<li><strong>Preferences</strong> → <strong>Connections</strong></li>
+<li>Find the connection entry for your “ESP32 LCC” connection from Chapter 3</li>
+<li>Check <strong>Disable this Connection</strong> to disable it (or delete it if you’re not going back)</li>
+<li>Click <strong>Save</strong></li>
+</ol>
+<p>This prevents JMRI from trying to connect to the old WiFi-based node, which won’t be responding anymore.</p>
+<h2 id="adding-the-rr-cirkits-lcc-buffer-connection"><a class="header" href="#adding-the-rr-cirkits-lcc-buffer-connection">Adding the RR-CirKits LCC Buffer Connection</a></h2>
+<h3 id="step-1-physical-connection"><a class="header" href="#step-1-physical-connection">Step 1: Physical Connection</a></h3>
+<ol>
+<li>Connect your <strong>LCC Buffer-USB</strong> to your computer via USB</li>
+<li>In <strong>Device Manager</strong> (Windows) or <strong>System Information</strong> (Mac/Linux), note which <strong>COM port</strong> or <strong>serial device</strong> the Buffer appears on
+<ul>
+<li>Windows: <code>COM3</code>, <code>COM4</code>, etc.</li>
+<li>Linux: <code>/dev/ttyUSB0</code>, <code>/dev/ttyUSB1</code>, etc.</li>
+<li>Mac: <code>/dev/tty.usbserial-*</code></li>
+</ul>
+</li>
+</ol>
+<h3 id="step-2-create-a-new-jmri-connection"><a class="header" href="#step-2-create-a-new-jmri-connection">Step 2: Create a New JMRI Connection</a></h3>
+<ol>
+<li><strong>Edit</strong> → <strong>Preferences</strong> in LccPro</li>
+<li>Click <strong>Connections</strong></li>
+<li>Click the <strong>+</strong> sign to the right to add a connection</li>
+<li><strong>System manufacturer</strong>: Select <strong>“LCC”</strong></li>
+<li><strong>System connection</strong>: Select <strong>“CAN via LCC Buffer-USB”</strong> (or the appropriate device name for your interface)</li>
+<li><strong>Serial port</strong>: Select the COM port where your interface appeared (from Step 1)</li>
+</ol>
+<p><img src="images/LCC-CAN-Connection.png" alt="LCC CAN Connection Setup"></p>
+<h3 id="step-3-save-and-restart"><a class="header" href="#step-3-save-and-restart">Step 3: Save and Restart</a></h3>
+<ol>
+<li>Click <strong>Save</strong></li>
+<li>LccPro will re-start</li>
+</ol>
+<h2 id="verifying-the-connection"><a class="header" href="#verifying-the-connection">Verifying the Connection</a></h2>
+<p>Once configured and JMRI restarts with LccPro, you should see the node list appear automatically:</p>
+<ol>
+<li>
+<p><strong>Look for your node</strong>: You should see your ESP32 node with ID <code>05.02.01.02.02.00</code> listed in the main JMRI window</p>
+</li>
+<li>
+<p><strong>Check traffic</strong>: Watch for activity in the Traffic Monitor window</p>
+<ul>
+<li>You should see LCC messages being received from your node</li>
+<li>Event traffic should be visible</li>
+</ul>
+</li>
+<li>
+<p><strong>Click on your node</strong> in the node list and its information will appear in the panel below:</p>
+<ul>
+<li>Node ID</li>
+<li>Manufacturer info (OpenMRN, model async_blink, etc.)</li>
+<li>SNIP data (name and description you set in configuration)</li>
+</ul>
+</li>
+</ol>
+<p>You can also monitor the serial output from your ESP32 (as shown in Chapter 3) to observe the periodic TWAI status messages:</p>
+<pre><code>ESP-TWAI: RX:0 (pending:0,overrun:0,discard:0,missed:0,lost:0) TX:16 (pending:16,suc:0,fail:16) Bus (arb-loss:0,err:14642,state:Running)
+</code></pre>
+<p>These messages show CAN bus health and activity. We’ll cover their interpretation in detail in the next section.</p>
+<h2 id="network-architecture-comparison"><a class="header" href="#network-architecture-comparison">Network Architecture Comparison</a></h2>
+<p>You’ve now successfully switched from WiFi to CAN transport. The node looks identical to the WiFi version from Chapter 3—same Node ID (<code>050201020200</code>), same SNIP data, same event IDs (<code>000000</code> and <code>000001</code>)—because the application code hasn’t changed. Only the physical transport layer has changed from TCP to CAN.</p>
+<h3 id="chapter-3-wifitcp"><a class="header" href="#chapter-3-wifitcp">Chapter 3: WiFi/TCP</a></h3>
+<pre class="mermaid">graph LR
+    A["ESP32&lt;br/&gt;(WiFi)"] --&gt; B["LccPro&lt;br/&gt;(TCP Hub)"]
+</pre>
+
+<p><strong>Pros</strong>: Simple, single connection<br><strong>Cons</strong>: Limited to one node per TCP Hub; WiFi reliability issues in noisy environments</p>
+<h3 id="chapter-5-can"><a class="header" href="#chapter-5-can">Chapter 5: CAN</a></h3>
+<pre class="mermaid">graph LR
+    A["ESP32 Node"] --&gt; B["CAN Bus&lt;br/&gt;(CANH, CANL)"]
+    B --&gt; C["LCC Buffer-USB"]
+    C --&gt; D["LccPro"]
+</pre>
+
+<p><strong>Pros</strong>: Multiple nodes on same bus; deterministic protocol; standard for OpenLCB<br><strong>Cons</strong>: Requires CAN transceiver hardware and proper termination</p>
+<h2 id="troubleshooting-connection-issues"><a class="header" href="#troubleshooting-connection-issues">Troubleshooting Connection Issues</a></h2>
+<h3 id="no-nodes-appear"><a class="header" href="#no-nodes-appear">No Nodes Appear</a></h3>
+<ul>
+<li><strong>Check USB cable</strong>: Make sure it’s properly connected and that you’re using a data cable (not power-only)</li>
+<li><strong>Check LccPro connection</strong>: Verify the LCC connection is listed in <strong>Edit → Preferences… → Connections</strong></li>
+<li><strong>Check buffer activity</strong>: Look at the activity lights on the LCC Buffer-USB to see if there is LCC activity</li>
+<li><strong>Check CAN bus</strong>: Verify your ESP32 node is powered and running (check serial monitor output)</li>
+<li><strong>Reset the ESP32</strong>: If the network activity LEDs on the LCC Buffer are not flashing, push the reset button on your ESP32 to restart the node and reinitialize the CAN bus</li>
+</ul>
+<h3 id="node-appears-but-no-properties"><a class="header" href="#node-appears-but-no-properties">Node Appears but No Properties</a></h3>
+<ul>
+<li>The Buffer may not be seeing the node on the CAN bus yet</li>
+<li>Check your breadboard wiring: GPIO4/GPIO5 connected correctly? Power and ground?</li>
+<li>Verify CANH/CANL are properly connected between your node and the Buffer</li>
+<li>Try clicking on the node to refresh its information in the details panel</li>
+</ul>
+<h3 id="node-disappears-when-you-upload-new-code"><a class="header" href="#node-disappears-when-you-upload-new-code">Node Disappears When You Upload New Code</a></h3>
+<p>This is normal—uploading resets the ESP32, which takes a moment to boot and re-initialize. Wait 5–10 seconds and the node should re-appear in LccPro. You can also click the <strong>Refresh</strong> button in LccPro to refresh the node list immediately.</p>
+<h2 id="verification-checklist"><a class="header" href="#verification-checklist">Verification Checklist</a></h2>
+<p>If something doesn’t match the above:</p>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Node doesn’t appear in JMRI</strong>: Check Buffer-USB connection and JMRI configuration in this section</li>
+<li><input disabled="" type="checkbox"> <strong>High error count persists</strong>: Check breadboard GPIO/power connections and CAN bus termination (Section 6)</li>
+<li><input disabled="" type="checkbox"> <strong>Events not producing</strong>: Check serial monitor output; node should print “Produced event” every 2 seconds</li>
+<li><input disabled="" type="checkbox"> <strong>SNIP data missing or wrong</strong>: Check Chapter 4 configuration; factory reset if needed</li>
+<li><input disabled="" type="checkbox"> <strong>Configuration changes not persisting</strong>: Same as above; verify SPIFFS is working</li>
+</ul>
+<h2 id="summary"><a class="header" href="#summary">Summary</a></h2>
+<p>Your CAN-based OpenLCB node is now complete and verified. You’ve successfully:</p>
+<ol>
+<li>✅ Wired a CAN transceiver to your ESP32</li>
+<li>✅ Modified the code to use TWAI instead of WiFi</li>
+<li>✅ Configured JMRI to connect via RR-CirKits buffer</li>
+<li>✅ Verified event production on the CAN bus</li>
+<li>✅ Confirmed your node appears in JMRI with correct SNIP data</li>
+</ol>
+<p><strong>The hard part was the hardware wiring. The software transformation from WiFi to CAN was just a few lines of code.</strong> This demonstrates the power of good software architecture—your OpenLCB application is transport-independent, allowing you to swap physical layers without changing the business logic.</p>
+<p><strong>Next</strong>: The following section covers TWAI bus diagnostics and interpreting the status messages you see in the serial monitor. It’s optional—if you’re confident your CAN bus is working, feel free to skip ahead to the next chapter on using the ESP32’s I/O pins.</p>
+<p><strong>Next Chapter</strong>: <a href="../06-io/overview.html">Using the ESP32’s I/O</a></p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../01-intro/node_architecture.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../05-can/04-esp32-class-naming.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../01-intro/intro_async_blink.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../05-can/06-twai-diagnostics.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -223,11 +323,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../01-intro/node_architecture.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../05-can/04-esp32-class-naming.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../01-intro/intro_async_blink.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../05-can/06-twai-diagnostics.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>

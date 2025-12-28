@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>CAN - OpenLCB Programmer&#x27;s Guide</title>
+        <title>Understanding CAN Transceivers - OpenLCB Programmer&#x27;s Guide</title>
 
 
         <!-- Custom HTML head -->
@@ -174,46 +174,81 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="introduction-to-can"><a class="header" href="#introduction-to-can">Introduction to CAN</a></h1>
-<p>Controller Area Network (CAN) is a standard that was initially created in 1981 by Bosch, and has since been used for factory automation and communication networks in cars, to name just a few uses. Today there are hundreds of billions of devices using CAN bus in daily use.</p>
-<p>As a result, there are a number of relatively inexpensive ICs available that fully implement the CAN specifications out of the box. By using CAN controllers and drivers, you do not have to write highly time-sensitive code. Instead, you can focus on implementing support for the messages in the application layers, which is a “relatively” simple task compared with implementing a transport layer.</p>
-<h2 id="can-messages"><a class="header" href="#can-messages">CAN Messages</a></h2>
-<p>CAN transmits messages, called <em>frames</em> on the bus. Every other device (node) on the bus can (and must) listen to all of the traffic on the bus. One of the interesting and useful aspects of CAN is how it handles collisions, which is through arbitration.</p>
-<p>CAN frames, in the form used by OpenLCB, consist of a 29-bit header followed by zero or more bytes of data. This is using the <em>extended frame format</em>, also know as CAN 2.0 B.</p>
-<p><img src="../images/can_bits.jpg" alt="CAN Format"></p>
-<h3 id="arbitration"><a class="header" href="#arbitration">Arbitration</a></h3>
-<p>Arbitration is the process used to ensure that only one message is being transmitted at one time. If two nodes are trying to transmit different messages at the same time, one of those two will pass through the bus unharmed, while the other node will realize it lost the arbitration and attempt to re-transmit right after the first message is completed. This allows nearly 100% utilization of the bandwidth, because the node(s) that lost the arbitration will immediately stop, thereby not corrupting the frame that is being transmitted by the winner of the arbitration. This guarantees forward progress. In contrast, old style Ethernet (and LocoNet, btw.) uses a more complex scheme, where a collision destroys the frame, then nodes have to back off, wait a random period, then attempt to transmit again, thus wasting bandwidth.</p>
-<p>The arbitration phase relies on drivers only pulling the bus low. If two nodes attempt to put different bit values on the bus at the same time, the 0 will always win. Here is a chart that shows how this works:</p>
+                        <h1 id="understanding-can-transceivers"><a class="header" href="#understanding-can-transceivers">Understanding CAN Transceivers</a></h1>
+<p>A <strong>CAN transceiver</strong> is a small IC (integrated circuit) that bridges the gap between your microcontroller’s CAN controller and the physical CAN bus. It’s essential—you can’t connect an ESP32 directly to a CAN bus; you need a transceiver in between.</p>
+<h2 id="what-a-can-transceiver-does"><a class="header" href="#what-a-can-transceiver-does">What a CAN Transceiver Does</a></h2>
+<p>Your ESP32 has a built-in <strong>CAN controller</strong> (called <strong>TWAI</strong> on ESP32—that’s Espressif’s acronym for “Two-Wire Automotive Interface,” which is their legal-safe name for CAN). This controller handles the CAN protocol logic. But the controller communicates with logic-level signals (0V/3.3V). The CAN <strong>bus</strong> itself uses <strong>differential signaling</strong> on two wires—CANH (CAN high) and CANL (CAN low)—with voltage levels established by the bus biasing and termination network.</p>
+<p>The transceiver’s job: <strong>convert between logic levels and bus levels</strong>.</p>
+<pre class="mermaid">graph TD
+    A["ESP32 TWAI Controller&lt;br/&gt;(Logic Level)"] --&gt;|3.3V Signals| B["CAN Transceiver"]
+    B --&gt;|Differential Signals| C["CAN Bus&lt;br/&gt;(CANH, CANL)&lt;br/&gt;(set by bus biasing)"]
+</pre>
+
+<h2 id="dominant-and-recessive-how-can-works"><a class="header" href="#dominant-and-recessive-how-can-works">Dominant and Recessive: How CAN Works</a></h2>
+<blockquote>
+<p><strong>Theory background</strong>: For a thorough explanation of CAN’s arbitration scheme and why dominant/recessive bits work, see Chapter 1’s Introduction to CAN. Here we’ll focus on what you need to understand to build your ESP32 CAN node.</p>
+</blockquote>
+<h3 id="how-can-encodes-bits"><a class="header" href="#how-can-encodes-bits">How CAN Encodes Bits</a></h3>
+<p>CAN doesn’t use “high = 1, low = 0” on a single wire like normal logic. Instead, it uses <strong>two wires</strong> (CANH and CANL) and encodes bits as a <strong>difference between them</strong>:</p>
+<ul>
+<li>A <strong>dominant bit</strong> represents a logic <strong>0</strong></li>
+<li>A <strong>recessive bit</strong> represents a logic <strong>1</strong></li>
+</ul>
+<p><strong>Key concept</strong>: The CAN bus’s idle (recessive) voltage is set by external infrastructure—in LCC, by a device like the RR-CirKits LCC Power-Point—not by your transceiver. Your transceiver only <em>nudges</em> the bus around that idle level.</p>
+<h4 id="recessive-idle-state"><a class="header" href="#recessive-idle-state">Recessive (Idle) State</a></h4>
+<p>In the <strong>recessive (idle) state</strong>, no node is actively driving the bus. Both CANH and CANL sit at nearly the <strong>same voltage</strong>, defined by the bias network in your LCC infrastructure. The exact idle voltage depends on what device provides the bias.</p>
+<h4 id="dominant-transmission-state"><a class="header" href="#dominant-transmission-state">Dominant (Transmission) State</a></h4>
+<p>When any node wants to send a <strong>dominant 0 bit</strong>, its CAN transceiver briefly <strong>creates a small voltage difference</strong> between the two wires:</p>
+<ul>
+<li><strong>CANH is nudged up</strong> above the idle level</li>
+<li><strong>CANL is nudged down</strong> below the idle level</li>
+</ul>
+<p><strong>Example: From my test setup</strong> (with a transceiver connected to an LCC Power-Point and RR-CirKits infrastructure), measurements showed:</p>
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>Node 1</th><th>Node 2</th><th>Bus Value</th></tr>
+<tr><th>State</th><th>CANH</th><th>CANL</th><th>Differential</th></tr>
 </thead>
 <tbody>
-<tr><td>0</td><td>0</td><td>0</td></tr>
-<tr><td>0</td><td>1</td><td>0</td></tr>
-<tr><td>1</td><td>0</td><td>0</td></tr>
-<tr><td>1</td><td>1</td><td>1</td></tr>
+<tr><td><strong>Recessive (1)</strong></td><td>~2.25V</td><td>~2.12V</td><td>~0.13V</td></tr>
+<tr><td><strong>Dominant (0)</strong></td><td>~1.68V</td><td>~1.08V</td><td>~0.60V</td></tr>
 </tbody>
 </table>
 </div>
-<blockquote>
-<p>Dominant and recessive are the normal terms used because a ‘1’ bit (recessive) does NOT drive the bus. It allows the terminators to ‘drive’ the bus by pulling the two bus lines to a common voltage. (2.5V) On the other hand a ‘0’ bit (dominant) drives the bus to both high and low. (CANH goes to 5V and CANL goes to 0V) The bus drivers can always over power the terminators, and that is how the zero bit always dominates over the one bit. It also explains why at least some termination is required. The termination values are also chosen to suppress cable reflections, but that is actually only an issue on long lines. Also note that this explains the complexity of our RR-CirKits terminators. You can attach a logic analyzer to one of our terminators because it creates a logic level image of the bus (to drive the activity LED). You cannot connect a logic analyzer directly to the CAN bus, because it does not contain a logic level signal on either line.</p>
-<p>Normally two nodes will happily send identical data until one node or the other transmits a zero bit during the other node’s one bit. At that point the recessive node notices that it transmitted a one bit,but received a zero bit back from the bus. This tells the recessive node that it is in conflict and must immediately stop transmitting. No other nodes can observe that this happened. This requirement for an immediate (within a fraction of the bit time) response is what limits the CAN bus segment lengths.</p>
-<p>– Dick Bronson, RR Cirkits</p>
-</blockquote>
-<p>Arbitration uses the 29-bit header value as a priority value to gain access to the bus, where lower values have higher priority. This mechanism provides very high utilization of the bus’ bandwidth because one node will always win a collision and keep transmitting. In contrast, Ethernet uses a more complex scheme where nodes have to back off, wait a random period, then attempt to transmit again, thus wasting bandwidth.</p>
-<p>For arbitration to work sucessfully, each message sent by a node needs to use a unique 29-bit ID. The details for this are handled by the OpenLCB specifications, and are different for different types of messages.</p>
+<p>The exact voltages you observe will depend on your specific infrastructure and transceiver. The key principle remains: <strong>the idle voltage is set by the bias network</strong>, and <strong>the transceiver creates the differential around that point</strong>.</p>
+<h3 id="the-transceivers-role"><a class="header" href="#the-transceivers-role">The Transceiver’s Role</a></h3>
+<p>Your transceiver does one essential job: <strong>convert the ESP32’s logic signals (0V/3.3V) into small differential voltages on the CAN bus</strong>. It pushes CANH and CANL apart to send a dominant bit, then releases them to send a recessive bit. Everything else—the bias voltage, termination, ground reference—comes from your LCC infrastructure (the Power-Point and RR-CirKits devices).</p>
+<h3 id="the-wired-and-behavior"><a class="header" href="#the-wired-and-behavior">The Wired-AND Behavior</a></h3>
+<p>This dominant/recessive behavior is the foundation of CAN’s arbitration—if two nodes transmit simultaneously, the one sending 0 (dominant) wins without any other node knowing a collision happened. This is covered in detail in Chapter 1.</p>
+<h3 id="why-you-need-the-lcc-power-point-or-similar-device"><a class="header" href="#why-you-need-the-lcc-power-point-or-similar-device">Why You Need the LCC Power-Point (or Similar Device)</a></h3>
+<p>Your transceiver alone can’t run the bus. You need external infrastructure to provide:</p>
+<ul>
+<li><strong>Bias network</strong>: Sets the idle (recessive) voltage that CANH and CANL rest at when no one is driving</li>
+<li><strong>Ground reference</strong>: A stable common point between all nodes</li>
+<li><strong>Termination resistors</strong> (120Ω): At each physical end of the bus to prevent signal reflections</li>
+</ul>
+<p>The first two are provided by devices like the <strong>RR-CirKits LCC Power-Point</strong>. Without them, the bus has no defined idle state, reflections corrupt signals, and nodes disagree on what voltages mean.</p>
+<p><strong>In this section</strong>, we focus on connecting the three signal wires—CANH, CANL, and GND—from your ESP32 to the LCC infrastructure. The infrastructure handles the rest.</p>
+<h3 id="ground-connection-the-third-signal-wire"><a class="header" href="#ground-connection-the-third-signal-wire">Ground Connection: The Third Signal Wire</a></h3>
+<p>Your transceiver’s ground connection is just as critical as CANH and CANL. While a learning bench might work with USB providing a common ground, <strong>a proper LCC installation requires an explicit ground wire</strong> connecting your ESP32 to the LCC bus infrastructure.</p>
+<p>This ground wire:</p>
+<ul>
+<li>Provides a stable common reference for all transceivers on the bus</li>
+<li>Ensures consistent behavior regardless of USB or power supply topology</li>
+<li>Maintains proper signal margins as specified by the CAN standard</li>
+</ul>
+<p>The next section shows exactly where to connect this wire on your breadboard and LCC interface.</p>
+<p><strong>Next</strong>: We’ll wire this up on a breadboard and connect to your LCC bus.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../01-intro/node_architecture.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../05-can/00-can.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../01-intro/intro_async_blink.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../05-can/02-hardware-wiring.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -223,11 +258,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../01-intro/node_architecture.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../05-can/00-can.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../01-intro/intro_async_blink.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../05-can/02-hardware-wiring.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>

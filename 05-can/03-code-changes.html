@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>CAN - OpenLCB Programmer&#x27;s Guide</title>
+        <title>Code Changes: From WiFi to CAN - OpenLCB Programmer&#x27;s Guide</title>
 
 
         <!-- Custom HTML head -->
@@ -174,46 +174,193 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="introduction-to-can"><a class="header" href="#introduction-to-can">Introduction to CAN</a></h1>
-<p>Controller Area Network (CAN) is a standard that was initially created in 1981 by Bosch, and has since been used for factory automation and communication networks in cars, to name just a few uses. Today there are hundreds of billions of devices using CAN bus in daily use.</p>
-<p>As a result, there are a number of relatively inexpensive ICs available that fully implement the CAN specifications out of the box. By using CAN controllers and drivers, you do not have to write highly time-sensitive code. Instead, you can focus on implementing support for the messages in the application layers, which is a “relatively” simple task compared with implementing a transport layer.</p>
-<h2 id="can-messages"><a class="header" href="#can-messages">CAN Messages</a></h2>
-<p>CAN transmits messages, called <em>frames</em> on the bus. Every other device (node) on the bus can (and must) listen to all of the traffic on the bus. One of the interesting and useful aspects of CAN is how it handles collisions, which is through arbitration.</p>
-<p>CAN frames, in the form used by OpenLCB, consist of a 29-bit header followed by zero or more bytes of data. This is using the <em>extended frame format</em>, also know as CAN 2.0 B.</p>
-<p><img src="../images/can_bits.jpg" alt="CAN Format"></p>
-<h3 id="arbitration"><a class="header" href="#arbitration">Arbitration</a></h3>
-<p>Arbitration is the process used to ensure that only one message is being transmitted at one time. If two nodes are trying to transmit different messages at the same time, one of those two will pass through the bus unharmed, while the other node will realize it lost the arbitration and attempt to re-transmit right after the first message is completed. This allows nearly 100% utilization of the bandwidth, because the node(s) that lost the arbitration will immediately stop, thereby not corrupting the frame that is being transmitted by the winner of the arbitration. This guarantees forward progress. In contrast, old style Ethernet (and LocoNet, btw.) uses a more complex scheme, where a collision destroys the frame, then nodes have to back off, wait a random period, then attempt to transmit again, thus wasting bandwidth.</p>
-<p>The arbitration phase relies on drivers only pulling the bus low. If two nodes attempt to put different bit values on the bus at the same time, the 0 will always win. Here is a chart that shows how this works:</p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Node 1</th><th>Node 2</th><th>Bus Value</th></tr>
-</thead>
-<tbody>
-<tr><td>0</td><td>0</td><td>0</td></tr>
-<tr><td>0</td><td>1</td><td>0</td></tr>
-<tr><td>1</td><td>0</td><td>0</td></tr>
-<tr><td>1</td><td>1</td><td>1</td></tr>
-</tbody>
-</table>
-</div>
+                        <h1 id="code-changes-from-wifi-to-can"><a class="header" href="#code-changes-from-wifi-to-can">Code Changes: From WiFi to CAN</a></h1>
+<p>The good news: <strong>your OpenLCB application logic doesn’t change</strong>. The event production code, configuration, and SNIP data are all transport-independent. What changes is minimal—just how the node connects to the network.</p>
+<h2 id="changes-in-key-code-sections"><a class="header" href="#changes-in-key-code-sections">Changes in Key Code Sections</a></h2>
 <blockquote>
-<p>Dominant and recessive are the normal terms used because a ‘1’ bit (recessive) does NOT drive the bus. It allows the terminators to ‘drive’ the bus by pulling the two bus lines to a common voltage. (2.5V) On the other hand a ‘0’ bit (dominant) drives the bus to both high and low. (CANH goes to 5V and CANL goes to 0V) The bus drivers can always over power the terminators, and that is how the zero bit always dominates over the one bit. It also explains why at least some termination is required. The termination values are also chosen to suppress cable reflections, but that is actually only an issue on long lines. Also note that this explains the complexity of our RR-CirKits terminators. You can attach a logic analyzer to one of our terminators because it creates a logic level image of the bus (to drive the activity LED). You cannot connect a logic analyzer directly to the CAN bus, because it does not contain a logic level signal on either line.</p>
-<p>Normally two nodes will happily send identical data until one node or the other transmits a zero bit during the other node’s one bit. At that point the recessive node notices that it transmitted a one bit,but received a zero bit back from the bus. This tells the recessive node that it is in conflict and must immediately stop transmitting. No other nodes can observe that this happened. This requirement for an immediate (within a fraction of the bit time) response is what limits the CAN bus segment lengths.</p>
-<p>– Dick Bronson, RR Cirkits</p>
+<p><strong>Note for Arduino IDE and Arduino Maker Workshop users</strong>: If you’re following this guide using the Arduino IDE or Arduino Maker Workshop (which uses the Arduino CLI), the class names in these examples may differ. These tools can access newer Arduino Core versions that use different class names and namespacing. See the next section (“The Esp32HardwareTwai Class: Arduino Cores and the Name Change”) for details on what adjustments are needed for your environment.</p>
 </blockquote>
-<p>Arbitration uses the 29-bit header value as a priority value to gain access to the bus, where lower values have higher priority. This mechanism provides very high utilization of the bus’ bandwidth because one node will always win a collision and keep transmitting. In contrast, Ethernet uses a more complex scheme where nodes have to back off, wait a random period, then attempt to transmit again, thus wasting bandwidth.</p>
-<p>For arbitration to work sucessfully, each message sent by a node needs to use a unique 29-bit ID. The details for this are handled by the OpenLCB specifications, and are different for different types of messages.</p>
+<h3 id="includes-and-definitions-maincpp"><a class="header" href="#includes-and-definitions-maincpp">Includes and Definitions (<code>main.cpp</code>)</a></h3>
+<pre><code class="language-diff">#include &lt;Arduino.h&gt;
+-#include &lt;WiFi.h&gt;
+#include &lt;SPIFFS.h&gt;
+#include &lt;OpenMRNLite.h&gt;
+-#include "utils/GcTcpHub.hxx"
++#include "utils/GpioInitializer.hxx"
+#include "config.h"
+
+-// WiFi credentials - CHANGE THESE to match your network
+-const char* ssid = "YourWiFiSSID";
+-const char* password = "YourWiFiPassword";
+
+ // OpenLCB Node ID - must be unique on your network
+ static constexpr uint64_t NODE_ID = 0x050201020200ULL;
+
+ // Event IDs that will be alternated
+ static const uint64_t EVENT_ID_0 = 0x0502010202000000ULL;
+ static const uint64_t EVENT_ID_1 = 0x0502010202000001ULL;
+
++/// This is the ESP32 pin connected to the SN65HVD23x/MCP2551 R (RX) pin.
++constexpr gpio_num_t CAN_RX_PIN = GPIO_NUM_4;
++
++/// This is the ESP32 pin connected to the SN65HVD23x/MCP2551 D (TX) pin.
++constexpr gpio_num_t CAN_TX_PIN = GPIO_NUM_5;
++
+ // Create the OpenMRN stack object
+ OpenMRN openmrn(NODE_ID);
+
+-// TCP Hub for JMRI connectivity
+-GcTcpHub* tcp_hub = nullptr;
++Esp32HardwareTwai can_driver(CAN_RX_PIN, CAN_TX_PIN);
+</code></pre>
+<h3 id="the-setup-function"><a class="header" href="#the-setup-function">The <code>setup()</code> Function</a></h3>
+<pre><code class="language-diff">void setup() {
+  init_serial();
+  init_filesystem();
+- init_network();
++ can_driver.hw_init();
+  init_openlcb_stack();
+- init_network();
++ openmrn.add_can_port_select("/dev/twai/twai0");
+  
+  Serial.println("OpenLCB node initialization complete!");
+  Serial.printf("Entering run mode - will alternate events every %lu ms\n", event_interval);
+  
+  // Record start time for event production
+  last_event_time = millis();
+}
+</code></pre>
+<h2 id="understanding-the-changes"><a class="header" href="#understanding-the-changes">Understanding the Changes</a></h2>
+<h3 id="1-removed-wifi-includes-and-code"><a class="header" href="#1-removed-wifi-includes-and-code">1. <strong>Removed WiFi Includes and Code</strong></a></h3>
+<ul>
+<li><code>#include &lt;WiFi.h&gt;</code> — no longer needed for network connectivity</li>
+<li><code>#include "utils/GcTcpHub.hxx"</code> — no longer needed (no TCP Hub)</li>
+<li>WiFi SSID/password variables — replaced by CAN GPIO pin definitions</li>
+<li>TCP Hub global variable — removed entirely</li>
+</ul>
+<h3 id="15-removed-functions-entirely"><a class="header" href="#15-removed-functions-entirely">1.5 <strong>Removed Functions Entirely</strong></a></h3>
+<p>Two complete functions are deleted:</p>
+<p><strong><code>init_network()</code></strong> — This entire function is removed:</p>
+<pre><code class="language-cpp">void init_network() {
+  Serial.printf("\nConnecting to WiFi SSID: %s\n", ssid);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("\nWiFi connected!");
+  Serial.printf("IP Address: %s\n", WiFi.localIP().toString().c_str());
+}
+</code></pre>
+<p><strong><code>init_tcp_hub()</code></strong> — This entire function is removed:</p>
+<pre><code class="language-cpp">void init_tcp_hub() {
+  Serial.println("Starting TCP Hub on port 12021...");
+  tcp_hub = new GcTcpHub(openmrn.stack()-&gt;can_hub(), 12021);
+  Serial.println("TCP Hub listening. JMRI can connect to this device on port 12021");
+}
+</code></pre>
+<p>Both are replaced by a single line in <code>setup()</code>:</p>
+<pre><code class="language-cpp">openmrn.add_can_port_select("/dev/twai/twai0");
+</code></pre>
+<h3 id="2-added-can-transceiver-definition"><a class="header" href="#2-added-can-transceiver-definition">2. <strong>Added CAN Transceiver Definition</strong></a></h3>
+<p>The <code>Esp32HardwareTwai</code> class represents your CAN transceiver on the breadboard. It takes two GPIO pins (RX and TX) as parameters:</p>
+<ul>
+<li><strong>GPIO_NUM_4</strong> (RX) — receives CAN messages</li>
+<li><strong>GPIO_NUM_5</strong> (TX) — transmits CAN messages</li>
+</ul>
+<h3 id="3-initialization-order"><a class="header" href="#3-initialization-order">3. <strong>Initialization Order</strong></a></h3>
+<p>The key difference: <strong><code>can_driver.hw_init()</code></strong> initializes the ESP32’s TWAI hardware and sets up GPIO4/GPIO5 for CAN signaling. This must happen <em>before</em> starting the OpenMRN stack.</p>
+<h3 id="4-port-registration"><a class="header" href="#4-port-registration">4. <strong>Port Registration</strong></a></h3>
+<p>Instead of creating a TCP Hub for JMRI connectivity, you register the TWAI device as a CAN port:</p>
+<ul>
+<li><code>add_can_port_select("/dev/twai/twai0")</code> — registers the TWAI device</li>
+<li><code>"/dev/twai/twai0"</code> — the filesystem device name for TWAI hardware</li>
+<li><code>select</code> means the driver uses Unix <code>select()</code> for efficient I/O</li>
+</ul>
+<p>The OpenMRN stack reads/writes CAN messages through this device, routing them to and from your OpenLCB application.</p>
+<h2 id="complete-updated-setup-function"><a class="header" href="#complete-updated-setup-function">Complete Updated <code>setup()</code> Function</a></h2>
+<p>Here’s the full, updated setup function:</p>
+<pre><code class="language-cpp">void setup() {
+  init_serial();
+  init_filesystem();
+  
+  // Initialize CAN transceiver hardware
+  can_driver.hw_init();
+  
+  // Initialize OpenMRN stack and configuration
+  init_openlcb_stack();
+  
+  // Register the TWAI CAN device as the network port
+  openmrn.add_can_port_select("/dev/twai/twai0");
+  
+  Serial.println("OpenLCB node initialization complete!");
+  Serial.printf("Entering run mode - will alternate events every %lu ms\n", event_interval);
+  
+  // Record start time for event production
+  last_event_time = millis();
+}
+</code></pre>
+<h2 id="what-stays-the-same"><a class="header" href="#what-stays-the-same">What Stays the Same</a></h2>
+<p>The following parts of your code are <strong>unchanged</strong>:</p>
+<ul>
+<li><strong>Event production logic</strong> in <code>loop()</code> — still produces EVENT_ID_0 and EVENT_ID_1</li>
+<li><strong>Configuration structure</strong> (config.h) — blink interval is now <strong>configurable</strong> via JMRI</li>
+<li><strong>SNIP data</strong> (node name, description) — initialized on factory reset</li>
+<li><strong>FactoryResetHelper</strong> — now also initializes default blink_interval (1000 ms)</li>
+<li><strong>apply_configuration()</strong> — now reads the blink_interval from config when JMRI updates settings</li>
+<li><strong>openmrn.loop()</strong> — still required in the main loop</li>
+</ul>
+<h2 id="key-additions-configuration-management"><a class="header" href="#key-additions-configuration-management">Key Additions: Configuration Management</a></h2>
+<p>This CAN version adds <strong>runtime configuration</strong> for the blink interval:</p>
+<ol>
+<li><strong>Global variable</strong> <code>event_interval</code> — cached value read from configuration</li>
+<li><strong>FactoryResetHelper.apply_configuration()</strong> — now reads <code>cfg.seg().blink_interval()</code> when configuration changes</li>
+<li><strong>FactoryResetHelper.factory_reset()</strong> — initializes default blink_interval to 1000 ms on first boot</li>
+<li><strong>loop() function</strong> — uses the configurable <code>event_interval</code> instead of a constant</li>
+</ol>
+<p>This means users can change the blink speed through JMRI without recompiling the firmware.</p>
+<p>The OpenLCB protocol stack is completely independent of the physical transport layer. This is excellent software architecture—change WiFi to CAN, and the node behaves identically.</p>
+<h2 id="compiling-and-uploading"><a class="header" href="#compiling-and-uploading">Compiling and Uploading</a></h2>
+<p>The code is ready to compile and upload using the same method as Chapter 3: click <strong>Upload and Monitor</strong> in the PlatformIO project tasks.</p>
+<p>When the upload completes and the device boots, you’ll see the same startup messages as before:</p>
+<pre><code>Node ID: 0x050201020200
+Event 0: 0x0502010202000000
+Event 1: 0x0502010202000001
+
+Initializing SPIFFS...
+SPIFFS initialized successfully
+ESP-TWAI: Configuring TWAI (TX:5, RX:4, EXT-CLK:-1, BUS-CTRL:-1)
+
+Creating CDI configuration descriptor...
+ESP-TWAI: Starting TWAI watchdog and reporting task
+[CDI] Checking /spiffs/cdi.xml...
+[CDI] File /spiffs/cdi.xml appears up-to-date (len 1172 vs 1172)
+[CDI] Registering CDI with stack...
+Initializing OpenLCB configuration...
+
+Starting OpenLCB stack...
+Starting executor thread...
+OpenLCB stack initialized successfully
+ESP-TWAI: Starting TWAI driver on:twai0 mCode:3ffb41cc (non-blocking) fd:0
+onfiguration updated: blink_interval = 2000 ms
+OpenLCB node initialization complete!
+Entering run mode - will alternate events every 2000 ms
+Allocating new alias C41 for node 050201020200
+Produced event: 0x0502010202000001 (state: 1)
+Produced event: 0x0502010202000000 (state: 0)...
+</code></pre>
+<p>The node is now producing events on the <strong>CAN bus</strong> instead of the WiFi TCP Hub.</p>
+<p><strong>Next</strong>: Understand the Esp32HardwareTwai class and why it’s named that.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../01-intro/node_architecture.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../05-can/02-hardware-wiring.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../01-intro/intro_async_blink.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../05-can/04-esp32-class-naming.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -223,11 +370,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../01-intro/node_architecture.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../05-can/02-hardware-wiring.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../01-intro/intro_async_blink.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../05-can/04-esp32-class-naming.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
