@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-54676ba6.js";
+            window.path_to_searchindex_js = "../searchindex-291cbed2.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-3fbc7ce2.js"></script>
@@ -402,12 +402,22 @@ Produced event: 0x0502010202000001 (state: 1)
 <li>Click <strong>Write</strong> to send the new value</li>
 </ol>
 <p><img src="images/ConfigBlinkInterval.png" alt="LccPro Configure dialog with Settings tab, Blink Interval field visible"></p>
+<h3 id="step-25-monitor-the-lcc-traffic"><a class="header" href="#step-25-monitor-the-lcc-traffic">Step 2.5: Monitor the LCC Traffic</a></h3>
+<p>When you click <strong>Write</strong>, JMRI sends the new interval value to the ESP32 as a Datagram message. Here’s what the LCC traffic looks like:</p>
+<p><img src="images/Write2000Interval.png" alt="LCC Datagram traffic when writing the new interval value"></p>
+<p>In this capture, you can see the write message:</p>
+<pre><code>S: 02.01.12.1A.9C.2C - 05.02.01.02.02.00 Datagram: (8) 20.01.00.00.00.84.07.D0
+</code></pre>
+<p>The last two bytes <code>07.D0</code> are the hex representation of 2000 (decimal)—this is the new interval value being written to the node.</p>
 <h3 id="step-3-click-update-complete"><a class="header" href="#step-3-click-update-complete">Step 3: Click Update Complete</a></h3>
 <p>This is the critical step! Unlike SNIP user data (Name and Description, which take effect immediately), application-specific configuration fields like blink_interval need an explicit <strong>Update Complete</strong> step.</p>
 <p>Here’s why: When you click <strong>Write</strong>, JMRI sends the new value to the ESP32 and it’s saved to SPIFFS. But OpenMRN doesn’t immediately call your <code>apply_configuration()</code> method. This allows you to make multiple writes in JMRI (e.g., change interval AND add other settings) before the node processes them all together.</p>
 <p>When you click <strong>Update Complete</strong>, you’re telling the node: “All changes are sent; now apply them.” OpenMRN then calls your <code>apply_configuration()</code> method, which reads the new interval from the config file and updates your global cache variable.</p>
 <p>Click the <strong>Update Complete</strong> button at the bottom of the Configure dialog.</p>
 <p><img src="images/ConfigUpdateComplete.png" alt="LccPro Configure dialog showing Update Complete button"></p>
+<p>When you click <strong>Update Complete</strong>, the node sends an acknowledgment message. Here’s what the LCC traffic shows:</p>
+<p><img src="images/UpdateComplete.png" alt="LCC traffic when Update Complete is sent to the node"></p>
+<p>The <code>20.A8</code> Datagram is the Update Complete message from JMRI to the node, followed by the node’s acknowledgment.</p>
 <h3 id="step-4-observe-the-change"><a class="header" href="#step-4-observe-the-change">Step 4: Observe the Change</a></h3>
 <p>Check the Serial Monitor. You should see:</p>
 <pre><code>Produced event: 0x0502010202000000 (state: 0)
