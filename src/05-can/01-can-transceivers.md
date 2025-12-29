@@ -47,6 +47,21 @@ When any node wants to send a **dominant 0 bit**, its CAN transceiver briefly **
 
 The exact voltages you observe will depend on your specific infrastructure and transceiver. The key principle remains: **the idle voltage is set by the bias network**, and **the transceiver creates the differential around that point**.
 
+#### Visualizing the Differential Signal
+
+Here's what this looks like on an oscilloscope during actual CAN bus communication:
+
+![Oscilloscope capture showing CANH, CANL, and differential signal](images/ScopeCapture.png)
+
+In this capture:
+- **Yellow trace (CANL)**: Shows the low line varying as nodes transmit
+- **Cyan trace (CANH)**: Shows the high line varying in the opposite direction
+- **Purple trace (CANH-CANL)**: The differential signal - notice how clean and digital it is!
+
+**Key observation**: While the individual CANH and CANL voltages aren't constant (they shift due to bus activity and bias variations), the **differential signal (CANH-CANL) is very clean**. This is the magic of differential signaling - noise and voltage shifts that affect both wires equally cancel out when you subtract them, leaving a robust digital signal.
+
+The CAN receiver in your transceiver looks only at this differential voltage, not the absolute voltage on either wire. This is why CAN is so reliable in electrically noisy environments like model railroads and industrial settings.
+
 ### The Transceiver's Role
 
 Your transceiver does one essential job: **convert the ESP32's logic signals (0V/3.3V) into small differential voltages on the CAN bus**. It pushes CANH and CANL apart to send a dominant bit, then releases them to send a recessive bit. Everything else—the bias voltage, termination, ground reference—comes from your LCC infrastructure (such as the RR-CirKits LCC Power-Point or SPROG POWER-LCC).
