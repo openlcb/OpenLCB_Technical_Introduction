@@ -25,7 +25,7 @@ CAN doesn't use "high = 1, low = 0" on a single wire like normal logic. Instead,
 - A **dominant bit** represents a logic **0**
 - A **recessive bit** represents a logic **1**
 
-**Key concept**: The CAN bus's idle (recessive) voltage is set by external infrastructure—in LCC, by a device like the RR-CirKits LCC Power-Point—not by your transceiver. Your transceiver only *nudges* the bus around that idle level.
+**Key concept**: The CAN bus's idle (recessive) voltage is set by external infrastructure—in LCC, by a device like the RR-CirKits LCC Power-Point or SPROG POWER-LCC—not by your transceiver. Your transceiver only *nudges* the bus around that idle level.
 
 #### Recessive (Idle) State
 
@@ -38,7 +38,7 @@ When any node wants to send a **dominant 0 bit**, its CAN transceiver briefly **
 - **CANH is nudged up** above the idle level
 - **CANL is nudged down** below the idle level
 
-**Example: From my test setup** (with a transceiver connected to an LCC Power-Point and RR-CirKits infrastructure), measurements showed:
+**Example: From my test setup** (with a transceiver connected to LCC infrastructure), measurements showed:
 
 | State | CANH | CANL | Differential |
 |-------|------|------|---------------|
@@ -49,7 +49,7 @@ The exact voltages you observe will depend on your specific infrastructure and t
 
 ### The Transceiver's Role
 
-Your transceiver does one essential job: **convert the ESP32's logic signals (0V/3.3V) into small differential voltages on the CAN bus**. It pushes CANH and CANL apart to send a dominant bit, then releases them to send a recessive bit. Everything else—the bias voltage, termination, ground reference—comes from your LCC infrastructure (the Power-Point and RR-CirKits devices).
+Your transceiver does one essential job: **convert the ESP32's logic signals (0V/3.3V) into small differential voltages on the CAN bus**. It pushes CANH and CANL apart to send a dominant bit, then releases them to send a recessive bit. Everything else—the bias voltage, termination, ground reference—comes from your LCC infrastructure (such as the RR-CirKits LCC Power-Point or SPROG POWER-LCC).
 
 ### The Wired-AND Behavior
 
@@ -63,7 +63,7 @@ Your transceiver alone can't run the bus. You need external infrastructure to pr
 - **Ground reference**: A stable common point between all nodes
 - **Termination resistors** (120Ω): At each physical end of the bus to prevent signal reflections
 
-The first two are provided by devices like the **RR-CirKits LCC Power-Point**. Without them, the bus has no defined idle state, reflections corrupt signals, and nodes disagree on what voltages mean.
+The first two are provided by devices like the **RR-CirKits LCC Power-Point** or **SPROG POWER-LCC**. Without them, the bus has no defined idle state, reflections corrupt signals, and nodes disagree on what voltages mean.
 
 **In this section**, we focus on connecting the three signal wires—CANH, CANL, and GND—from your ESP32 to the LCC infrastructure. The infrastructure handles the rest.
 

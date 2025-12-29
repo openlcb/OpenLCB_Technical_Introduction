@@ -33,5 +33,5 @@
   - [Hardware Wiring: Breadboard Setup](./05-can/02-hardware-wiring.md)
   - [Code Changes: From WiFi to CAN](./05-can/03-code-changes.md)
   - [The Esp32HardwareTwai Class: Arduino Cores and the Name Change](./05-can/04-esp32-class-naming.md)
-  - [Configuring JMRI for CAN: RR-CirKits LCC Buffer-USB](./05-can/05-jmri-configuration.md)
+  - [Configuring JMRI for CAN](./05-can/05-jmri-configuration.md)
   - [TWAI Bus Diagnostics and Troubleshooting](./05-can/06-twai-diagnostics.md)

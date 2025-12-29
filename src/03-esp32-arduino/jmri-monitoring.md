@@ -104,27 +104,33 @@ You can verify that JMRI recognizes your ESP32 as a node on the network and view
 
   ![LccPro node list showing the async_blink node](../images/LccProNodes.png)
 
-   > **Note**: The **Configure** button in LccPro is for editing the node's configuration. We'll explore that in Chapter 5.
+   > **Note**: The **Configure** button in LccPro is for editing the node's configuration. We'll explore that in Chapter 4.
 
-### Understanding SNIP vs ACDI (Important!)
+### Understanding SNIP and ACDI
 
-Now is a good time to understand the distinction between two types of node information in OpenLCB:
+Now is a good time to understand how OpenLCB provides access to node information through two different mechanisms:
+
+**Both SNIP and ACDI provide access to the same information**:
+- **Fixed manufacturer information**: manufacturer name, model, hardware/software versions
+- **User-definable information**: node name and description
+
+**The difference is HOW you access this information**:
 
 **SNIP (Simple Node Information Protocol)**:
-- Identifies **what the device IS** (manufacturer, model, hardware/software versions)
-- **Hardcoded in firmware** (in `config.h` as `SNIP_STATIC_DATA`)
-- **Read-only** - cannot be changed without recompiling
-- Displayed in **LccPro → Identification tab** when you view node properties
-- Examples: `OpenMRN` (manufacturer), `async_blink` (model)
+- A dedicated **simple request/response** interaction
+- **Read-only** - queries the current values but cannot modify them
+- Fast and lightweight - just send a request, get a response
+- Used by JMRI's node list to quickly display node identity
+- Displayed in **LccPro → Identification tab**
 
 **ACDI (Abbreviated Configuration Description Information)**:
-- Stores **layout identity** - how YOU refer to the node in your model railroad
-- **Persistent in SPIFFS** (can be modified via JMRI without recompiling)
-- User-editable through **LccPro**
-- Includes fields like "User Name" (what you call the node) and "Description"
-- Examples: `Main Station Blinker`, `Yard Controller #3`
+- Accessed through the **memory configuration mechanism**
+- **Read and write** - can both query and modify the values
+- Goes through the configuration protocol (more complex but more capable)
+- Used by JMRI's configuration editor to let you change node name/description
+- Modified through **LccPro → Configure**
 
-In this v0.1 example, both are initialized from `config.h` constants. In Chapter 5, you'll learn to make ACDI values editable through JMRI using the configuration interface.
+**In this v0.1 example**, both mechanisms read from the same underlying data (initialized from `config.h` constants). In Chapter 4, you'll learn to make this information writable through the ACDI/configuration interface, which will also update what SNIP returns.
 
 ### Optional: View Events as Sensors
 

@@ -1,6 +1,6 @@
 # Configuring JMRI for CAN: Using a CAN Bus Interface Module
 
-In Chapter 3, JMRI connected to your ESP32 node via a TCP Hub on port 12021 (WiFi). Now that your node is on a CAN bus, JMRI needs a different path to reach it: through a **CAN bus interface module** (such as RR-CirKits LCC Buffer-USB, PEAK PCAN-USB, or similar) connected to the same CAN bus.
+In Chapter 3, JMRI connected to your ESP32 node via a TCP Hub on port 12021 (WiFi). Now that your node is on a CAN bus, JMRI needs a different path to reach it: through a **CAN bus interface module** (such as RR-CirKits LCC Buffer-USB, SPROG USB-LCC, PEAK PCAN-USB, or similar) connected to the same CAN bus.
 
 ## Hardware Setup
 
@@ -8,13 +8,13 @@ Before configuring JMRI, make sure your physical setup is in place and looks som
 
 ```mermaid
 graph LR
-    T["120Ω Terminator"] --> A["RR-CirKits<br/> LCC Power-Point"]
-    A --> B["RR-CirKits<br/> LCC Buffer-USB"]
+    T["120Ω Terminator"] --> A["RR-CirKits<br/> LCC Power-Point<br/>(or SPROG POWER-LCC)"]
+    A --> B["RR-CirKits<br/> LCC Buffer-USB<br/>(or SPROG USB-LCC)"]
     B --> C["Your ESP32 Node<br/>(120Ω terminator added)"]
     B --> D["LccPro/JMRI<br/>(USB)"]
 ```
 
-The interface module acts as a "gateway" that translates between the CAN bus and JMRI's protocol. Examples include RR-CirKits LCC Buffer-USB, PEAK PCAN-USB, or any other CAN interface compatible with JMRI. Note that 120Ω terminators are required at the physical ends of the CAN bus.
+The interface module acts as a "gateway" that translates between the CAN bus and JMRI's protocol. Examples include RR-CirKits LCC Buffer-USB, SPROG USB-LCC, PEAK PCAN-USB, or any other CAN interface compatible with JMRI. Note that 120Ω terminators are required at the physical ends of the CAN bus.
 
 ## Disabling the WiFi Connection from Chapter 3
 
@@ -29,11 +29,11 @@ If you still have your Chapter 3 WiFi-based node running, you'll want to disable
 
 This prevents JMRI from trying to connect to the old WiFi-based node, which won't be responding anymore.
 
-## Adding the RR-CirKits LCC Buffer Connection
+## Adding the CAN Bus Interface Connection
 
 ### Step 1: Physical Connection
 
-1. Connect your **LCC Buffer-USB** to your computer via USB
+1. Connect your **LCC Buffer-USB** (or **SPROG USB-LCC**) to your computer via USB
 2. In **Device Manager** (Windows) or **System Information** (Mac/Linux), note which **COM port** or **serial device** the Buffer appears on
    - Windows: `COM3`, `COM4`, etc.
    - Linux: `/dev/ttyUSB0`, `/dev/ttyUSB1`, etc.
@@ -45,7 +45,7 @@ This prevents JMRI from trying to connect to the old WiFi-based node, which won'
 2. Click **Connections**
 2. Click the **+** sign to the right to add a connection
 3. **System manufacturer**: Select **"LCC"**
-4. **System connection**: Select **"CAN via LCC Buffer-USB"** (or the appropriate device name for your interface)
+4. **System connection**: Select **"CAN via LCC Buffer-USB"**, **"CAN via SPROG USB-LCC"**, or the appropriate device name for your interface
 5. **Serial port**: Select the COM port where your interface appeared (from Step 1)
 
 ![LCC CAN Connection Setup](images/LCC-CAN-Connection.png)

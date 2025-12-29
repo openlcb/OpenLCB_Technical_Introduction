@@ -80,7 +80,7 @@ This creates a blinking LED controlled entirely through OpenLCB events, demonstr
 In a real layout, you'd typically have separate nodes for inputs (buttons, sensors) and outputs (LEDs, turnouts), but the event flow works exactly the same way.
 
 For detailed event protocol specifications, see:
-- [S-9.7.3.1 Event Transport](https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/s-9.7.3.1-eventtransport-2016-02-06.pdf)
-- [TN-9.7.3.1 Event Transport](https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/tn-9.7.3.1-eventtransport-2016-02-06.pdf)
+- [S-9.7.3.1 Event Transport](https://www.nmra.org/sites/default/files/standards/sandrp/LCC/S/s-9.7.3.1-eventtransport-2024-07-22.pdf)
+- [TN-9.7.3.1 Event Transport](https://www.nmra.org/sites/default/files/standards/sandrp/LCC/TN/tn-9.7.3.1-eventtransport-2024-07-22.pdf)
 
 > **Note**: Future chapters will show you how to create your own nodes with real button inputs and LED outputs on an ESP32 microcontroller.

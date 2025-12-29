@@ -11,7 +11,7 @@ Start JMRI (5.12 or later) and navigate to:
 Tools → LCC → LccPro
 ```
 
-You should see a list of nodes currently on your LCC network. Your ESP32 node appears here, identified by its ACDI manufacturer and model information.
+You should see a list of nodes currently on your LCC network. Your ESP32 node appears here, identified by its SNIP information (manufacturer, model, and user name).
 
 ![LccPro main window showing node list with async_blink](images/NodeListFirstBoot.png)
 
