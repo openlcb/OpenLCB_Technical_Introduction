@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-8dde4bc0.js";
+            window.path_to_searchindex_js = "../searchindex-e4bbaba0.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-a18098d4.js"></script>
@@ -216,6 +216,17 @@
 </table>
 </div>
 <p>The exact voltages you observe will depend on your specific infrastructure and transceiver. The key principle remains: <strong>the idle voltage is set by the bias network</strong>, and <strong>the transceiver creates the differential around that point</strong>.</p>
+<h4 id="visualizing-the-differential-signal"><a class="header" href="#visualizing-the-differential-signal">Visualizing the Differential Signal</a></h4>
+<p>Here’s what this looks like on an oscilloscope during actual CAN bus communication:</p>
+<p><img src="images/ScopeCapture.png" alt="Oscilloscope capture showing CANH, CANL, and differential signal"></p>
+<p>In this capture:</p>
+<ul>
+<li><strong>Yellow trace (CANL)</strong>: Shows the low line varying as nodes transmit</li>
+<li><strong>Cyan trace (CANH)</strong>: Shows the high line varying in the opposite direction</li>
+<li><strong>Purple trace (CANH-CANL)</strong>: The differential signal - notice how clean and digital it is!</li>
+</ul>
+<p><strong>Key observation</strong>: While the individual CANH and CANL voltages aren’t constant (they shift due to bus activity and bias variations), the <strong>differential signal (CANH-CANL) is very clean</strong>. This is the magic of differential signaling - noise and voltage shifts that affect both wires equally cancel out when you subtract them, leaving a robust digital signal.</p>
+<p>The CAN receiver in your transceiver looks only at this differential voltage, not the absolute voltage on either wire. This is why CAN is so reliable in electrically noisy environments like model railroads and industrial settings.</p>
 <h3 id="the-transceivers-role"><a class="header" href="#the-transceivers-role">The Transceiver’s Role</a></h3>
 <p>Your transceiver does one essential job: <strong>convert the ESP32’s logic signals (0V/3.3V) into small differential voltages on the CAN bus</strong>. It pushes CANH and CANL apart to send a dominant bit, then releases them to send a recessive bit. Everything else—the bias voltage, termination, ground reference—comes from your LCC infrastructure (such as the RR-CirKits LCC Power-Point or SPROG POWER-LCC).</p>
 <h3 id="the-wired-and-behavior"><a class="header" href="#the-wired-and-behavior">The Wired-AND Behavior</a></h3>
