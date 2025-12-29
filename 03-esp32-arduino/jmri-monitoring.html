@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-291cbed2.js";
+            window.path_to_searchindex_js = "../searchindex-8dde4bc0.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-3fbc7ce2.js"></script>
+        <script src="../toc-a18098d4.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -314,27 +314,33 @@
 </ol>
 <p><img src="../images/LccProNodes.png" alt="LccPro node list showing the async_blink node"></p>
 <blockquote>
-<p><strong>Note</strong>: The <strong>Configure</strong> button in LccPro is for editing the node’s configuration. We’ll explore that in Chapter 5.</p>
+<p><strong>Note</strong>: The <strong>Configure</strong> button in LccPro is for editing the node’s configuration. We’ll explore that in Chapter 4.</p>
 </blockquote>
-<h3 id="understanding-snip-vs-acdi-important"><a class="header" href="#understanding-snip-vs-acdi-important">Understanding SNIP vs ACDI (Important!)</a></h3>
-<p>Now is a good time to understand the distinction between two types of node information in OpenLCB:</p>
+<h3 id="understanding-snip-and-acdi"><a class="header" href="#understanding-snip-and-acdi">Understanding SNIP and ACDI</a></h3>
+<p>Now is a good time to understand how OpenLCB provides access to node information through two different mechanisms:</p>
+<p><strong>Both SNIP and ACDI provide access to the same information</strong>:</p>
+<ul>
+<li><strong>Fixed manufacturer information</strong>: manufacturer name, model, hardware/software versions</li>
+<li><strong>User-definable information</strong>: node name and description</li>
+</ul>
+<p><strong>The difference is HOW you access this information</strong>:</p>
 <p><strong>SNIP (Simple Node Information Protocol)</strong>:</p>
 <ul>
-<li>Identifies <strong>what the device IS</strong> (manufacturer, model, hardware/software versions)</li>
-<li><strong>Hardcoded in firmware</strong> (in <code>config.h</code> as <code>SNIP_STATIC_DATA</code>)</li>
-<li><strong>Read-only</strong> - cannot be changed without recompiling</li>
-<li>Displayed in <strong>LccPro → Identification tab</strong> when you view node properties</li>
-<li>Examples: <code>OpenMRN</code> (manufacturer), <code>async_blink</code> (model)</li>
+<li>A dedicated <strong>simple request/response</strong> interaction</li>
+<li><strong>Read-only</strong> - queries the current values but cannot modify them</li>
+<li>Fast and lightweight - just send a request, get a response</li>
+<li>Used by JMRI’s node list to quickly display node identity</li>
+<li>Displayed in <strong>LccPro → Identification tab</strong></li>
 </ul>
 <p><strong>ACDI (Abbreviated Configuration Description Information)</strong>:</p>
 <ul>
-<li>Stores <strong>layout identity</strong> - how YOU refer to the node in your model railroad</li>
-<li><strong>Persistent in SPIFFS</strong> (can be modified via JMRI without recompiling)</li>
-<li>User-editable through <strong>LccPro</strong></li>
-<li>Includes fields like “User Name” (what you call the node) and “Description”</li>
-<li>Examples: <code>Main Station Blinker</code>, <code>Yard Controller #3</code></li>
+<li>Accessed through the <strong>memory configuration mechanism</strong></li>
+<li><strong>Read and write</strong> - can both query and modify the values</li>
+<li>Goes through the configuration protocol (more complex but more capable)</li>
+<li>Used by JMRI’s configuration editor to let you change node name/description</li>
+<li>Modified through <strong>LccPro → Configure</strong></li>
 </ul>
-<p>In this v0.1 example, both are initialized from <code>config.h</code> constants. In Chapter 5, you’ll learn to make ACDI values editable through JMRI using the configuration interface.</p>
+<p><strong>In this v0.1 example</strong>, both mechanisms read from the same underlying data (initialized from <code>config.h</code> constants). In Chapter 4, you’ll learn to make this information writable through the ACDI/configuration interface, which will also update what SNIP returns.</p>
 <h3 id="optional-view-events-as-sensors"><a class="header" href="#optional-view-events-as-sensors">Optional: View Events as Sensors</a></h3>
 <p>Want to see your ESP32’s events visualized as sensor states? You can create sensors in <strong>PanelPro</strong> that correspond to your event IDs.</p>
 <p><strong>Important</strong>: For this section, you need to have <strong>PanelPro</strong> open. If you only have JMRI running:</p>

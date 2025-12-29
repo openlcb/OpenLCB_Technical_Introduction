@@ -36,10 +36,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-291cbed2.js";
+            window.path_to_searchindex_js = "searchindex-8dde4bc0.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-3fbc7ce2.js"></script>
+        <script src="toc-a18098d4.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -522,8 +522,8 @@ Consumer Identified Valid:   Event 05.02.01.02.02.00.00.00
 <p>In a real layout, you’d typically have separate nodes for inputs (buttons, sensors) and outputs (LEDs, turnouts), but the event flow works exactly the same way.</p>
 <p>For detailed event protocol specifications, see:</p>
 <ul>
-<li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/s-9.7.3.1-eventtransport-2016-02-06.pdf">S-9.7.3.1 Event Transport</a></li>
-<li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/OpenLCB/tn-9.7.3.1-eventtransport-2016-02-06.pdf">TN-9.7.3.1 Event Transport</a></li>
+<li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/LCC/S/s-9.7.3.1-eventtransport-2024-07-22.pdf">S-9.7.3.1 Event Transport</a></li>
+<li><a href="https://www.nmra.org/sites/default/files/standards/sandrp/LCC/TN/tn-9.7.3.1-eventtransport-2024-07-22.pdf">TN-9.7.3.1 Event Transport</a></li>
 </ul>
 <blockquote>
 <p><strong>Note</strong>: Future chapters will show you how to create your own nodes with real button inputs and LED outputs on an ESP32 microcontroller.</p>
@@ -2082,27 +2082,33 @@ Produced event: 0x0502010202000001 (state: 1)
 </ol>
 <p><img src="images/LccProNodes.png" alt="LccPro node list showing the async_blink node"></p>
 <blockquote>
-<p><strong>Note</strong>: The <strong>Configure</strong> button in LccPro is for editing the node’s configuration. We’ll explore that in Chapter 5.</p>
+<p><strong>Note</strong>: The <strong>Configure</strong> button in LccPro is for editing the node’s configuration. We’ll explore that in Chapter 4.</p>
 </blockquote>
-<h3 id="understanding-snip-vs-acdi-important"><a class="header" href="#understanding-snip-vs-acdi-important">Understanding SNIP vs ACDI (Important!)</a></h3>
-<p>Now is a good time to understand the distinction between two types of node information in OpenLCB:</p>
+<h3 id="understanding-snip-and-acdi"><a class="header" href="#understanding-snip-and-acdi">Understanding SNIP and ACDI</a></h3>
+<p>Now is a good time to understand how OpenLCB provides access to node information through two different mechanisms:</p>
+<p><strong>Both SNIP and ACDI provide access to the same information</strong>:</p>
+<ul>
+<li><strong>Fixed manufacturer information</strong>: manufacturer name, model, hardware/software versions</li>
+<li><strong>User-definable information</strong>: node name and description</li>
+</ul>
+<p><strong>The difference is HOW you access this information</strong>:</p>
 <p><strong>SNIP (Simple Node Information Protocol)</strong>:</p>
 <ul>
-<li>Identifies <strong>what the device IS</strong> (manufacturer, model, hardware/software versions)</li>
-<li><strong>Hardcoded in firmware</strong> (in <code>config.h</code> as <code>SNIP_STATIC_DATA</code>)</li>
-<li><strong>Read-only</strong> - cannot be changed without recompiling</li>
-<li>Displayed in <strong>LccPro → Identification tab</strong> when you view node properties</li>
-<li>Examples: <code>OpenMRN</code> (manufacturer), <code>async_blink</code> (model)</li>
+<li>A dedicated <strong>simple request/response</strong> interaction</li>
+<li><strong>Read-only</strong> - queries the current values but cannot modify them</li>
+<li>Fast and lightweight - just send a request, get a response</li>
+<li>Used by JMRI’s node list to quickly display node identity</li>
+<li>Displayed in <strong>LccPro → Identification tab</strong></li>
 </ul>
 <p><strong>ACDI (Abbreviated Configuration Description Information)</strong>:</p>
 <ul>
-<li>Stores <strong>layout identity</strong> - how YOU refer to the node in your model railroad</li>
-<li><strong>Persistent in SPIFFS</strong> (can be modified via JMRI without recompiling)</li>
-<li>User-editable through <strong>LccPro</strong></li>
-<li>Includes fields like “User Name” (what you call the node) and “Description”</li>
-<li>Examples: <code>Main Station Blinker</code>, <code>Yard Controller #3</code></li>
+<li>Accessed through the <strong>memory configuration mechanism</strong></li>
+<li><strong>Read and write</strong> - can both query and modify the values</li>
+<li>Goes through the configuration protocol (more complex but more capable)</li>
+<li>Used by JMRI’s configuration editor to let you change node name/description</li>
+<li>Modified through <strong>LccPro → Configure</strong></li>
 </ul>
-<p>In this v0.1 example, both are initialized from <code>config.h</code> constants. In Chapter 5, you’ll learn to make ACDI values editable through JMRI using the configuration interface.</p>
+<p><strong>In this v0.1 example</strong>, both mechanisms read from the same underlying data (initialized from <code>config.h</code> constants). In Chapter 4, you’ll learn to make this information writable through the ACDI/configuration interface, which will also update what SNIP returns.</p>
 <h3 id="optional-view-events-as-sensors"><a class="header" href="#optional-view-events-as-sensors">Optional: View Events as Sensors</a></h3>
 <p>Want to see your ESP32’s events visualized as sensor states? You can create sensors in <strong>PanelPro</strong> that correspond to your event IDs.</p>
 <p><strong>Important</strong>: For this section, you need to have <strong>PanelPro</strong> open. If you only have JMRI running:</p>
@@ -2425,7 +2431,7 @@ CDI_GROUP_END();
 <p>Start JMRI (5.12 or later) and navigate to:</p>
 <pre><code>Tools → LCC → LccPro
 </code></pre>
-<p>You should see a list of nodes currently on your LCC network. Your ESP32 node appears here, identified by its ACDI manufacturer and model information.</p>
+<p>You should see a list of nodes currently on your LCC network. Your ESP32 node appears here, identified by its SNIP information (manufacturer, model, and user name).</p>
 <p><img src="04-configuration/images/NodeListFirstBoot.png" alt="LccPro main window showing node list with async_blink"></p>
 <h3 id="2-select-your-node"><a class="header" href="#2-select-your-node">2. Select Your Node</a></h3>
 <p>In the node list, click on the node you want to configure (e.g., “async_blink”).</p>
@@ -3031,7 +3037,7 @@ Produced event: 0x0502010202000001 (state: 1)
 <li>A <strong>dominant bit</strong> represents a logic <strong>0</strong></li>
 <li>A <strong>recessive bit</strong> represents a logic <strong>1</strong></li>
 </ul>
-<p><strong>Key concept</strong>: The CAN bus’s idle (recessive) voltage is set by external infrastructure—in LCC, by a device like the RR-CirKits LCC Power-Point—not by your transceiver. Your transceiver only <em>nudges</em> the bus around that idle level.</p>
+<p><strong>Key concept</strong>: The CAN bus’s idle (recessive) voltage is set by external infrastructure—in LCC, by a device like the RR-CirKits LCC Power-Point or SPROG POWER-LCC—not by your transceiver. Your transceiver only <em>nudges</em> the bus around that idle level.</p>
 <h4 id="recessive-idle-state"><a class="header" href="#recessive-idle-state">Recessive (Idle) State</a></h4>
 <p>In the <strong>recessive (idle) state</strong>, no node is actively driving the bus. Both CANH and CANL sit at nearly the <strong>same voltage</strong>, defined by the bias network in your LCC infrastructure. The exact idle voltage depends on what device provides the bias.</p>
 <h4 id="dominant-transmission-state"><a class="header" href="#dominant-transmission-state">Dominant (Transmission) State</a></h4>
@@ -3040,7 +3046,7 @@ Produced event: 0x0502010202000001 (state: 1)
 <li><strong>CANH is nudged up</strong> above the idle level</li>
 <li><strong>CANL is nudged down</strong> below the idle level</li>
 </ul>
-<p><strong>Example: From my test setup</strong> (with a transceiver connected to an LCC Power-Point and RR-CirKits infrastructure), measurements showed:</p>
+<p><strong>Example: From my test setup</strong> (with a transceiver connected to LCC infrastructure), measurements showed:</p>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -3054,7 +3060,7 @@ Produced event: 0x0502010202000001 (state: 1)
 </div>
 <p>The exact voltages you observe will depend on your specific infrastructure and transceiver. The key principle remains: <strong>the idle voltage is set by the bias network</strong>, and <strong>the transceiver creates the differential around that point</strong>.</p>
 <h3 id="the-transceivers-role"><a class="header" href="#the-transceivers-role">The Transceiver’s Role</a></h3>
-<p>Your transceiver does one essential job: <strong>convert the ESP32’s logic signals (0V/3.3V) into small differential voltages on the CAN bus</strong>. It pushes CANH and CANL apart to send a dominant bit, then releases them to send a recessive bit. Everything else—the bias voltage, termination, ground reference—comes from your LCC infrastructure (the Power-Point and RR-CirKits devices).</p>
+<p>Your transceiver does one essential job: <strong>convert the ESP32’s logic signals (0V/3.3V) into small differential voltages on the CAN bus</strong>. It pushes CANH and CANL apart to send a dominant bit, then releases them to send a recessive bit. Everything else—the bias voltage, termination, ground reference—comes from your LCC infrastructure (such as the RR-CirKits LCC Power-Point or SPROG POWER-LCC).</p>
 <h3 id="the-wired-and-behavior"><a class="header" href="#the-wired-and-behavior">The Wired-AND Behavior</a></h3>
 <p>This dominant/recessive behavior is the foundation of CAN’s arbitration—if two nodes transmit simultaneously, the one sending 0 (dominant) wins without any other node knowing a collision happened. This is covered in detail in Chapter 1.</p>
 <h3 id="why-you-need-the-lcc-power-point-or-similar-device"><a class="header" href="#why-you-need-the-lcc-power-point-or-similar-device">Why You Need the LCC Power-Point (or Similar Device)</a></h3>
@@ -3064,7 +3070,7 @@ Produced event: 0x0502010202000001 (state: 1)
 <li><strong>Ground reference</strong>: A stable common point between all nodes</li>
 <li><strong>Termination resistors</strong> (120Ω): At each physical end of the bus to prevent signal reflections</li>
 </ul>
-<p>The first two are provided by devices like the <strong>RR-CirKits LCC Power-Point</strong>. Without them, the bus has no defined idle state, reflections corrupt signals, and nodes disagree on what voltages mean.</p>
+<p>The first two are provided by devices like the <strong>RR-CirKits LCC Power-Point</strong> or <strong>SPROG POWER-LCC</strong>. Without them, the bus has no defined idle state, reflections corrupt signals, and nodes disagree on what voltages mean.</p>
 <p><strong>In this section</strong>, we focus on connecting the three signal wires—CANH, CANL, and GND—from your ESP32 to the LCC infrastructure. The infrastructure handles the rest.</p>
 <h3 id="ground-connection-the-third-signal-wire"><a class="header" href="#ground-connection-the-third-signal-wire">Ground Connection: The Third Signal Wire</a></h3>
 <p>Your transceiver’s ground connection is just as critical as CANH and CANL. While a learning bench might work with USB providing a common ground, <strong>a proper LCC installation requires an explicit ground wire</strong> connecting your ESP32 to the LCC bus infrastructure.</p>
@@ -3369,17 +3375,17 @@ openmrn.add_can_port(&amp;can_driver);
 <p><strong>Next</strong>: Configure JMRI to connect via CAN instead of WiFi.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="configuring-jmri-for-can-using-a-can-bus-interface-module"><a class="header" href="#configuring-jmri-for-can-using-a-can-bus-interface-module">Configuring JMRI for CAN: Using a CAN Bus Interface Module</a></h1>
-<p>In Chapter 3, JMRI connected to your ESP32 node via a TCP Hub on port 12021 (WiFi). Now that your node is on a CAN bus, JMRI needs a different path to reach it: through a <strong>CAN bus interface module</strong> (such as RR-CirKits LCC Buffer-USB, PEAK PCAN-USB, or similar) connected to the same CAN bus.</p>
+<p>In Chapter 3, JMRI connected to your ESP32 node via a TCP Hub on port 12021 (WiFi). Now that your node is on a CAN bus, JMRI needs a different path to reach it: through a <strong>CAN bus interface module</strong> (such as RR-CirKits LCC Buffer-USB, SPROG USB-LCC, PEAK PCAN-USB, or similar) connected to the same CAN bus.</p>
 <h2 id="hardware-setup"><a class="header" href="#hardware-setup">Hardware Setup</a></h2>
 <p>Before configuring JMRI, make sure your physical setup is in place and looks something like the following:</p>
 <pre class="mermaid">graph LR
-    T["120Ω Terminator"] --&gt; A["RR-CirKits&lt;br/&gt; LCC Power-Point"]
-    A --&gt; B["RR-CirKits&lt;br/&gt; LCC Buffer-USB"]
+    T["120Ω Terminator"] --&gt; A["RR-CirKits&lt;br/&gt; LCC Power-Point&lt;br/&gt;(or SPROG POWER-LCC)"]
+    A --&gt; B["RR-CirKits&lt;br/&gt; LCC Buffer-USB&lt;br/&gt;(or SPROG USB-LCC)"]
     B --&gt; C["Your ESP32 Node&lt;br/&gt;(120Ω terminator added)"]
     B --&gt; D["LccPro/JMRI&lt;br/&gt;(USB)"]
 </pre>
 
-<p>The interface module acts as a “gateway” that translates between the CAN bus and JMRI’s protocol. Examples include RR-CirKits LCC Buffer-USB, PEAK PCAN-USB, or any other CAN interface compatible with JMRI. Note that 120Ω terminators are required at the physical ends of the CAN bus.</p>
+<p>The interface module acts as a “gateway” that translates between the CAN bus and JMRI’s protocol. Examples include RR-CirKits LCC Buffer-USB, SPROG USB-LCC, PEAK PCAN-USB, or any other CAN interface compatible with JMRI. Note that 120Ω terminators are required at the physical ends of the CAN bus.</p>
 <h2 id="disabling-the-wifi-connection-from-chapter-3"><a class="header" href="#disabling-the-wifi-connection-from-chapter-3">Disabling the WiFi Connection from Chapter 3</a></h2>
 <p>If you still have your Chapter 3 WiFi-based node running, you’ll want to disable or remove that JMRI connection:</p>
 <h3 id="in-jmri"><a class="header" href="#in-jmri">In JMRI</a></h3>
@@ -3390,10 +3396,10 @@ openmrn.add_can_port(&amp;can_driver);
 <li>Click <strong>Save</strong></li>
 </ol>
 <p>This prevents JMRI from trying to connect to the old WiFi-based node, which won’t be responding anymore.</p>
-<h2 id="adding-the-rr-cirkits-lcc-buffer-connection"><a class="header" href="#adding-the-rr-cirkits-lcc-buffer-connection">Adding the RR-CirKits LCC Buffer Connection</a></h2>
+<h2 id="adding-the-can-bus-interface-connection"><a class="header" href="#adding-the-can-bus-interface-connection">Adding the CAN Bus Interface Connection</a></h2>
 <h3 id="step-1-physical-connection"><a class="header" href="#step-1-physical-connection">Step 1: Physical Connection</a></h3>
 <ol>
-<li>Connect your <strong>LCC Buffer-USB</strong> to your computer via USB</li>
+<li>Connect your <strong>LCC Buffer-USB</strong> (or <strong>SPROG USB-LCC</strong>) to your computer via USB</li>
 <li>In <strong>Device Manager</strong> (Windows) or <strong>System Information</strong> (Mac/Linux), note which <strong>COM port</strong> or <strong>serial device</strong> the Buffer appears on
 <ul>
 <li>Windows: <code>COM3</code>, <code>COM4</code>, etc.</li>
@@ -3408,7 +3414,7 @@ openmrn.add_can_port(&amp;can_driver);
 <li>Click <strong>Connections</strong></li>
 <li>Click the <strong>+</strong> sign to the right to add a connection</li>
 <li><strong>System manufacturer</strong>: Select <strong>“LCC”</strong></li>
-<li><strong>System connection</strong>: Select <strong>“CAN via LCC Buffer-USB”</strong> (or the appropriate device name for your interface)</li>
+<li><strong>System connection</strong>: Select <strong>“CAN via LCC Buffer-USB”</strong>, <strong>“CAN via SPROG USB-LCC”</strong>, or the appropriate device name for your interface</li>
 <li><strong>Serial port</strong>: Select the COM port where your interface appeared (from Step 1)</li>
 </ol>
 <p><img src="05-can/images/LCC-CAN-Connection.png" alt="LCC CAN Connection Setup"></p>

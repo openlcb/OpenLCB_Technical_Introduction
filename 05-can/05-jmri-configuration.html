@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Configuring JMRI for CAN: RR-CirKits LCC Buffer-USB - OpenLCB Programmer&#x27;s Guide</title>
+        <title>Configuring JMRI for CAN - OpenLCB Programmer&#x27;s Guide</title>
 
 
         <!-- Custom HTML head -->
@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-291cbed2.js";
+            window.path_to_searchindex_js = "../searchindex-8dde4bc0.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-3fbc7ce2.js"></script>
+        <script src="../toc-a18098d4.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -175,17 +175,17 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="configuring-jmri-for-can-using-a-can-bus-interface-module"><a class="header" href="#configuring-jmri-for-can-using-a-can-bus-interface-module">Configuring JMRI for CAN: Using a CAN Bus Interface Module</a></h1>
-<p>In Chapter 3, JMRI connected to your ESP32 node via a TCP Hub on port 12021 (WiFi). Now that your node is on a CAN bus, JMRI needs a different path to reach it: through a <strong>CAN bus interface module</strong> (such as RR-CirKits LCC Buffer-USB, PEAK PCAN-USB, or similar) connected to the same CAN bus.</p>
+<p>In Chapter 3, JMRI connected to your ESP32 node via a TCP Hub on port 12021 (WiFi). Now that your node is on a CAN bus, JMRI needs a different path to reach it: through a <strong>CAN bus interface module</strong> (such as RR-CirKits LCC Buffer-USB, SPROG USB-LCC, PEAK PCAN-USB, or similar) connected to the same CAN bus.</p>
 <h2 id="hardware-setup"><a class="header" href="#hardware-setup">Hardware Setup</a></h2>
 <p>Before configuring JMRI, make sure your physical setup is in place and looks something like the following:</p>
 <pre class="mermaid">graph LR
-    T["120Ω Terminator"] --&gt; A["RR-CirKits&lt;br/&gt; LCC Power-Point"]
-    A --&gt; B["RR-CirKits&lt;br/&gt; LCC Buffer-USB"]
+    T["120Ω Terminator"] --&gt; A["RR-CirKits&lt;br/&gt; LCC Power-Point&lt;br/&gt;(or SPROG POWER-LCC)"]
+    A --&gt; B["RR-CirKits&lt;br/&gt; LCC Buffer-USB&lt;br/&gt;(or SPROG USB-LCC)"]
     B --&gt; C["Your ESP32 Node&lt;br/&gt;(120Ω terminator added)"]
     B --&gt; D["LccPro/JMRI&lt;br/&gt;(USB)"]
 </pre>
 
-<p>The interface module acts as a “gateway” that translates between the CAN bus and JMRI’s protocol. Examples include RR-CirKits LCC Buffer-USB, PEAK PCAN-USB, or any other CAN interface compatible with JMRI. Note that 120Ω terminators are required at the physical ends of the CAN bus.</p>
+<p>The interface module acts as a “gateway” that translates between the CAN bus and JMRI’s protocol. Examples include RR-CirKits LCC Buffer-USB, SPROG USB-LCC, PEAK PCAN-USB, or any other CAN interface compatible with JMRI. Note that 120Ω terminators are required at the physical ends of the CAN bus.</p>
 <h2 id="disabling-the-wifi-connection-from-chapter-3"><a class="header" href="#disabling-the-wifi-connection-from-chapter-3">Disabling the WiFi Connection from Chapter 3</a></h2>
 <p>If you still have your Chapter 3 WiFi-based node running, you’ll want to disable or remove that JMRI connection:</p>
 <h3 id="in-jmri"><a class="header" href="#in-jmri">In JMRI</a></h3>
@@ -196,10 +196,10 @@
 <li>Click <strong>Save</strong></li>
 </ol>
 <p>This prevents JMRI from trying to connect to the old WiFi-based node, which won’t be responding anymore.</p>
-<h2 id="adding-the-rr-cirkits-lcc-buffer-connection"><a class="header" href="#adding-the-rr-cirkits-lcc-buffer-connection">Adding the RR-CirKits LCC Buffer Connection</a></h2>
+<h2 id="adding-the-can-bus-interface-connection"><a class="header" href="#adding-the-can-bus-interface-connection">Adding the CAN Bus Interface Connection</a></h2>
 <h3 id="step-1-physical-connection"><a class="header" href="#step-1-physical-connection">Step 1: Physical Connection</a></h3>
 <ol>
-<li>Connect your <strong>LCC Buffer-USB</strong> to your computer via USB</li>
+<li>Connect your <strong>LCC Buffer-USB</strong> (or <strong>SPROG USB-LCC</strong>) to your computer via USB</li>
 <li>In <strong>Device Manager</strong> (Windows) or <strong>System Information</strong> (Mac/Linux), note which <strong>COM port</strong> or <strong>serial device</strong> the Buffer appears on
 <ul>
 <li>Windows: <code>COM3</code>, <code>COM4</code>, etc.</li>
@@ -214,7 +214,7 @@
 <li>Click <strong>Connections</strong></li>
 <li>Click the <strong>+</strong> sign to the right to add a connection</li>
 <li><strong>System manufacturer</strong>: Select <strong>“LCC”</strong></li>
-<li><strong>System connection</strong>: Select <strong>“CAN via LCC Buffer-USB”</strong> (or the appropriate device name for your interface)</li>
+<li><strong>System connection</strong>: Select <strong>“CAN via LCC Buffer-USB”</strong>, <strong>“CAN via SPROG USB-LCC”</strong>, or the appropriate device name for your interface</li>
 <li><strong>Serial port</strong>: Select the COM port where your interface appeared (from Step 1)</li>
 </ol>
 <p><img src="images/LCC-CAN-Connection.png" alt="LCC CAN Connection Setup"></p>
