@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-e4bbaba0.js";
+            window.path_to_searchindex_js = "searchindex-149837ae.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-a18098d4.js"></script>
@@ -3037,41 +3037,65 @@ Produced event: 0x0502010202000001 (state: 1)
 <li>A <strong>dominant bit</strong> represents a logic <strong>0</strong></li>
 <li>A <strong>recessive bit</strong> represents a logic <strong>1</strong></li>
 </ul>
-<p><strong>Key concept</strong>: The CAN bus’s idle (recessive) voltage is set by external infrastructure—in LCC, by a device like the RR-CirKits LCC Power-Point or SPROG POWER-LCC—not by your transceiver. Your transceiver only <em>nudges</em> the bus around that idle level.</p>
+<p><strong>Key concept</strong>: The transceiver operates in two fundamentally different modes—<strong>high-impedance (recessive)</strong> and <strong>active driving (dominant)</strong>. The bias network in your LCC infrastructure (like RR-CirKits LCC Power-Point or SPROG POWER-LCC) provides the reference voltage, but the transceiver’s behavior determines what you actually measure.</p>
 <h4 id="recessive-idle-state"><a class="header" href="#recessive-idle-state">Recessive (Idle) State</a></h4>
-<p>In the <strong>recessive (idle) state</strong>, no node is actively driving the bus. Both CANH and CANL sit at nearly the <strong>same voltage</strong>, defined by the bias network in your LCC infrastructure. The exact idle voltage depends on what device provides the bias.</p>
+<p>In the <strong>recessive state</strong>, the transceiver outputs are <strong>high-impedance</strong>—essentially disconnected from the bus. The transceiver isn’t driving the lines at all; it has “let go” of them.</p>
+<p>With no active driving, the <strong>bias network</strong> in your LCC infrastructure pulls both CANH and CANL to nearly the <strong>same voltage</strong>. For typical LCC infrastructure (like the RR-CirKits Power-Point or SPROG POWER-LCC), this is around 2.5V, though the exact voltage depends on the specific device. When fully settled, there’s almost no differential voltage between them.</p>
+<p><strong>Important</strong>: After a dominant period, the bus doesn’t instantly jump to the bias voltage. The bias network charges the bus through the cable capacitance, creating an <strong>RC charging curve</strong>. During short recessive periods (between bits), the voltage may not fully settle to the bias level.</p>
 <h4 id="dominant-transmission-state"><a class="header" href="#dominant-transmission-state">Dominant (Transmission) State</a></h4>
-<p>When any node wants to send a <strong>dominant 0 bit</strong>, its CAN transceiver briefly <strong>creates a small voltage difference</strong> between the two wires:</p>
+<p>When any node wants to send a <strong>dominant 0 bit</strong>, its CAN transceiver <strong>actively drives</strong> both outputs:</p>
 <ul>
-<li><strong>CANH is nudged up</strong> above the idle level</li>
-<li><strong>CANL is nudged down</strong> below the idle level</li>
+<li><strong>CANH driver</strong> pulls toward the transceiver’s VDD supply voltage (e.g., 3.3V for SN65HVD230)</li>
+<li><strong>CANL driver</strong> pulls toward GND (0V)</li>
 </ul>
-<p><strong>Example: From my test setup</strong> (with a transceiver connected to LCC infrastructure), measurements showed:</p>
+<p>This creates a significant differential voltage between the two lines. However, the actual voltages you measure are <strong>not</strong> VDD and GND because:</p>
+<ol>
+<li>The <strong>bias network is still connected</strong> and pulls both lines toward the bias voltage (~2.5V)</li>
+<li>The <strong>termination resistors</strong> (120Ω at each end of the bus) load the drivers</li>
+<li>The drivers and bias network “fight” each other, settling at intermediate voltages</li>
+</ol>
+<p><strong>Example: From my test setup</strong> (SN65HVD230 transceiver with VDD=3.3V, connected to LCC infrastructure), measurements showed:</p>
 <div class="table-wrapper">
 <table>
 <thead>
 <tr><th>State</th><th>CANH</th><th>CANL</th><th>Differential</th></tr>
 </thead>
 <tbody>
-<tr><td><strong>Recessive (1)</strong></td><td>~2.25V</td><td>~2.12V</td><td>~0.13V</td></tr>
-<tr><td><strong>Dominant (0)</strong></td><td>~1.68V</td><td>~1.08V</td><td>~0.60V</td></tr>
+<tr><td><strong>Recessive (1)</strong></td><td>~2.37V</td><td>~2.37V</td><td>~0.00V</td></tr>
+<tr><td><strong>Dominant (0)</strong></td><td>~2.14V</td><td>~1.18V</td><td>~0.96V</td></tr>
 </tbody>
 </table>
 </div>
-<p>The exact voltages you observe will depend on your specific infrastructure and transceiver. The key principle remains: <strong>the idle voltage is set by the bias network</strong>, and <strong>the transceiver creates the differential around that point</strong>.</p>
+<p>Note that the recessive voltage (~2.37V) is set by the LCC infrastructure’s bias network, not by the transceiver. The exact voltages you observe will depend on your specific transceiver, its supply voltage, and the LCC infrastructure you’re using. What matters for reliable communication is the <strong>differential voltage</strong> (CANH - CANL), not the absolute voltage on either line.</p>
 <h4 id="visualizing-the-differential-signal"><a class="header" href="#visualizing-the-differential-signal">Visualizing the Differential Signal</a></h4>
 <p>Here’s what this looks like on an oscilloscope during actual CAN bus communication:</p>
-<p><img src="05-can/images/ScopeCapture.png" alt="Oscilloscope capture showing CANH, CANL, and differential signal"></p>
+<p><img src="05-can/images/ScopeCapture3.png" alt="Oscilloscope capture showing CANH, CANL, and differential signal"></p>
 <p>In this capture:</p>
 <ul>
-<li><strong>Yellow trace (CANL)</strong>: Shows the low line varying as nodes transmit</li>
-<li><strong>Cyan trace (CANH)</strong>: Shows the high line varying in the opposite direction</li>
+<li><strong>Yellow trace (CANL)</strong>: Shows the low line being actively driven low during dominant periods, then charging back up during recessive periods</li>
+<li><strong>Cyan trace (CANH)</strong>: Shows the high line behavior during the same transmission</li>
 <li><strong>Purple trace (CANH-CANL)</strong>: The differential signal - notice how clean and digital it is!</li>
 </ul>
-<p><strong>Key observation</strong>: While the individual CANH and CANL voltages aren’t constant (they shift due to bus activity and bias variations), the <strong>differential signal (CANH-CANL) is very clean</strong>. This is the magic of differential signaling - noise and voltage shifts that affect both wires equally cancel out when you subtract them, leaving a robust digital signal.</p>
+<p><strong>Key observations</strong>:</p>
+<ol>
+<li>
+<p><strong>RC Charging Behavior</strong>: Notice the curved rise at the end of each dominant pulse (when returning to recessive). This is the bias network charging the cable capacitance. The voltage doesn’t instantly snap to the bias level—it gradually rises following an exponential curve.</p>
+</li>
+<li>
+<p><strong>Longer vs. Shorter Recessive Periods</strong>: During longer idle periods (left side of the capture), both lines fully settle to ~2.37V. During shorter recessive periods between bits, the voltage doesn’t have time to fully charge and settles at a lower intermediate voltage.</p>
+</li>
+<li>
+<p><strong>Clean Differential Signal</strong>: While the individual CANH and CANL voltages show complex behavior (active driving, RC charging, partial settling), the <strong>differential signal (CANH-CANL) is very clean</strong>. This is the magic of differential signaling—noise, voltage shifts, and charging effects that affect both wires equally cancel out when you subtract them, leaving a robust digital signal.</p>
+</li>
+</ol>
 <p>The CAN receiver in your transceiver looks only at this differential voltage, not the absolute voltage on either wire. This is why CAN is so reliable in electrically noisy environments like model railroads and industrial settings.</p>
 <h3 id="the-transceivers-role"><a class="header" href="#the-transceivers-role">The Transceiver’s Role</a></h3>
-<p>Your transceiver does one essential job: <strong>convert the ESP32’s logic signals (0V/3.3V) into small differential voltages on the CAN bus</strong>. It pushes CANH and CANL apart to send a dominant bit, then releases them to send a recessive bit. Everything else—the bias voltage, termination, ground reference—comes from your LCC infrastructure (such as the RR-CirKits LCC Power-Point or SPROG POWER-LCC).</p>
+<p>Your transceiver does one essential job: <strong>convert the ESP32’s logic signals (0V/3.3V) into differential voltages on the CAN bus</strong>.</p>
+<ul>
+<li><strong>Recessive (logic 1)</strong>: Transceiver goes <strong>high-impedance</strong>, releasing the bus and allowing the bias network to set the voltage</li>
+<li><strong>Dominant (logic 0)</strong>: Transceiver <strong>actively drives</strong> CANH toward VCC and CANL toward GND, creating a differential voltage</li>
+</ul>
+<p>Everything else—the bias voltage, termination, ground reference—comes from your LCC infrastructure (such as the RR-CirKits LCC Power-Point or SPROG POWER-LCC). The transceiver’s drivers work against this infrastructure during dominant periods, which is why the measured voltages are intermediate values rather than full VCC/GND.</p>
 <h3 id="the-wired-and-behavior"><a class="header" href="#the-wired-and-behavior">The Wired-AND Behavior</a></h3>
 <p>This dominant/recessive behavior is the foundation of CAN’s arbitration—if two nodes transmit simultaneously, the one sending 0 (dominant) wins without any other node knowing a collision happened. This is covered in detail in Chapter 1.</p>
 <h3 id="why-you-need-the-lcc-power-point-or-similar-device"><a class="header" href="#why-you-need-the-lcc-power-point-or-similar-device">Why You Need the LCC Power-Point (or Similar Device)</a></h3>
