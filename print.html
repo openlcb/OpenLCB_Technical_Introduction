@@ -36,10 +36,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-149837ae.js";
+            window.path_to_searchindex_js = "searchindex-e5dac756.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-a18098d4.js"></script>
+        <script src="toc-0aab397f.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -3695,6 +3695,670 @@ openmrn.add_can_port(&amp;can_driver);
 </ul>
 <p><strong>This is not a problem</strong>—it means your node is <em>trying</em> to communicate, and the hardware is working. Once you connect to the Buffer-USB (which will acknowledge frames), the error count will stabilize.</p>
 <p><strong>Next Chapter</strong>: <a href="06-io/overview.html">Using the ESP32’s I/O</a></p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="physical-io-with-gpio"><a class="header" href="#physical-io-with-gpio">Physical I/O with GPIO</a></h1>
+<p>Now that you’ve successfully created a CAN-based OpenLCB node in Chapter 5, it’s time to add physical hardware interactions. But before we wire up buttons and LEDs, we’ll add a useful enable/disable toggle to control the async_blink event production. This serves two purposes: it reduces message clutter (both serial output and LCC traffic in JMRI/LccPro) when we’re focusing on GPIO events, and it demonstrates how to implement binary (on/off) configuration options in OpenMRNLite.</p>
+<h2 id="chapter-structure-1"><a class="header" href="#chapter-structure-1">Chapter Structure</a></h2>
+<p>This chapter takes a strategic two-part approach:</p>
+<h3 id="part-1-configuration-evolution-no-additional-hardware"><a class="header" href="#part-1-configuration-evolution-no-additional-hardware">Part 1: Configuration Evolution (No Additional Hardware)</a></h3>
+<p>Before adding GPIO pins, we’ll enhance the async_blink example with:</p>
+<ul>
+<li>A configurable <strong>enable/disable feature</strong> for event production to reduce message clutter (serial output and LCC traffic)</li>
+<li>Demonstrating <strong>binary (boolean) configuration values</strong> using mapped integers</li>
+</ul>
+<p><strong>You can complete Part 1 using the existing CAN setup from Chapter 5</strong>—no additional components needed.</p>
+<p>This enhancement gives you control over the async_blink output and introduces an important configuration pattern you’ll use throughout your OpenLCB nodes.</p>
+<h3 id="part-2-adding-physical-io-additional-hardware-required"><a class="header" href="#part-2-adding-physical-io-additional-hardware-required">Part 2: Adding Physical I/O (Additional Hardware Required)</a></h3>
+<p>Once the configuration foundation is solid, we’ll add real-world interactions:</p>
+<ul>
+<li>Connect <strong>pushbuttons</strong> to detect physical input</li>
+<li>Connect <strong>LEDs</strong> to provide visual output</li>
+<li>Implement OpenLCB <strong>producers and consumers</strong> tied to GPIO pins</li>
+<li>Scale to <strong>multiple inputs and outputs</strong> using efficient patterns</li>
+</ul>
+<h2 id="what-youll-learn-1"><a class="header" href="#what-youll-learn-1">What You’ll Learn</a></h2>
+<p>By the end of this chapter, you’ll understand:</p>
+<ol>
+<li><strong>Boolean configuration</strong>: Implementing enable/disable toggles in OpenMRNLite’s CDI system using mapped integers</li>
+<li><strong>CDI caching behavior</strong>: Why you must restart JMRI/LccPro after firmware changes</li>
+<li><strong>GPIO integration</strong> (Part 2): ConfiguredProducer, ConfiguredConsumer, and scaling patterns</li>
+</ol>
+<h2 id="part-2-additional-hardware-requirements"><a class="header" href="#part-2-additional-hardware-requirements">Part 2: Additional Hardware Requirements</a></h2>
+<p>When you reach Part 2 (adding physical GPIO), you’ll need these additional components:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Component</th><th>Quantity</th><th>Notes</th></tr>
+</thead>
+<tbody>
+<tr><td>Tactile pushbutton switches</td><td>2</td><td>Normally-open, momentary contact</td></tr>
+<tr><td>LEDs</td><td>2</td><td>Any color; 5mm standard size recommended</td></tr>
+<tr><td>220Ω resistors</td><td>2</td><td>Current limiting for LEDs (5% tolerance, 1/4W)</td></tr>
+<tr><td>Jumper wires</td><td>~6</td><td>Male-to-male (you already have these from Chapter 5)</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>Note:</strong> You already have a breadboard and basic jumper wires from the CAN setup in Chapter 5.</p>
+<p><strong>Budget Estimate:</strong> $2-3 USD for the new components (or free if you have a basic electronics kit).</p>
+<h3 id="where-to-order"><a class="header" href="#where-to-order">Where to Order</a></h3>
+<p>These components are available from Amazon, eBay, AliExpress, Adafruit, SparkFun, DigiKey, Mouser, or local hobby electronics stores.</p>
+<h2 id="whats-next-3"><a class="header" href="#whats-next-3">What’s Next</a></h2>
+<p>Start with <a href="06-gpio/config-evolution.html">Configuration Evolution</a> to add the enable/disable toggle and learn about binary configuration values.</p>
+<p>Once you’ve added this feature, you’ll be ready to add physical I/O in the subsequent sections.</p>
+<ul>
+<li>Reduce noise by keeping jumper wires away from USB cable</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="adding-an-enabledisable-toggle"><a class="header" href="#adding-an-enabledisable-toggle">Adding an Enable/Disable Toggle</a></h1>
+<p>Let’s add a “Blink Enabled” toggle to the async_blink example. This demonstrates an important OpenMRNLite pattern: <strong>binary configuration values using mapped integers</strong>.</p>
+<h2 id="implementing-binary-configuration-values"><a class="header" href="#implementing-binary-configuration-values">Implementing Binary Configuration Values</a></h2>
+<h3 id="step-1-add-the-enabledisable-feature"><a class="header" href="#step-1-add-the-enabledisable-feature">Step 1: Add the Enable/Disable Feature</a></h3>
+<p>Let’s add a “Blink Enabled” toggle to control whether the async_blink node produces events. This will quiet down both the serial monitor and the JMRI/LccPro event monitor, making it easier to focus on GPIO events when we add them in the next section.</p>
+<p>This also demonstrates an important OpenMRNLite pattern: <strong>binary configuration values using mapped integers</strong>. Since OpenMRNLite doesn’t have a dedicated boolean type, we’ll use a <code>Uint8ConfigEntry</code> with a <code>MapValues</code> attribute that maps 0→“Disabled” and 1→“Enabled” for user-friendly display in JMRI.</p>
+<p><strong>Note:</strong> Because we’re adding a new field to the configuration structure, we must increment <code>CANONICAL_VERSION</code> from <code>0x0002</code> to <code>0x0003</code>. As covered in Chapter 4, this will trigger a factory reset when you first flash this version.</p>
+<h4 id="updated-configh"><a class="header" href="#updated-configh">Updated config.h</a></h4>
+<p>We’ll add these changes to our CDI:</p>
+<pre><code class="language-diff"> namespace openlcb {
+ 
+ // ... SNIP static/dynamic data unchanged ...
+ 
++/// Boolean map for Enabled/Disabled configuration values
++static constexpr const char *BOOLEAN_MAP =
++    "&lt;relation&gt;&lt;property&gt;0&lt;/property&gt;&lt;value&gt;Disabled&lt;/value&gt;&lt;/relation&gt;"
++    "&lt;relation&gt;&lt;property&gt;1&lt;/property&gt;&lt;value&gt;Enabled&lt;/value&gt;&lt;/relation&gt;";
++
+ /// Version number for the configuration structure
+-static constexpr uint16_t CANONICAL_VERSION = 0x0002;
++static constexpr uint16_t CANONICAL_VERSION = 0x0003;
+ 
+ /// Minimal configuration segment with application settings
+ CDI_GROUP(AsyncBlinkSegment, Segment(MemoryConfigDefs::SPACE_CONFIG), Offset(128));
+ CDI_GROUP_ENTRY(internal_config, InternalConfigData);
++CDI_GROUP_ENTRY(blink_enabled, Uint8ConfigEntry,
++                Default(1),
++                Min(0), Max(1),
++                MapValues(BOOLEAN_MAP),
++                Name("Blink Enabled"),
++                Description("Enable or disable event production"));
+ CDI_GROUP_ENTRY(blink_interval, Uint16ConfigEntry,
+                 Default(1000),
+                 Min(100),
+                 Max(30000),
+                 Name("Blink Interval"),
+                 Description("Milliseconds between alternating events (100-30000)"));
+ CDI_GROUP_END();
+</code></pre>
+<p><strong>Key Points:</strong></p>
+<ul>
+<li><strong>Mapped integers for binary values</strong>: OpenMRNLite doesn’t have a dedicated boolean type, so we use <code>Uint8ConfigEntry</code> with <code>MapValues</code> to create user-friendly “Enabled/Disabled” labels</li>
+<li>The mapping: <code>0</code> displays as “Disabled”, <code>1</code> displays as “Enabled” in JMRI</li>
+<li><code>CANONICAL_VERSION</code> incremented to <code>0x0003</code> (triggers factory reset as explained in Chapter 4)</li>
+<li>JMRI will render this as a dropdown with “Enabled” and “Disabled” options instead of raw numbers</li>
+</ul>
+<h4 id="updated-maincpp"><a class="header" href="#updated-maincpp">Updated main.cpp</a></h4>
+<p>Now we need to read and apply the new <code>blink_enabled</code> configuration:</p>
+<pre><code class="language-diff"> // State variable to track which event to send
+ bool event_state = false;
+ 
+-// Timing for event production - cached from configuration
++// Configuration variables - cached from configuration
++bool blink_enabled = true;           // Default enabled, will be read from config in setup()
+ unsigned long last_event_time = 0;
+ unsigned long event_interval = 100;  // Default, will be read from config in setup()
+</code></pre>
+<p>Update <code>apply_configuration()</code> to read both settings:</p>
+<pre><code class="language-diff">     UpdateAction apply_configuration(int fd, bool initial_load,
+                                      BarrierNotifiable *done) OVERRIDE
+     {
+         AutoNotify n(done);
+         
+-        // Read the blink interval from config file and update global variable
++        // Read configuration values from config file and update global variables
++        blink_enabled = cfg.seg().blink_enabled().read(fd);
+         event_interval = cfg.seg().blink_interval().read(fd);
+-        Serial.printf("Configuration updated: blink_interval = %lu ms\n", event_interval);
++        Serial.printf("Configuration updated: blink_enabled = %s, blink_interval = %lu ms\n",
++                      blink_enabled ? "Enabled" : "Disabled", event_interval);
+         
+         return UPDATED;
+     }
+</code></pre>
+<p>Update <code>factory_reset()</code> to initialize the new field:</p>
+<pre><code class="language-diff">     void factory_reset(int fd) override
+     {
+         // Initialize SNIP dynamic data on first boot
+         cfg.userinfo().name().write(fd, openlcb::SNIP_NODE_NAME);
+         cfg.userinfo().description().write(fd, openlcb::SNIP_NODE_DESC);
+         
+         // Initialize application settings with defaults
++        cfg.seg().blink_enabled().write(fd, 1);      // Default enabled
+         cfg.seg().blink_interval().write(fd, 1000);  // Default 1 second
+-        Serial.println("Factory reset: wrote default blink_interval = 1000 ms");
++        Serial.println("Factory reset: wrote defaults (blink_enabled=Enabled, blink_interval=1000 ms)");
+     }
+</code></pre>
+<p>Update <code>loop()</code> to check the enabled flag before producing events:</p>
+<pre><code class="language-diff"> void loop() {
+   // CRITICAL: Must call openmrn.loop() frequently to process messages
+   openmrn.loop();
+   
+-  // Check if it's time to produce an event
+-  // event_interval is read from config in setup() and updated in apply_configuration()
++  // Check if blinking is enabled and if it's time to produce an event
++  // blink_enabled and event_interval are read from config and updated in apply_configuration()
+   unsigned long current_time = millis();
+   
+-  if (current_time - last_event_time &gt;= event_interval) {
++  if (blink_enabled &amp;&amp; current_time - last_event_time &gt;= event_interval) {
+     // Alternate event state
+     event_state = !event_state;
+     
+     // Send the event
+     // ... rest of event production code unchanged ...
+   }
+ }
+</code></pre>
+<h3 id="step-2-test-the-configuration"><a class="header" href="#step-2-test-the-configuration">Step 2: Test the Configuration</a></h3>
+<p>After building and uploading the firmware:</p>
+<ol>
+<li>
+<p><strong>Observe the factory reset</strong> (due to version increment):</p>
+<pre><code>Factory reset: wrote defaults (blink_enabled=Enabled, blink_interval=1000 ms)
+</code></pre>
+</li>
+<li>
+<p><strong>Configure via JMRI/LccPro</strong>:</p>
+<ul>
+<li>Open the node’s configuration dialog</li>
+<li>You should see “Blink Enabled” with a dropdown showing “Enabled” / “Disabled”</li>
+<li>You should see “Blink Interval” with the existing 100-30000 ms range</li>
+</ul>
+</li>
+<li>
+<p><strong>Test the enable/disable feature</strong>:</p>
+<ul>
+<li>Set “Blink Enabled” to “Disabled”</li>
+<li>Click “Write” or “Save Changes” to write the new value to the node</li>
+<li><strong>Important:</strong> Click “More…” then “Update Complete” to signal the node to apply changes</li>
+<li>Watch the serial console: <code>Configuration updated: blink_enabled = Disabled, ...</code></li>
+<li><strong>Both event production and serial output stop</strong> — notice how much quieter the output becomes</li>
+<li>Also check JMRI/LccPro’s Event Monitor — no more async_blink events cluttering the view</li>
+<li>Re-enable and verify events resume (remember to click “Update Complete” again)</li>
+</ul>
+</li>
+</ol>
+<h2 id="important-cdi-caching-in-jmrilccpro"><a class="header" href="#important-cdi-caching-in-jmrilccpro">Important: CDI Caching in JMRI/LccPro</a></h2>
+<p><strong>⚠️ Critical Limitation:</strong> JMRI and LccPro aggressively cache CDI data. If you change your firmware’s CDI structure and reflash, <strong>you must restart JMRI/LccPro</strong> to see the updated configuration fields.</p>
+<h3 id="why-cdi-is-cached"><a class="header" href="#why-cdi-is-cached">Why CDI is Cached</a></h3>
+<ul>
+<li><strong>CDI is expensive to fetch</strong>: It’s retrieved via streamed datagrams and can be tens of kilobytes</li>
+<li><strong>Tools assume CDI is static</strong>: The LCC spec treats CDI as a description of the node that rarely changes</li>
+<li><strong>No protocol for CDI change notification</strong>: There’s no way for a node to tell configuration tools “my CDI changed, please reload”</li>
+</ul>
+<h3 id="when-cdi-is-refreshed"><a class="header" href="#when-cdi-is-refreshed">When CDI is Refreshed</a></h3>
+<p>Both JMRI and LccPro only reload CDI when:</p>
+<ul>
+<li>The tool is restarted</li>
+<li>The node is removed from the roster and re-added (JMRI only)</li>
+</ul>
+<p><strong>Tip:</strong> LccPro is faster to restart than JMRI, so many developers use it during rapid CDI iteration.</p>
+<h2 id="memory-layout-after-changes"><a class="header" href="#memory-layout-after-changes">Memory Layout After Changes</a></h2>
+<p>Our configuration now looks like this:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Offset</th><th>Field</th><th>Size</th><th>Purpose</th></tr>
+</thead>
+<tbody>
+<tr><td>0-127</td><td>ACDI User Data</td><td>128 bytes</td><td>Node name, description</td></tr>
+<tr><td>128</td><td>InternalConfigData</td><td>Variable</td><td>Version tracking, etc.</td></tr>
+<tr><td>129</td><td>blink_enabled</td><td>1 byte</td><td>Enable/disable event production</td></tr>
+<tr><td>130-131</td><td>blink_interval</td><td>2 bytes</td><td>Milliseconds between events</td></tr>
+<tr><td><strong>Total</strong></td><td></td><td><strong>~132 bytes</strong></td><td></td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="key-takeaways"><a class="header" href="#key-takeaways">Key Takeaways</a></h2>
+<ol>
+<li><strong>Mapped integers for binary values</strong>: Use <code>Uint8ConfigEntry</code> with <code>MapValues</code> to create user-friendly on/off toggles</li>
+<li><strong>Value mapping syntax</strong>: <code>&lt;relation&gt;&lt;property&gt;VALUE&lt;/property&gt;&lt;value&gt;LABEL&lt;/value&gt;&lt;/relation&gt;</code></li>
+<li><strong>Restart tools after CDI changes</strong>: JMRI/LccPro won’t auto-reload CDI</li>
+<li><strong>Use meaningful labels</strong>: “Enabled/Disabled” is clearer than numeric values</li>
+<li><strong>Practical benefit</strong>: The enable/disable toggle keeps message monitors clean when focusing on specific events</li>
+</ol>
+<p><strong>Next:</strong> <a href="06-gpio/single-button-led.html">Adding Physical I/O: Button and LED</a></p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="adding-a-physical-button-input"><a class="header" href="#adding-a-physical-button-input">Adding a Physical Button Input</a></h1>
+<p>Now that you have a configurable OpenLCB node with CAN transport, let’s add physical hardware interaction. We’ll start with a pushbutton input that produces OpenLCB events when pressed and released.</p>
+<h2 id="what-youll-build"><a class="header" href="#what-youll-build">What You’ll Build</a></h2>
+<p>In this section, you’ll:</p>
+<ul>
+<li>Wire a pushbutton to GPIO 18</li>
+<li>Configure a <code>ConfiguredProducer</code> to monitor the button state</li>
+<li>Use <code>RefreshLoop</code> for efficient 33Hz polling with hardware debounce</li>
+<li>See the button produce unique event IDs when pressed and released</li>
+<li>Configure the button’s behavior through JMRI/LccPro</li>
+</ul>
+<h2 id="additional-hardware-required"><a class="header" href="#additional-hardware-required">Additional Hardware Required</a></h2>
+<p>For this section, you’ll need:</p>
+<ul>
+<li><strong>1× Tactile pushbutton switch</strong> (normally-open, momentary contact)</li>
+<li><strong>Jumper wires</strong> (you already have these from Chapter 5)</li>
+</ul>
+<p><strong>Note:</strong> The ESP32 has internal pull-up resistors, so you don’t need external resistors for button inputs. We’ll use pull-up (rather than pull-down) configuration—see the “Active-Low vs Active-High” section below for why.</p>
+<h2 id="hardware-setup-1"><a class="header" href="#hardware-setup-1">Hardware Setup</a></h2>
+<h3 id="breadboard-wiring"><a class="header" href="#breadboard-wiring">Breadboard Wiring</a></h3>
+<p><img src="06-gpio/images/ESP32-CAN-Button.png" alt="Breadboard layout with button"><br><em>Figure: ESP32 with CAN transceiver and pushbutton on breadboard</em></p>
+<p>Connect the button as follows:</p>
+<ol>
+<li><strong>One side of button</strong> → GPIO 18</li>
+<li><strong>Other side of button</strong> → GND</li>
+</ol>
+<p>That’s it! The ESP32’s internal pull-up resistor will keep GPIO 18 HIGH when the button is not pressed.</p>
+<h3 id="how-it-works"><a class="header" href="#how-it-works">How It Works</a></h3>
+<ul>
+<li><strong>Button released (unpressed):</strong> Internal pull-up resistor pulls GPIO 18 HIGH (3.3V) → produces “Event On”</li>
+<li><strong>Button pressed:</strong> Direct connection to GND pulls GPIO 18 LOW (0V) → produces “Event Off”</li>
+</ul>
+<p>This is called <strong>active-low</strong> logic: pressing the button creates the LOW state.</p>
+<p><strong>Note:</strong> This may seem reversed—you might expect pressing a button to produce “Event On” rather than “Event Off”. We’ll explain why we use this pull-up configuration (and why we don’t use pull-down to make it more intuitive) in the “Active-Low vs Active-High” section below.</p>
+<h2 id="understanding-the-code-changes"><a class="header" href="#understanding-the-code-changes">Understanding the Code Changes</a></h2>
+<p>We’ll add three key components to make the button work:</p>
+<h3 id="1-gpio-pin-definition-before-openmrn-stack-initialization"><a class="header" href="#1-gpio-pin-definition-before-openmrn-stack-initialization">1. GPIO Pin Definition (before OpenMRN stack initialization)</a></h3>
+<pre><code class="language-diff">+// Define GPIO pin for button input (active-low with internal pull-up)
++// When button is pressed, pin reads LOW (0); when released, reads HIGH (1)
++GPIO_PIN(BUTTON, GpioInputPU, 18);
++
++// GPIO initializer - sets up all GPIO pins before OpenMRN stack starts
++typedef GpioInitializer&lt;BUTTON_Pin&gt; GpioInit;
+</code></pre>
+<p><strong>Key points:</strong></p>
+<ul>
+<li><code>GpioInputPU</code> enables the internal pull-up resistor (see “Active-Low vs Active-High” section for why we use pull-up)</li>
+<li>The pin must be initialized <strong>before</strong> the OpenMRN stack starts</li>
+<li><code>GpioInit::hw_init()</code> will be called in <code>setup()</code> before <code>openmrn.begin()</code></li>
+</ul>
+<h3 id="2-configuration-in-configh"><a class="header" href="#2-configuration-in-configh">2. Configuration in config.h</a></h3>
+<p>Add a <code>ProducerConfig</code> entry to the CDI segment:</p>
+<pre><code class="language-diff"> CDI_GROUP_ENTRY(blink_interval, Uint16ConfigEntry,
+                 Default(1000),
+                 Min(100),
+                 Max(30000),
+                 Name("Blink Interval"),
+                 Description("Milliseconds between alternating events (100-30000)"));
++CDI_GROUP_ENTRY(button, ProducerConfig,
++                Name("Button 1"),
++                Description("Physical button input on GPIO 18"));
+ CDI_GROUP_END();
+</code></pre>
+<p>This creates a configuration section for the button with:</p>
+<ul>
+<li><strong>Description:</strong> User-editable label for this input</li>
+<li><strong>Event On:</strong> Event ID produced when button is released (pin goes HIGH)</li>
+<li><strong>Event Off:</strong> Event ID produced when button is pressed (pin goes LOW)</li>
+<li><strong>Debounce:</strong> Number of polling cycles the input must remain stable</li>
+</ul>
+<h3 id="3-producer-and-refresh-loop"><a class="header" href="#3-producer-and-refresh-loop">3. Producer and Refresh Loop</a></h3>
+<pre><code class="language-diff"> } factory_reset_helper;
+ 
++// Button producer - monitors GPIO 18 and produces events on state changes
++// Uses RefreshLoop for 33Hz polling (debounce handled by ConfiguredProducer)
++openlcb::ConfiguredProducer button_producer(
++    openmrn.stack()-&gt;node(), cfg.seg().button(), BUTTON_Pin());
++
++// RefreshLoop - polls button at 33Hz and handles debouncing
++openlcb::RefreshLoop button_refresh_loop(openmrn.stack()-&gt;node(),
++    {button_producer.polling()});
++
+ void init_serial() {
+</code></pre>
+<p><strong>How it works:</strong></p>
+<ul>
+<li><code>RefreshLoop</code> polls the button at 33Hz (~30ms per cycle)</li>
+<li>Each poll calls <code>button_producer.polling()</code> which:
+<ol>
+<li>Reads the current GPIO state</li>
+<li>Compares it to the previous state</li>
+<li>If different for <code>debounce</code> consecutive cycles → state change confirmed</li>
+<li>Produces the appropriate event (On or Off)</li>
+</ol>
+</li>
+</ul>
+<h3 id="4-factory-reset-updates"><a class="header" href="#4-factory-reset-updates">4. Factory Reset Updates</a></h3>
+<p>Initialize the button configuration with default values:</p>
+<pre><code class="language-diff"> void factory_reset(int fd) override
+ {
+     // Initialize SNIP dynamic data on first boot
+     // This data is displayed by JMRI in the node properties dialog
+     cfg.userinfo().name().write(fd, openlcb::SNIP_NODE_NAME);
+     cfg.userinfo().description().write(fd, openlcb::SNIP_NODE_DESC);
+     
+     // Initialize application settings with defaults
+     cfg.seg().blink_enabled().write(fd, 1);      // Default enabled
+     cfg.seg().blink_interval().write(fd, 1000);  // Default 1 second
+     
++    // Initialize button producer configuration
++    // Event IDs use NODE_ID base with unique offsets to avoid collision
++    cfg.seg().button().description().write(fd, "Button 1");
++    cfg.seg().button().event_on().write(fd, NODE_ID + 0x0100);   // Released (HIGH)
++    cfg.seg().button().event_off().write(fd, NODE_ID + 0x0101);  // Pressed (LOW)
++    CDI_FACTORY_RESET(cfg.seg().button().debounce);  // Default: 3 (90ms at 33Hz)
++    
+     Serial.println("Factory reset: wrote defaults (blink_enabled=Enabled, blink_interval=1000 ms)");
++    Serial.printf("Button events: ON=0x%016llX, OFF=0x%016llX\n", 
++                  NODE_ID + 0x0100, NODE_ID + 0x0101);
+ }
+</code></pre>
+<p><strong>Event ID strategy:</strong></p>
+<ul>
+<li>Base all event IDs on <code>NODE_ID</code> to ensure uniqueness</li>
+</ul>
+<p>We use offset <code>+0x0100</code> for button ON (released) and <code>+0x0101</code> for button OFF (pressed). The higher offset provides visual separation from async_blink events and makes button events easy to identify in event IDs. This is just one approach—use whatever offset scheme works for your node.</p>
+<h3 id="5-setup-initialization"><a class="header" href="#5-setup-initialization">5. Setup() Initialization</a></h3>
+<p>Add GPIO initialization before starting the OpenMRN stack:</p>
+<pre><code class="language-diff"> void setup() {
+   init_serial();
+   init_filesystem();
+   
++  // Initialize GPIO pins before OpenMRN stack starts
++  // This ensures pins are in known state before producers/consumers access them
++  GpioInit::hw_init();
++  Serial.println("GPIO initialized: Button on GPIO 18 (active-low with pull-up)");
++  
+   can_driver.hw_init();
+   init_openlcb_stack();
+   openmrn.add_can_port_select("/dev/twai/twai0");
+</code></pre>
+<p><strong>Critical:</strong> GPIO must be initialized <strong>before</strong> <code>openmrn.begin()</code> so the producer has a valid pin state to read.</p>
+<h2 id="building-and-flashing"><a class="header" href="#building-and-flashing">Building and Flashing</a></h2>
+<h3 id="update-canonical_version"><a class="header" href="#update-canonical_version">Update CANONICAL_VERSION</a></h3>
+<p>Since we’re adding a new configuration field, increment the version number in <a href="d:&#92;src&#92;github&#92;LCC&#92;test&#92;async_blink_esp32&#92;include&#92;config.h">config.h</a>:</p>
+<pre><code class="language-diff"> /// Version number for the configuration structure
+-/// NOTE: Incremented to 0x0003 when adding blink_enabled and reserved space
+-static constexpr uint16_t CANONICAL_VERSION = 0x0003;
++/// NOTE: Incremented to 0x0004 when adding button configuration
++static constexpr uint16_t CANONICAL_VERSION = 0x0004;
+</code></pre>
+<p>This triggers a factory reset on first boot, initializing the new button configuration.</p>
+<h3 id="build-flash-and-monitor"><a class="header" href="#build-flash-and-monitor">Build, Flash, and Monitor</a></h3>
+<p>Use PlatformIO’s “Upload and Monitor” task:</p>
+<ol>
+<li>Click the PlatformIO icon in the left sidebar</li>
+<li>Expand <strong>async_blink_esp32 → esp32doit-devkit-v1 → General</strong></li>
+<li>Click <strong>Upload and Monitor</strong></li>
+</ol>
+<h3 id="expected-serial-output"><a class="header" href="#expected-serial-output">Expected Serial Output</a></h3>
+<pre><code>=== OpenLCB async_blink ESP32 Example ===
+Node ID: 0x050201020200
+Event 0: 0x0502010202000000
+Event 1: 0x0502010202000001
+
+Initializing SPIFFS...
+SPIFFS initialized successfully
+GPIO initialized: Button on GPIO 18 (active-low with pull-up)
+ESP-TWAI: Configuring TWAI (TX:5, RX:4, EXT-CLK:-1, BUS-CTRL:-1)
+
+Creating CDI configuration descriptor...
+[CDI] Checking /spiffs/cdi.xml...
+[CDI] File /spiffs/cdi.xml is not up-to-date
+[CDI] Updating /spiffs/cdi.xml (len 2509)
+[CDI] Registering CDI with stack...
+Initializing OpenLCB configuration...
+Factory reset: wrote defaults (blink_enabled=Enabled, blink_interval=1000 ms)
+Button events: ON=0x0000050201020300, OFF=0x0000050201020301
+
+Starting OpenLCB stack...
+Starting executor thread...
+OpenLCB stack initialized successfully
+ESP-TWAI: Starting TWAI driver on:twai0 mode:3ffb42a8 (non-blocking) fd:0
+OpenLCB node initialization complete!
+Configuration updated: blink_enabled = Enabled, blink_interval = 1000 ms
+Entering run mode - will alternate events every 1000 ms
+Allocating new alias C41 for node 050201020200
+</code></pre>
+<p><strong>Key observations:</strong></p>
+<ul>
+<li>Factory reset detected (triggered by <code>CANONICAL_VERSION</code> change)</li>
+<li>Button events calculated:
+<ul>
+<li>ON (released): <code>0x0000050201020300</code> (NODE_ID + 0x0100)</li>
+<li>OFF (pressed): <code>0x0000050201020301</code> (NODE_ID + 0x0101)</li>
+</ul>
+</li>
+<li>Node acquires alias <code>C41</code> on the CAN bus</li>
+</ul>
+<h2 id="testing-the-button"><a class="header" href="#testing-the-button">Testing the Button</a></h2>
+<h3 id="monitoring-events-in-lccpro"><a class="header" href="#monitoring-events-in-lccpro">Monitoring Events in LccPro</a></h3>
+<p>Open the Traffic Monitor to see button events in real-time:</p>
+<ol>
+<li>In LccPro, click the <strong>Traffic Monitor</strong> button</li>
+<li><strong>Press and release the button</strong>:</li>
+</ol>
+<p><img src="06-gpio/images/ButtonPushRelease.png" alt="Traffic Monitor showing button press and release events"><br><em>Figure: Button produces two distinct events - one for press, one for release</em></p>
+<p><strong>What you see:</strong></p>
+<p>Each button press/release cycle produces <strong>two events</strong>:</p>
+<ol>
+<li><strong>Button pressed:</strong> <code>Produce Event: 00.00.05.02.01.02.03.01</code> (Event Off)</li>
+<li><strong>Button released:</strong> <code>Produce Event: 00.00.05.02.01.02.03.00</code> (Event On)</li>
+</ol>
+<p><strong>Note the naming:</strong></p>
+<ul>
+<li>“Event <strong>On</strong>” occurs when GPIO goes <strong>HIGH</strong> (button <strong>released</strong>)</li>
+<li>“Event <strong>Off</strong>” occurs when GPIO goes <strong>LOW</strong> (button <strong>pressed</strong>)</li>
+</ul>
+<p>This naming can be counterintuitive at first, but it’s consistent with the <strong>electrical state of the GPIO pin</strong>, not the physical button action. We’ll explain why later.</p>
+<h3 id="viewing-button-configuration-requires-restart"><a class="header" href="#viewing-button-configuration-requires-restart">Viewing Button Configuration (Requires Restart)</a></h3>
+<p><strong>Important:</strong> To view the updated button configuration in LccPro, you <strong>must</strong> restart the application to clear its cached CDI. The cache persists even if you refresh or close/reopen the Configure dialog.</p>
+<p><strong>After restarting,</strong> open the Configure dialog for your node:</p>
+<ol>
+<li>In LccPro, find your node: <code>async_blink - ESP32 Blink demo (05.02.01.02.02.00)</code></li>
+<li>Right-click → <strong>Configure</strong></li>
+<li>Scroll down to the <strong>Button 1</strong> section</li>
+</ol>
+<p><img src="06-gpio/images/ConfigureButton1.png" alt="LccPro Configure showing Button 1 section"><br><em>Figure: LccPro Configure dialog showing Button 1 configuration</em></p>
+<p><strong>What you see:</strong></p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Default Value</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Description</strong></td><td><code>Button 1</code></td><td>User-editable name for this input</td></tr>
+<tr><td><strong>Debounce parameter</strong></td><td><code>3</code></td><td>Number of 30ms cycles (90ms total) before state change confirmed</td></tr>
+<tr><td><strong>Event On</strong></td><td><code>00.00.05.02.01.02.03.00</code></td><td>Produced when button is <strong>released</strong> (GPIO HIGH)</td></tr>
+<tr><td><strong>Event Off</strong></td><td><code>00.00.05.02.01.02.03.01</code></td><td>Produced when button is <strong>pressed</strong> (GPIO LOW)</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="understanding-debounce"><a class="header" href="#understanding-debounce">Understanding Debounce</a></h3>
+<p>The debounce parameter controls how many consecutive polling cycles the input must remain stable before the event is produced. At 33Hz polling:</p>
+<ul>
+<li><strong>Debounce = 3</strong> (default): 3 cycles × 30ms = <strong>90ms stabilization time</strong></li>
+<li><strong>Debounce = 2</strong>: 2 cycles × 30ms = <strong>60ms</strong> (faster but less noise-immune)</li>
+<li><strong>Debounce = 8</strong>: 8 cycles × 30ms = <strong>240ms</strong> (very stable, good for noisy environments)</li>
+</ul>
+<p><strong>Typical values:</strong></p>
+<ul>
+<li><strong>2-3:</strong> Good for clean pushbuttons in quiet environments</li>
+<li><strong>8-15:</strong> Recommended for train layouts with electrical noise from motors</li>
+</ul>
+<h2 id="node-event-ids"><a class="header" href="#node-event-ids">Node Event IDs</a></h2>
+<p>Our node now produces multiple event IDs:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Event</th><th>Offset</th><th>Full Event ID</th><th>Purpose</th></tr>
+</thead>
+<tbody>
+<tr><td>Async Blink 0</td><td><code>+0x00</code></td><td><code>05.02.01.02.02.00.00.00</code></td><td>Alternating event (state 0)</td></tr>
+<tr><td>Async Blink 1</td><td><code>+0x01</code></td><td><code>05.02.01.02.02.00.00.01</code></td><td>Alternating event (state 1)</td></tr>
+<tr><td>Button 1 ON</td><td><code>+0x0100</code></td><td><code>00.00.05.02.01.02.03.00</code></td><td>Button released (HIGH)</td></tr>
+<tr><td>Button 1 OFF</td><td><code>+0x0101</code></td><td><code>00.00.05.02.01.02.03.01</code></td><td>Button pressed (LOW)</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="understanding-active-low-vs-active-high"><a class="header" href="#understanding-active-low-vs-active-high">Understanding Active-Low vs Active-High</a></h2>
+<p>The button in this example uses <strong>active-low</strong> logic:</p>
+<ul>
+<li>Physical button <strong>released</strong> → GPIO pin <strong>HIGH</strong> (3.3V via pull-up) → “Event On”</li>
+<li>Physical button <strong>pressed</strong> → GPIO pin <strong>LOW</strong> (0V to GND) → “Event Off”</li>
+</ul>
+<h3 id="why-not-active-high-pull-down"><a class="header" href="#why-not-active-high-pull-down">Why Not Active-High (Pull-Down)?</a></h3>
+<p>You might reasonably ask: wouldn’t it be more intuitive if pressing the button produced “Event On” instead of “Event Off”? With active-high logic using a pull-down resistor, you could wire the button to 3.3V instead of GND:</p>
+<ul>
+<li>Physical button <strong>released</strong> → GPIO pin <strong>LOW</strong> (0V via pull-down) → “Event Off”</li>
+<li>Physical button <strong>pressed</strong> → GPIO pin <strong>HIGH</strong> (3.3V) → “Event On”</li>
+</ul>
+<p>This would align the physical action (pressing) with the logical “On” state. <strong>And the ESP32 does have internal pull-down resistors</strong> (<code>GpioInputPD</code>) that would make this possible.</p>
+<h3 id="the-openmrnopenmrnlite-bug"><a class="header" href="#the-openmrnopenmrnlite-bug">The OpenMRN/OpenMRNLite Bug</a></h3>
+<p>Unfortunately (as of December 2025), there’s a <strong>bug in OpenMRN’s ESP32 GPIO implementation</strong> that prevents using pull-down resistors on most pins. In the file <code>Esp32Gpio.hxx</code>, there’s a static assertion to prevent enabling pull-down on GPIO pins 0, 5, and 15 (which have hardware pull-ups on most ESP32 boards):</p>
+<pre><code class="language-cpp">// GPIO 0, 5 and 15 typically have pull-up resistors.
+static_assert(!PDEN ||
+              (PDEN &amp;&amp; (PIN_NUM != 0 &amp;&amp; PIN_NUM != 5 &amp;&amp; PIN_NUM == 15)),
+              //                                           ^^
+              // BUG: Should be != 15, not == 15
+              "GPIO 0, 5, 15 typically have built-in pull-up resistors, "
+              "enabling pull-down is not possible.");
+</code></pre>
+<p><strong>The bug:</strong> The condition says <code>PIN_NUM == 15</code> when it should say <code>PIN_NUM != 15</code>. This reversed logic means:</p>
+<ul>
+<li><strong>Intended:</strong> Block pull-down on pins 0, 5, and 15</li>
+<li><strong>Actual:</strong> Block pull-down on <strong>all pins except 15</strong></li>
+</ul>
+<p>When you try to use <code>GpioInputPD</code> on GPIO 18, you get a compile error:</p>
+<pre><code>error: static assertion failed: GPIO 0, 5, 15 typically have built-in 
+pull-up resistors, enabling pull-down is not possible.
+</code></pre>
+<p>This bug exists in both <strong>OpenMRNLite</strong> (the Arduino library) and the current <strong>master branch of OpenMRN</strong> (as of December 2025).</p>
+<h3 id="why-use-pull-up-anyway"><a class="header" href="#why-use-pull-up-anyway">Why Use Pull-Up Anyway?</a></h3>
+<p>Even without the bug, <strong>active-low with pull-up is the standard pattern</strong> for pushbuttons in embedded systems:</p>
+<ol>
+<li><strong>Noise immunity:</strong> Pull-up resistor provides a defined HIGH state when the button is open (not pressed)</li>
+<li><strong>Simplicity:</strong> Button connects GPIO directly to GND—no need to route 3.3V to the button</li>
+<li><strong>Safety:</strong> If a wire comes loose, the pin floats HIGH (safe idle state) rather than floating LOW</li>
+<li><strong>Industry convention:</strong> Most schematics and examples use active-low buttons</li>
+</ol>
+<p>So while the inverted logic (pressed = “off”) feels backwards at first, it’s actually the <strong>preferred approach</strong> independent of the OpenMRN bug.</p>
+<p><strong>Bottom line:</strong> We use <code>GpioInputPU</code> (pull-up) both because of the bug and because it’s best practice for button inputs.</p>
+<h2 id="common-issues-and-troubleshooting"><a class="header" href="#common-issues-and-troubleshooting">Common Issues and Troubleshooting</a></h2>
+<h3 id="button-events-not-appearing-in-jmrilccpro"><a class="header" href="#button-events-not-appearing-in-jmrilccpro">Button events not appearing in JMRI/LccPro</a></h3>
+<p><strong>Symptom:</strong> Traffic Monitor shows async_blink events but no button events.</p>
+<p><strong>Fixes:</strong></p>
+<ol>
+<li><strong>Verify wiring:</strong> One button pin to GPIO 18, other to GND</li>
+<li><strong>Check CDI cache:</strong> Did you restart JMRI/LccPro after flashing?</li>
+<li><strong>Test serial output:</strong> Does it show “GPIO initialized: Button on GPIO 18”?</li>
+<li><strong>Verify factory reset:</strong> Check for “Button events: ON=…” in serial output</li>
+</ol>
+<h3 id="button-produces-events-continuously-or-erratically"><a class="header" href="#button-produces-events-continuously-or-erratically">Button produces events continuously or erratically</a></h3>
+<p><strong>Symptom:</strong> Traffic Monitor floods with button events without touching the button.</p>
+<p><strong>Possible causes:</strong></p>
+<ol>
+<li><strong>Loose connection:</strong> Check breadboard contacts and jumper wires</li>
+<li><strong>Wrong pull-up/pull-down:</strong> Ensure you used <code>GpioInputPU</code> (pull-<strong>up</strong>), not <code>GpioInputPD</code></li>
+<li><strong>Electrical noise:</strong> Try increasing debounce from 3 to 8 or higher</li>
+<li><strong>Floating pin:</strong> Verify GND connection is solid</li>
+</ol>
+<h3 id="wrong-event-ids-in-jmri"><a class="header" href="#wrong-event-ids-in-jmri">Wrong event IDs in JMRI</a></h3>
+<p><strong>Symptom:</strong> Button events show different IDs than expected.</p>
+<p><strong>Fixes:</strong></p>
+<ol>
+<li><strong>Factory reset required:</strong> Delete <code>/spiffs/openlcb_config</code> and <code>/spiffs/cdi.xml</code>, then reboot</li>
+<li><strong>Node ID mismatch:</strong> Verify <code>NODE_ID</code> in code matches what JMRI shows</li>
+<li><strong>Manual configuration:</strong> Someone may have changed Event On/Off in JMRI - restore defaults</li>
+</ol>
+<h2 id="whats-next-4"><a class="header" href="#whats-next-4">What’s Next</a></h2>
+<p>You’ve successfully added a physical input to your OpenLCB node! The button can now:</p>
+<ul>
+<li>✅ Produce unique events when pressed and released</li>
+<li>✅ Be configured through JMRI/LccPro (description, debounce, event IDs)</li>
+<li>✅ Operate reliably with hardware debouncing</li>
+</ul>
+<p>In the next section, we’ll add <strong>LED outputs</strong> using <code>ConfiguredConsumer</code> so your node can <strong>respond to events</strong> from other nodes on the network—creating true two-way communication.</p>
+<h2 id="complete-code-files"><a class="header" href="#complete-code-files">Complete Code Files</a></h2>
+<p>For reference, here are the complete updated files:</p>
+<h3 id="configh-excerpt---button-section"><a class="header" href="#configh-excerpt---button-section">config.h (excerpt - button section)</a></h3>
+<pre><code class="language-diff"> /// Version number for the configuration structure
+-/// NOTE: Incremented to 0x0003 when adding blink_enabled and reserved space
+-static constexpr uint16_t CANONICAL_VERSION = 0x0003;
++/// NOTE: Incremented to 0x0004 when adding button configuration
++static constexpr uint16_t CANONICAL_VERSION = 0x0004;
+ 
+ /// Minimal configuration segment with application settings
+ CDI_GROUP(AsyncBlinkSegment, Segment(MemoryConfigDefs::SPACE_CONFIG), Offset(128));
+ CDI_GROUP_ENTRY(internal_config, InternalConfigData);
+ CDI_GROUP_ENTRY(blink_enabled, Uint8ConfigEntry,
+                 Default(1),
+                 Min(0), Max(1),
+                 MapValues(BOOLEAN_MAP),
+                 Name("Blink Enabled"),
+                 Description("Enable or disable event production"));
+ CDI_GROUP_ENTRY(blink_interval, Uint16ConfigEntry,
+                 Default(1000),
+                 Min(100),
+                 Max(30000),
+                 Name("Blink Interval"),
+                 Description("Milliseconds between alternating events (100-30000)"));
++CDI_GROUP_ENTRY(button, ProducerConfig,
++                Name("Button 1"),
++                Description("Physical button input on GPIO 18"));
+ CDI_GROUP_END();
+</code></pre>
+<h3 id="maincpp-key-additions"><a class="header" href="#maincpp-key-additions">main.cpp (key additions)</a></h3>
+<pre><code class="language-diff"> // ConfigDef comes from config.h and defines the configuration layout
+ static constexpr openlcb::ConfigDef cfg(0);
+ 
++// Define GPIO pin for button input (active-low with internal pull-up)
++// When button is pressed, pin reads LOW (0); when released, reads HIGH (1)
++GPIO_PIN(BUTTON, GpioInputPU, 18);
++
++// GPIO initializer - sets up all GPIO pins before OpenMRN stack starts
++typedef GpioInitializer&lt;BUTTON_Pin&gt; GpioInit;
++
+ // OpenLCB configuration - required by OpenMRNLite
+ namespace openlcb {
+ 
+...
+
+ } factory_reset_helper;
+ 
++// Button producer - monitors GPIO 18 and produces events on state changes
++openlcb::ConfiguredProducer button_producer(
++    openmrn.stack()-&gt;node(), cfg.seg().button(), BUTTON_Pin());
++
++// RefreshLoop - polls button at 33Hz and handles debouncing
++openlcb::RefreshLoop button_refresh_loop(openmrn.stack()-&gt;node(),
++    {button_producer.polling()});
++
+ void init_serial() {
+ 
+...
+
+     cfg.seg().blink_enabled().write(fd, 1);      // Default enabled
+     cfg.seg().blink_interval().write(fd, 1000);  // Default 1 second
+     
++    // Initialize button producer configuration
++    cfg.seg().button().description().write(fd, "Button 1");
++    cfg.seg().button().event_on().write(fd, NODE_ID + 0x0100);
++    cfg.seg().button().event_off().write(fd, NODE_ID + 0x0101);
++    CDI_FACTORY_RESET(cfg.seg().button().debounce);
++    Serial.printf("Button events: ON=0x%016llX, OFF=0x%016llX\n", 
++                  NODE_ID + 0x0100, NODE_ID + 0x0101);
++
+     Serial.println("Factory reset: wrote defaults...");
+ 
+...
+
+ void setup() {
+   init_serial();
+   init_filesystem();
+   
++  GpioInit::hw_init();
++  Serial.println("GPIO initialized: Button on GPIO 18 (active-low with pull-up)");
++  
+   can_driver.hw_init();
+   init_openlcb_stack();
+</code></pre>
 
                     </main>
 
