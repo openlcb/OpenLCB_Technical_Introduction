@@ -35,3 +35,5 @@
   - [The Esp32HardwareTwai Class: Arduino Cores and the Name Change](./05-can/04-esp32-class-naming.md)
   - [Configuring JMRI for CAN](./05-can/05-jmri-configuration.md)
   - [TWAI Bus Diagnostics and Troubleshooting](./05-can/06-twai-diagnostics.md)
+- [GPIO and Physical I/O](./06-gpio/overview.md)
+  - [Configuration Evolution with Reserved Space](./06-gpio/config-evolution.md)

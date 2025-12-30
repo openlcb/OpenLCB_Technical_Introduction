@@ -2,10 +2,10 @@
 
 ## Current Phase
 
-**Phase**: Phase 2 - Example Code (T2.7 COMPLETED)  
-**Milestone**: JMRI documentation updated for LccPro; Chapter 3 complete and ready for review  
-**Status**: ✅ Phase 0 & Phase 1 Complete | ✅ Phase 2 Complete (T2.0-T2.7)  
-**Last Updated**: 2025-12-22
+**Phase**: Phase 6 - GPIO/Physical I/O Implementation  
+**Milestone**: Chapter 6 with button producers, LED consumers, and Multi I/O patterns; demonstrate configuration evolution with reserved space  
+**Status**: ✅ Phase 0-2 Complete | ✅ Phase 3 Complete (Diagrams) | ⏳ Phase 4-5 Deferred | 🔄 Phase 6 Starting  
+**Last Updated**: 2025-12-29
 
 ## Strategic Decision: OpenMRN-Lite Architecture Clarification
 
@@ -74,56 +74,48 @@
 - [x] Task breakdown (24+ tasks across 5 phases)
 - [x] Diagram requirements mapped (5 diagrams planned)
 
+### Phase 4: Configuration & Persistence
+- [x] **Chapter 4 Complete**: Configuration & Persistence chapter written and integrated
+  - Storage model documentation
+  - JMRI editing workflow
+  - Factory reset behavior
+  - Configurable blink interval example (added to async_blink_esp32)
+
 ## In-Progress Items 🔄
 
-None - Phase 1 complete, ready for Phase 2.
+**Phase 6: GPIO/Physical I/O** - Starting implementation (see Upcoming Priority Tasks below)
 
 ## Upcoming Priority Tasks
 
-### Phase 2: Example Code & Hardware Documentation (IN PROGRESS) 🔄
-- **T2.0** ✅ COMPLETED: Write PlatformIO Installation Guide (OpenMRNLite version)
-- **T2.0.1** ✅ COMPLETED: Enhance async_blink_esp32 with CDI support
-  - Keep OpenMRN-Lite library (no migration needed) ✅
-  - Rewrite config.h to enable CDI structure ✅
-  - Rewrite main.cpp to generate and expose CDI ✅
-  - Test on ESP32 hardware, verify JMRI sees events and CDI ✅
-- **T2.1** ✅ COMPLETED (OpenMRNLite) → ✅ UPDATED (via T2.0.1)
-- **T2.2** ✅ COMPLETED (OpenMRNLite) → ✅ UPDATED (via T2.0.1)
-- **T2.3** ✅ COMPLETED: Physical I/O Content deferred to Chapter 6
-- **T2.4** ✅ COMPLETED: JMRI TCP setup guide (no changes needed)
-- **T2.5** 📋 DEFERRED: Make WiFi Configuration & Event IDs Configurable (Chapter 4)
-- **T2.6** ✅ COMPLETED (2025-12-21): Updated Chapter 3 Documentation for OpenMRN-Lite CDI
-  - Updated config.h code block with SNIP_NODE_NAME, SNIP_NODE_DESC, Acdi, UserInfoSegment ✅
-  - Updated main.cpp with refactored helper functions ✅
-  - Enhanced code walkthrough with SPIFFS/SNIP explanations ✅
-  - Added 9 detailed code walkthrough sections ✅
-- **T2.6.1** ✅ COMPLETED (2025-12-21): Create Chapter 3 (OpenMRN-Lite Architecture)
-- **T2.7** ✅ COMPLETED (2025-12-22): Revise esp32-arduino.md for LccPro & Fix Config Comments
-  - Verified main.cpp works on ESP32 hardware (builds, WiFi connects, JMRI sees node/events) ✅
-  - Replaced DecoderPro references with LccPro (authoritative tool in JMRI 5.12+) ✅
-  - Added LccPro Wizard screenshot (LccPro_FirstConnection.png) for first-time setup ✅
-  - Added JMRI Preferences screenshot (JMRI_Preferences.png) for existing connections ✅
-  - Added LccProNodes.png showing node list with SNIP data ✅
-  - Added SNIP vs ACDI explanation (device identity vs layout identity) ✅
-  - Fixed config documentation comments (clarified SPIFFS persistence, factory_reset, apply_configuration) ✅
-  - Added "Configuration & JMRI: CDI Discovery" subsection explaining config discovery role ✅
-  - Updated menu references to use "ESP32 LCC" (connection name) ✅
-  - Updated JMRI minimum version requirement to 5.12 ✅
-  - **Result**: Chapter 3 documentation complete and consistent with working code
-
-### Phase 3: Diagrams & Visualization
-- Mermaid diagrams already complete in Phase 0! ✅
-  - Node Startup Sequence diagram (in intro_async_blink.md)
-  - Event Flow diagram (in intro_ab_events.md)
-- **T3.3**: (Optional) Create breadboard schematic diagram
-
-### Phase 4: Integration & Testing
-- **T4.1**: End-to-end testing & verification guide
-- **T4.2**: Create "What's Next" preview section
-
-### Phase 5: Book Build & Release
-- **T5.1**: Final book build & verification
-- **T5.2**: Create release notes / session summary
+### Phase 6: GPIO/Physical I/O Implementation (IN PROGRESS) 🔄
+- **T6.1** ⏳ NOT STARTED: Add Reserved Configuration Space
+  - Add 32-byte BytesConfigEntry<32> to config.h ⏳
+  - Test configuration persistence without version increment ⏳
+  - Write config-evolution.md explaining reserved space pattern ⏳
+  - Add forward reference from Chapter 4 ⏳
+- **T6.2** ⏳ NOT STARTED: Add Single Button Producer
+  - Research GPIO initialization timing ⏳
+  - Add ConfiguredProducer with GPIO 18 button ⏳
+  - Add RefreshLoop for 33Hz polling ⏳
+  - Consume 12 bytes from reserved space ⏳
+  - Test button events in JMRI LccPro ⏳
+- **T6.3** ⏳ NOT STARTED: Add Single LED Consumer
+  - Add ConfiguredConsumer with GPIO 19 LED ⏳
+  - Consume 12 more bytes from reserved space ⏳
+  - Test JMRI configuration workflow to wire button→LED ⏳
+  - Write single-button-led.md documentation ⏳
+- **T6.4** ⏳ NOT STARTED: Scale to Multiple I/O
+  - Research MultiConfiguredProducer/Consumer patterns ⏳
+  - Add RepeatedGroup<ProducerConfig, 2> and RepeatedGroup<ConsumerConfig, 3> ⏳
+  - Add GPIO 21 (button 2), 22 (LED 2), 23 (LED 3) ⏳
+  - Consume remaining 8 bytes of reserved space ⏳
+  - Test cross-wiring scenarios via JMRI ⏳
+  - Write scaling-multiple-io.md documentation ⏳
+- **T6.5** ⏳ NOT STARTED: Finalize Chapter 6 and Evaluate Chapter 7
+  - Update overview.md with GPIO pin safety table ⏳
+  - Create Mermaid diagrams (sequence, timing, state) ⏳
+  - Update SUMMARY.md with Chapter 6 subchapters ⏳
+  - Decide if servo becomes Chapter 6 section or Chapter 7 ⏳
 
 ## Known Blockers 🚧
 
@@ -139,6 +131,33 @@ None currently blocking progress.
 | Breadboard schematic format | Low | Mermaid or PNG export; decide when creating |
 
 ## Summary of Key Findings
+
+### Phase 6: GPIO Implementation Strategy
+
+**Configuration Evolution Pattern**:
+- Reserved space (BytesConfigEntry<32>) enables adding fields without version changes
+- CANONICAL_VERSION remains unchanged as reserved bytes are consumed
+- Progression: 32 bytes reserved → 20 (button) → 8 (LED) → 0 (multi I/O)
+- Prevents factory reset and preserves user configuration during firmware updates
+
+**GPIO Patterns**:
+- **ConfiguredProducer**: Polling-based button input, requires RefreshLoop at 33Hz
+- **ConfiguredConsumer**: Event-driven LED output, no polling needed
+- **MultiConfiguredConsumer**: Memory-efficient pattern for multiple outputs (single event handler)
+- **RepeatedGroup<T, N>**: CDI pattern for scalable I/O configuration
+
+**Pin Assignments** (ESP32 DevKit):
+- GPIO 18: Button 1 (GpioInputPU, active-low with pullup)
+- GPIO 19: LED 1 (GpioOutputSafeLow)
+- GPIO 21: Button 2 (GpioInputPU)
+- GPIO 22: LED 2 (GpioOutputSafeLow)
+- GPIO 23: LED 3 (GpioOutputSafeLow)
+- GPIO 20: Reserved for future servo (PWM capable)
+
+**Event ID Strategy**:
+- factory_reset() writes independent event IDs for all producers/consumers
+- No automatic cross-wiring in defaults
+- Users configure event wiring via JMRI (demonstrates configuration workflow)
 
 ### async_blink Example
 - Located in `openmrn/applications/async_blink/`
@@ -172,5 +191,5 @@ None currently blocking progress.
 
 ---
 
-**Last Updated**: 2025-12-20  
-Next Session: Start Phase 3 (diagrams and testing/verification)
+**Last Updated**: 2025-12-29  
+Next Session: Start Phase 6 with T6.1 (Reserved Configuration Space)
