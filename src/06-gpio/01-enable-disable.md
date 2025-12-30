@@ -1,34 +1,16 @@
-# Configuration Evolution with Reserved Space
+# Adding an Enable/Disable Toggle
 
-In this section, we'll demonstrate a critical pattern for evolving OpenLCB node configurations without forcing users to lose their settings: **reserved space allocation**.
+Let's add a "Blink Enabled" toggle to the async_blink example. This demonstrates an important OpenMRNLite pattern: **binary configuration values using mapped integers**.
 
-## The Problem: Configuration Version Changes
+## Implementing Binary Configuration Values
 
-When you modify your node's CDI (Configuration Description Information) structure, OpenMRNLite checks whether the stored configuration version matches the firmware's expected version:
+### Step 1: Add the Enable/Disable Feature
 
-```cpp
-static constexpr uint16_t CANONICAL_VERSION = 0x0003;
-```
+Let's add a "Blink Enabled" toggle to control whether the async_blink node produces events. This will quiet down both the serial monitor and the JMRI/LccPro event monitor, making it easier to focus on GPIO events when we add them in the next section.
 
-If the versions don't match, OpenMRNLite triggers a **complete factory reset**, wiping all user configuration including:
-- Node name and description (ACDI data)
-- Custom event IDs
-- Application-specific settings
-- Everything except the first 128 bytes
+This also demonstrates an important OpenMRNLite pattern: **binary configuration values using mapped integers**. Since OpenMRNLite doesn't have a dedicated boolean type, we'll use a `Uint8ConfigEntry` with a `MapValues` attribute that maps 0→"Disabled" and 1→"Enabled" for user-friendly display in JMRI.
 
-This happens because OpenMRNLite cannot migrate configuration fields between versions—it's an all-or-nothing reset.
-
-## The Solution: Reserve Space Up Front
-
-By adding reserved bytes to your configuration structure **before you need them**, you can add new fields later without changing the total configuration size, avoiding the version mismatch that triggers factory resets.
-
-### Step 1: Add Reserved Space and Enable/Disable Feature
-
-Let's enhance our async_blink example with:
-1. A boolean "Blink Enabled" setting to enable/disable event production
-2. 32 bytes of reserved space for future GPIO configuration
-
-**Important:** Because we're adding new fields, we must increment `CANONICAL_VERSION` from `0x0002` to `0x0003`. This will trigger one final factory reset when users first flash this version, but all future additions that consume the reserved space won't require a version change.
+**Note:** Because we're adding a new field to the configuration structure, we must increment `CANONICAL_VERSION` from `0x0002` to `0x0003`. As covered in Chapter 4, this will trigger a factory reset when you first flash this version.
 
 #### Updated config.h
 
@@ -63,18 +45,14 @@ We'll add these changes to our CDI:
                  Max(30000),
                  Name("Blink Interval"),
                  Description("Milliseconds between alternating events (100-30000)"));
-+CDI_GROUP_ENTRY(reserved, BytesConfigEntry<32>,
-+                Name("Reserved"),
-+                Description("Reserved space for future configuration expansion"));
  CDI_GROUP_END();
 ```
 
 **Key Points:**
-- `BytesConfigEntry<32>` allocates 32 bytes of reserved space
-- `CANONICAL_VERSION` incremented to `0x0003` (this will trigger one final factory reset)
-- `blink_enabled` uses `Uint8ConfigEntry` with `MapValues` to provide "Enabled/Disabled" labels in JMRI
-- OpenMRNLite doesn't have a dedicated boolean type, so we use a mapped integer (0=Disabled, 1=Enabled)
-- JMRI will render this as a dropdown with "Enabled" and "Disabled" options
+- **Mapped integers for binary values**: OpenMRNLite doesn't have a dedicated boolean type, so we use `Uint8ConfigEntry` with `MapValues` to create user-friendly "Enabled/Disabled" labels
+- The mapping: `0` displays as "Disabled", `1` displays as "Enabled" in JMRI
+- `CANONICAL_VERSION` incremented to `0x0003` (triggers factory reset as explained in Chapter 4)
+- JMRI will render this as a dropdown with "Enabled" and "Disabled" options instead of raw numbers
 
 #### Updated main.cpp
 
@@ -165,14 +143,14 @@ After building and uploading the firmware:
    - Open the node's configuration dialog
    - You should see "Blink Enabled" with a dropdown showing "Enabled" / "Disabled"
    - You should see "Blink Interval" with the existing 100-30000 ms range
-   - The "Reserved" field won't be visible in the UI (intentionally hidden)
 
 3. **Test the enable/disable feature**:
    - Set "Blink Enabled" to "Disabled"
    - Click "Write" or "Save Changes" to write the new value to the node
    - **Important:** Click "More..." then "Update Complete" to signal the node to apply changes
    - Watch the serial console: `Configuration updated: blink_enabled = Disabled, ...`
-   - Events should stop being produced
+   - **Both event production and serial output stop** — notice how much quieter the output becomes
+   - Also check JMRI/LccPro's Event Monitor — no more async_blink events cluttering the view
    - Re-enable and verify events resume (remember to click "Update Complete" again)
 
 ## Important: CDI Caching in JMRI/LccPro
@@ -203,38 +181,14 @@ Our configuration now looks like this:
 | 128 | InternalConfigData | Variable | Version tracking, etc. |
 | 129 | blink_enabled | 1 byte | Enable/disable event production |
 | 130-131 | blink_interval | 2 bytes | Milliseconds between events |
-| 132-163 | reserved | 32 bytes | Reserved for future GPIO configuration |
-| **Total** | | **~164 bytes** | |
-
-## Future Expansion: Consuming Reserved Space
-
-When we add GPIO configuration in the next section, we'll:
-
-1. **Reduce reserved space** from 32 bytes to a smaller value
-2. **Add new fields** that consume the difference
-3. **Keep `CANONICAL_VERSION` unchanged** (critical!)
-
-Because the total configuration size won't change, OpenMRNLite won't trigger a factory reset, and users will keep their existing settings.
-
-For example, if we add a `ProducerConfig` (approximately 12 bytes):
-
-```cpp
-CDI_GROUP_ENTRY(button1, ProducerConfig, Name("Button 1"));
-CDI_GROUP_ENTRY(reserved, BytesConfigEntry<20>,  // Was 32, now 20
-                Name("Reserved"),
-                Description("Reserved space for future configuration expansion"));
-```
-
-Total size remains 164 bytes, so `CANONICAL_VERSION` stays at `0x0003`, and no factory reset occurs.
+| **Total** | | **~132 bytes** | |
 
 ## Key Takeaways
 
-1. **Reserve space early**: Add extra bytes before you need them
-2. **Consume reserved space gradually**: Shrink the reserved field as you add new configuration
-3. **Don't increment version unnecessarily**: Only increment when the total size changes
-4. **Restart tools after CDI changes**: JMRI/LccPro won't auto-reload CDI
-5. **Use meaningful labels**: "Enabled/Disabled" is clearer than "Yes/No" for feature toggles
-
-This pattern enables smooth configuration evolution without frustrating users with lost settings.
+1. **Mapped integers for binary values**: Use `Uint8ConfigEntry` with `MapValues` to create user-friendly on/off toggles
+2. **Value mapping syntax**: `<relation><property>VALUE</property><value>LABEL</value></relation>`
+3. **Restart tools after CDI changes**: JMRI/LccPro won't auto-reload CDI
+4. **Use meaningful labels**: "Enabled/Disabled" is clearer than numeric values
+5. **Practical benefit**: The enable/disable toggle keeps message monitors clean when focusing on specific events
 
 **Next:** [Adding Physical I/O: Button and LED](single-button-led.md)

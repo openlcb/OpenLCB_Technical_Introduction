@@ -91,7 +91,7 @@
 - **T6.1** ⏳ NOT STARTED: Add Reserved Configuration Space
   - Add 32-byte BytesConfigEntry<32> to config.h ⏳
   - Test configuration persistence without version increment ⏳
-  - Write config-evolution.md explaining reserved space pattern ⏳
+  - Write 01-enable-disable.md explaining binary config pattern ✅
   - Add forward reference from Chapter 4 ⏳
 - **T6.2** ⏳ NOT STARTED: Add Single Button Producer
   - Research GPIO initialization timing ⏳

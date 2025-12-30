@@ -61,7 +61,7 @@ Track forward references in the book that point to chapters not yet written. Whe
 
 | Location | Current Text | Target Chapter Title | Status | Notes |
 |----------|--------------|----------------------|--------|-------|
-| End of chapter | "For advanced configuration evolution patterns, see Chapter 6: Configuration Evolution" | Configuration Evolution | ⏳ Not yet written | Forward reference to config-evolution.md in Chapter 6 explaining reserved space pattern |
+| End of chapter | "For advanced GPIO configuration patterns, see Chapter 6: GPIO and Physical I/O" | GPIO Configuration | ⏳ Not yet written | Forward reference to 01-enable-disable.md in Chapter 6 explaining binary configuration values |
 
 ---
 
@@ -69,7 +69,7 @@ Track forward references in the book that point to chapters not yet written. Whe
 
 - Configuration & Persistence — `04-configuration/` (IN PROGRESS)
 - GPIO/Physical I/O — `06-gpio/` (STARTING Phase 6)
-  - Configuration Evolution — `06-gpio/config-evolution.md` (T6.1)
+  - GPIO Configuration — `06-gpio/01-enable-disable.md` (T6.1)
   - Single Button and LED — `06-gpio/single-button-led.md` (T6.3)
   - Scaling Multiple I/O — `06-gpio/scaling-multiple-io.md` (T6.4)
 - Switching to CAN — `05-can/` (PLANNED)

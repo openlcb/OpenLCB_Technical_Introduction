@@ -454,7 +454,7 @@
     - Verified factory reset on first boot with new version ✅
     - Tested enable/disable feature via JMRI (dropdown shows Enabled/Disabled) ✅
     - Verified configuration persists across power cycles ✅
-  - Created `src/06-gpio/config-evolution.md`: ✅
+  - Created `src/06-gpio/01-enable-disable.md`: ✅
     - Explained reserved space pattern for configuration evolution ✅
     - Documented how future fields will consume reserved bytes without version increment ✅
     - Covered CDI caching behavior (must restart JMRI/LccPro after CDI changes) ✅
@@ -464,45 +464,46 @@
     - Updated GPIO pin assignments to avoid CAN conflict (GPIO 18/19/21/22) ✅
     - Updated hardware BOM for 2 buttons and 2 LEDs ✅
   - Updated `src/SUMMARY.md`: ✅
-    - Added Chapter 6 with config-evolution.md section ✅
+    - Added Chapter 6 with 01-enable-disable.md section ✅
 - **Owner**: Completed 2025-12-30
 - **Depends On**: None (builds on completed Chapter 5) ✅
 - **Blocks**: T6.2
 
 ### T6.2 - Add Single Button Producer with ConfiguredProducer
-- **Status**: ⏳ Not Started
+- **Status**: ✅ COMPLETED (2025-12-30)
 - **Priority**: HIGH
 - **Effort**: 2-3 hours
 - **Description**:
-  - Research GPIO initialization timing:
-    - Determine if `GpioInit::hw_init()` should be called before or after `openmrn.begin()`
-    - Document findings and safety implications
-  - Modify `test/async_blink_esp32/include/config.h`:
-    - Reduce reserved space from 32 to 20 bytes (consuming ~12 bytes for ProducerConfig)
-    - Add `CDI_GROUP_ENTRY(button, ProducerConfig, Name("Button 1"))` before reserved entry
-    - **DO NOT increment CANONICAL_VERSION** - consuming reserved space maintains file size
-  - Modify `test/async_blink_esp32/src/main.cpp`:
-    - Add GPIO pin definition: `GPIO_PIN(Button1, GpioInputPU, 18);`
-    - Add GpioInitializer: `typedef GpioInitializer<Button1_Pin> GpioInit;`
-    - Create ConfiguredProducer instance: `openlcb::ConfiguredProducer button_producer(openmrn.stack()->node(), cfg.seg().button(), Button1_Pin());`
-    - Create RefreshLoop for polling: `openlcb::RefreshLoop producer_refresh(openmrn.stack()->node(), { button_producer.polling() });`
-    - Call `GpioInit::hw_init()` at determined timing
-  - Update FactoryResetHelper::factory_reset():
-    - Write unique event IDs for button (independent, not wired to any consumer)
-    - Example: button event_on = NODE_ID + 0x0100, event_off = NODE_ID + 0x0101
-    - Write default description: "Button 1"
-    - Write default debounce: 3 (90ms at 33Hz)
-  - Test on hardware:
-    - Build and upload
-    - Verify JMRI LccPro shows button events when pressed/released
-    - Test debounce configuration via JMRI (change from 3 to 10, verify slower response)
-    - Confirm no factory reset triggered (config persisted from previous session)
-  - Document findings:
-    - Note GPIO initialization timing decision and rationale
-    - Document button wiring (pullup, active-low behavior)
-    - Record debounce tuning observations
-- **Owner**: Next session
-- **Depends On**: T6.1
+  - ✅ Modified `test/async_blink_esp32/include/config.h`:
+    - Incremented CANONICAL_VERSION to 0x0004 (button configuration added)
+    - Added `CDI_GROUP_ENTRY(button, ProducerConfig, Name("Button 1"))` 
+    - No reserved space consumed yet (saved for future expansion)
+  - ✅ Modified `test/async_blink_esp32/src/main.cpp`:
+    - Added GPIO pin definition: `GPIO_PIN(BUTTON, GpioInputPU, 18)` (active-low with pull-up)
+    - Added GpioInitializer: `typedef GpioInitializer<BUTTON_Pin> GpioInit`
+    - Created ConfiguredProducer: `openlcb::ConfiguredProducer button_producer(...)`
+    - Created RefreshLoop for 33Hz polling: `openlcb::RefreshLoop button_refresh_loop(...)`
+    - Called `GpioInit::hw_init()` before `openmrn.begin()` in setup()
+  - ✅ Updated FactoryResetHelper::factory_reset():
+    - Button event_on = NODE_ID + 0x0100 (released/HIGH)
+    - Button event_off = NODE_ID + 0x0101 (pressed/LOW)
+    - Default description: "Button 1"
+    - Default debounce: 3 (90ms at 33Hz)
+  - ✅ Tested on hardware:
+    - Button wired to GPIO 18 (one side) and GND (other side)
+    - LccPro Traffic Monitor shows events when pressed/released
+    - Configuration dialog shows button settings (description, debounce, event IDs)
+    - Active-low behavior verified (pressed = LOW/Off, released = HIGH/On)
+  - ✅ Created `src/06-gpio/02-button-input.md`:
+    - Hardware setup with breadboard wiring diagram
+    - Complete code walkthrough (GPIO definition, ProducerConfig, RefreshLoop, factory reset)
+    - Event ID allocation strategy (0x0100 offset for visual clarity)
+    - Active-low vs active-high explanation with OpenMRN pull-down bug documentation
+    - Testing workflow (Traffic Monitor first, then configuration viewing after restart)
+    - Troubleshooting section
+  - ✅ Updated `src/SUMMARY.md` with new section
+- **Owner**: Completed 2025-12-30
+- **Depends On**: T6.1 ✅
 - **Blocks**: T6.3
 
 ### T6.3 - Add Single LED Consumer with ConfiguredConsumer
@@ -630,7 +631,7 @@
     - State diagram: ConfigUpdateFlow applying configuration to producers/consumers
   - Update `src/SUMMARY.md`:
     - Add Chapter 6 subchapters:
-      - Configuration Evolution (config-evolution.md)
+      - Configuration Evolution (01-enable-disable.md)
       - Single Button and LED (single-button-led.md)
       - Scaling to Multiple I/O (scaling-multiple-io.md)
       - (Placeholder for servo if Chapter 6, or forward ref if Chapter 7)
