@@ -57,14 +57,23 @@ Track forward references in the book that point to chapters not yet written. Whe
 |----------|--------------|----------------------|--------|-------|
 | What's Next section | "Future chapters will explore: Adding CAN hardware, Advanced events, Memory config, SNIP, Train control" | Various planned chapters (see Planned Future Chapters below) | ⏳ Not yet written | Break into separate planned chapters and add links when available |
 
+### adding-interval-setting.md (Chapter 4: Configuration & Persistence)
+
+| Location | Current Text | Target Chapter Title | Status | Notes |
+|----------|--------------|----------------------|--------|-------|
+| End of chapter | "For advanced GPIO configuration patterns, see Chapter 6: GPIO and Physical I/O" | GPIO Configuration | ⏳ Not yet written | Forward reference to 01-enable-disable.md in Chapter 6 explaining binary configuration values |
+
 ---
 
 ## Planned Future Chapters (for link targets)
 
-- Configuration & Persistence — `configuration-persistence.md`
-- Switching to CAN — `switching-to-can.md`
-- Physical I/O / GPIO hardware — `gpio-hardware.md`
-- Understanding Startup Sequence (detailed)
+- Configuration & Persistence — `04-configuration/` (IN PROGRESS)
+- GPIO/Physical I/O — `06-gpio/` (STARTING Phase 6)
+  - GPIO Configuration — `06-gpio/01-enable-disable.md` (T6.1)
+  - Single Button and LED — `06-gpio/single-button-led.md` (T6.3)
+  - Scaling Multiple I/O — `06-gpio/scaling-multiple-io.md` (T6.4)
+- Switching to CAN — `05-can/` (PLANNED)
+- Advanced I/O: Servos and PWM — TBD (Chapter 6 or Chapter 7)
 - Advanced Events, Node Configuration, Memory Configuration, etc.
 
 ---
@@ -98,6 +107,6 @@ NEW: "See [Understanding Alias Negotiation](../understanding-startup-sequence.md
 
 ---
 
-**Last Updated**: 2025-12-24
+**Last Updated**: 2025-12-29  
 **Purpose**: Keep forward references manageable and unambiguous; prefer chapter titles/paths over numeric IDs
 

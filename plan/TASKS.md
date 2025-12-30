@@ -316,7 +316,7 @@
 
 ---
 
-## Phase 4: Configuration Chapter — Multi-Session Development
+## Phase 4: Configuration Chapter — Multi-Session Development ✅ COMPLETE
 
 ### T4.1 - Write Phase 1: Initial Configuration Content (Session 1)
 - **Status**: ✅ COMPLETED (2025-12-24)
@@ -363,26 +363,24 @@
 - **Blocks**: T4.3
 
 ### T4.3 - Write Phase 3: Configuration Versioning Content & Code Implementation (Session 3)
-- **Status**: � READY TO START
+- **Status**: ✅ COMPLETED (2025-12-25)
 - **Priority**: HIGH
 - **Effort**: 2-2.5 hours
 - **Description**:
-  - **Create new Chapter 4 section** (persistence-details.md was removed; content will be written during implementation based on practical EventInterval example):
-    - Configurable Settings / Applying Configuration Changes: Practical implementation of apply_configuration()
-    - Configuration Versioning: CANONICAL_VERSION role, what triggers resets
-    - Reserved Space Technique: How to evolve schema without breaking configs
-    - Version Mismatch Behavior: Factory reset triggers, SNIP preservation at offset 0-127
-    - Hands-on Walkthrough: Modify EventInterval via JMRI, demonstrate runtime effect
-    - Best Practices: When to bump version, when to use reserved space
-  - **Code Implementation** in test/async_blink_esp32:
-    - Add EventInterval uint16_t field to config.h CDI segment
-    - Implement enhanced apply_configuration() to read EventInterval from config
-    - Update loop() to use configurable interval instead of hardcoded EVENT_INTERVAL
-    - Add logging to show when config changes are detected
-    - Test with JMRI: change interval via Configure, verify firmware reads and applies it
-  - **Update code comments** in config.h explaining reserved space pattern and field layout
-- **Testing**: Requires ESP32 hardware, JMRI, and verifying EventInterval changes work
-- **Owner**: Next session
+  - **Created new Chapter 4 section** (adding-interval-setting.md): ✅
+    - Configurable Settings: Practical implementation of apply_configuration() ✅
+    - Configuration Versioning: CANONICAL_VERSION role explained ✅
+    - Hands-on Walkthrough: Step-by-step JMRI configuration guide ✅
+    - Best Practices: When to use configurable vs hardcoded values ✅
+  - **Code Implementation** in test/async_blink_esp32: ✅
+    - Added blink_interval Uint16ConfigEntry field to config.h CDI segment ✅
+    - Implemented apply_configuration() to read blink_interval from config ✅
+    - Updated loop() to use configurable interval (0 = disabled) ✅
+    - Added logging to show when config changes are detected ✅
+    - Tested with JMRI: interval changes work, configuration persists ✅
+  - **Updated code comments** in config.h explaining configuration structure ✅
+- **Testing**: Completed on ESP32 hardware with JMRI ✅
+- **Owner**: Completed 2025-12-25
 - **Depends On**: T4.2 ✅
 - **Blocks**: T4.4
 
@@ -413,79 +411,249 @@
 
 ## Phase 5: Future Chapters (CAN, GPIO, Advanced Topics)
 
-### T5.1 - Switching to CAN Transport Chapter (FUTURE)
-- **Status**: 📋 PLANNED
-- **Priority**: MEDIUM (v0.3)
+## Phase 5: CAN Transport Chapter ✅ COMPLETE
+
+### T5.1 - Switching to CAN Transport Chapter
+- **Status**: ✅ COMPLETED (2025-12-29)
+- **Priority**: HIGH
 - **Effort**: 3-4 hours
 - **Description**:
-  - Create new file: `src/05-switching-to-can/switching-to-can.md` (becomes Chapter 5 in book)
-  - Content:
-    - Transport architecture comparison: WiFi/TCP vs CAN bus
-    - Hardware requirements: CAN transceiver selection, wiring, termination
-    - Porting async_blink_esp32 to use CAN instead of WiFi
-    - Configuration changes needed (no more WiFi credentials, add CAN pin setup)
-    - Testing with JMRI via CAN interface instead of TCP
-  - Result: Users understand transport layer abstraction and can migrate to production CAN-based nodes
-- **Owner**: Future session
-- **Depends On**: T4.4 (Configuration chapter complete)
+  - Created Chapter 5: `src/05-can/` with complete CAN transport documentation ✅
+  - Content completed:
+    - Understanding CAN Transceivers (01-can-transceivers.md) ✅
+    - Hardware Wiring: Breadboard Setup (02-hardware-wiring.md) ✅
+    - Code Changes: From WiFi to CAN (03-code-changes.md) ✅
+    - The Esp32HardwareTwai Class (04-esp32-class-naming.md) ✅
+    - Configuring JMRI for CAN (05-jmri-configuration.md) ✅
+    - TWAI Bus Diagnostics and Troubleshooting (06-twai-diagnostics.md) ✅
+  - Updated async_blink_esp32 code to support CAN transport ✅
+  - Tested CAN transport with JMRI ✅
+- **Owner**: Completed 2025-12-29
+- **Depends On**: T4.4 (Configuration chapter complete) ✅
 - **Blocks**: None
 
-### T5.2 - Final Book Build & Verification
-- **Status**: ⏳ Not Started
+---
+
+## Phase 6: GPIO/Physical I/O Implementation
+
+### T6.1 - Add Reserved Configuration Space for Future Expansion
+- **Status**: ✅ COMPLETED (2025-12-30)
 - **Priority**: HIGH
 - **Effort**: 1 hour
 - **Description**:
-  - Run `mdbook build` and verify:
-    - No build errors
-    - All chapters appear in TOC
-    - Mermaid diagrams render correctly
-    - Links work (archive reference if included)
-  - Run `mdbook serve` and spot-check HTML rendering
-  - Verify async_blink_esp32 code blocks format correctly
-  - Check for markdown syntax errors
-- **Owner**: Final session
-- **Depends On**: All Phase 1-4 tasks
-- **Blocks**: None
+  - Modified `test/async_blink_esp32/include/config.h`: ✅
+    - Added `blink_enabled` (Uint8ConfigEntry with Enabled/Disabled MapValues) ✅
+    - Added `reserved` (BytesConfigEntry<32>) after blink_interval ✅
+    - Incremented CANONICAL_VERSION to 0x0003 (triggers one-time factory reset) ✅
+  - Modified `test/async_blink_esp32/src/main.cpp`: ✅
+    - Added global `bool blink_enabled` variable ✅
+    - Updated `apply_configuration()` to read both blink_enabled and blink_interval ✅
+    - Updated `factory_reset()` to initialize blink_enabled to 1 (Enabled) ✅
+    - Updated `loop()` to check `if (blink_enabled && ...)` before producing events ✅
+  - Tested configuration persistence: ✅
+    - Verified factory reset on first boot with new version ✅
+    - Tested enable/disable feature via JMRI (dropdown shows Enabled/Disabled) ✅
+    - Verified configuration persists across power cycles ✅
+  - Created `src/06-gpio/01-enable-disable.md`: ✅
+    - Explained reserved space pattern for configuration evolution ✅
+    - Documented how future fields will consume reserved bytes without version increment ✅
+    - Covered CDI caching behavior (must restart JMRI/LccPro after CDI changes) ✅
+    - Included complete code diffs using Highlight.js format ✅
+  - Updated `src/06-gpio/overview.md`: ✅
+    - Restructured as chapter introduction (two-part approach) ✅
+    - Updated GPIO pin assignments to avoid CAN conflict (GPIO 18/19/21/22) ✅
+    - Updated hardware BOM for 2 buttons and 2 LEDs ✅
+  - Updated `src/SUMMARY.md`: ✅
+    - Added Chapter 6 with 01-enable-disable.md section ✅
+- **Owner**: Completed 2025-12-30
+- **Depends On**: None (builds on completed Chapter 5) ✅
+- **Blocks**: T6.2
 
-### T5.3 - Create Release Notes / Session Summary
-- **Status**: ⏳ Not Started
-- **Priority**: MEDIUM
-- **Effort**: 30 minutes
+### T6.2 - Add Single Button Producer with ConfiguredProducer
+- **Status**: ✅ COMPLETED (2025-12-30)
+- **Priority**: HIGH
+- **Effort**: 2-3 hours
 - **Description**:
-  - Update PROJECT_STATUS.md: mark v0.2 complete
-  - Document what was accomplished:
-    - Chapters revised/added (esp32-arduino.md for LccPro, new Configuration & Persistence chapter)
-    - Examples enhanced (main.cpp config integration, EVENT_INTERVAL example)
-    - Documentation clarifications (SNIP vs ACDI, config persistence, factory_reset vs apply_configuration)
-  - List what's NOT included (CAN hardware, advanced features, GPIO integration) for future chapters
-  - Note any open questions or TODOs for next iteration
-- **Owner**: Final session
-- **Depends On**: T5.2
-- **Blocks**: None
+  - ✅ Modified `test/async_blink_esp32/include/config.h`:
+    - Incremented CANONICAL_VERSION to 0x0004 (button configuration added)
+    - Added `CDI_GROUP_ENTRY(button, ProducerConfig, Name("Button 1"))` 
+    - No reserved space consumed yet (saved for future expansion)
+  - ✅ Modified `test/async_blink_esp32/src/main.cpp`:
+    - Added GPIO pin definition: `GPIO_PIN(BUTTON, GpioInputPU, 18)` (active-low with pull-up)
+    - Added GpioInitializer: `typedef GpioInitializer<BUTTON_Pin> GpioInit`
+    - Created ConfiguredProducer: `openlcb::ConfiguredProducer button_producer(...)`
+    - Created RefreshLoop for 33Hz polling: `openlcb::RefreshLoop button_refresh_loop(...)`
+    - Called `GpioInit::hw_init()` before `openmrn.begin()` in setup()
+  - ✅ Updated FactoryResetHelper::factory_reset():
+    - Button event_on = NODE_ID + 0x0100 (released/HIGH)
+    - Button event_off = NODE_ID + 0x0101 (pressed/LOW)
+    - Default description: "Button 1"
+    - Default debounce: 3 (90ms at 33Hz)
+  - ✅ Tested on hardware:
+    - Button wired to GPIO 18 (one side) and GND (other side)
+    - LccPro Traffic Monitor shows events when pressed/released
+    - Configuration dialog shows button settings (description, debounce, event IDs)
+    - Active-low behavior verified (pressed = LOW/Off, released = HIGH/On)
+  - ✅ Created `src/06-gpio/02-button-input.md`:
+    - Hardware setup with breadboard wiring diagram
+    - Complete code walkthrough (GPIO definition, ProducerConfig, RefreshLoop, factory reset)
+    - Event ID allocation strategy (0x0100 offset for visual clarity)
+    - Active-low vs active-high explanation with OpenMRN pull-down bug documentation
+    - Testing workflow (Traffic Monitor first, then configuration viewing after restart)
+    - Troubleshooting section
+  - ✅ Updated `src/SUMMARY.md` with new section
+- **Owner**: Completed 2025-12-30
+- **Depends On**: T6.1 ✅
+- **Blocks**: T6.3
+
+### T6.3 - Add Single LED Consumer with ConfiguredConsumer
+- **Status**: ⏳ Not Started
+- **Priority**: HIGH
+- **Effort**: 2 hours
+- **Description**:
+  - Modify `test/async_blink_esp32/include/config.h`:
+    - Reduce reserved space from 20 to 8 bytes (consuming ~12 bytes for ConsumerConfig)
+    - Add `CDI_GROUP_ENTRY(led, ConsumerConfig, Name("LED 1"))` before reserved entry
+    - **DO NOT increment CANONICAL_VERSION**
+  - Modify `test/async_blink_esp32/src/main.cpp`:
+    - Add GPIO pin definition: `GPIO_PIN(LED1, GpioOutputSafeLow, 19);`
+    - Update GpioInitializer: `typedef GpioInitializer<Button1_Pin, LED1_Pin> GpioInit;`
+    - Create ConfiguredConsumer instance: `openlcb::ConfiguredConsumer led_consumer(openmrn.stack()->node(), cfg.seg().led(), LED1_Pin());`
+  - Update FactoryResetHelper::factory_reset():
+    - Write independent event IDs for LED (different from button)
+    - Example: led event_on = NODE_ID + 0x0200, event_off = NODE_ID + 0x0201
+    - Write default description: "LED 1"
+  - Test on hardware:
+    - Build and upload
+    - Verify LED doesn't respond to button initially (different event IDs)
+    - Use JMRI to reconfigure LED's event_on to match button's event_on
+    - Use JMRI to reconfigure LED's event_off to match button's event_off
+    - Verify button→LED workflow works after JMRI configuration
+    - Test configuration persists across power cycles
+  - Write `src/06-gpio/single-button-led.md`:
+    - Breadboard wiring diagram (button on GPIO 18, LED on GPIO 19 with current-limiting resistor)
+    - Complete code walkthrough showing:
+      - GPIO pin definitions (GpioInputPU vs GpioOutputSafeLow)
+      - ConfiguredProducer and ConfiguredConsumer setup
+      - RefreshLoop polling pattern (why producers need it, consumers don't)
+      - Reserved space consumption pattern (show config.h evolution)
+    - JMRI configuration workflow (high-level with key screenshots):
+      - Open LccPro and connect to node
+      - Navigate to CDI configuration
+      - Edit LED event IDs to match button events
+      - Save and verify button controls LED
+    - Troubleshooting section:
+      - Button events not appearing (check RefreshLoop)
+      - LED not responding (verify event IDs match)
+      - Configuration not persisting (SPIFFS issues)
+- **Owner**: Next session
+- **Depends On**: T6.2
+- **Blocks**: T6.4
+
+### T6.4 - Scale to Multiple I/O with Multi Patterns
+- **Status**: ⏳ Not Started
+- **Priority**: HIGH
+- **Effort**: 3-4 hours
+- **Description**:
+  - Research Multi patterns:
+    - Confirm MultiConfiguredConsumer exists and usage pattern
+    - Research whether MultiConfiguredProducer exists in OpenMRNLite
+    - If MultiConfiguredProducer doesn't exist, plan to use individual ConfiguredProducer instances
+    - Document findings
+  - Modify `test/async_blink_esp32/include/config.h`:
+    - Consume remaining reserved space (8 bytes → 0 bytes)
+    - Replace single entries with RepeatedGroup:
+      - `constexpr uint8_t NUM_BUTTONS = 2;`
+      - `constexpr uint8_t NUM_LEDS = 3;`
+      - `using AllProducers = RepeatedGroup<ProducerConfig, NUM_BUTTONS>;`
+      - `using AllConsumers = RepeatedGroup<ConsumerConfig, NUM_LEDS>;`
+      - `CDI_GROUP_ENTRY(buttons, AllProducers, Name("Buttons"), RepName("Button"));`
+      - `CDI_GROUP_ENTRY(leds, AllConsumers, Name("LEDs"), RepName("LED"));`
+    - Remove old single button/led entries
+    - **DO NOT increment CANONICAL_VERSION** - total config size unchanged (32 bytes reserved → 2 buttons + 3 LEDs consumed)
+  - Modify `test/async_blink_esp32/src/main.cpp`:
+    - Add new GPIO pins:
+      - `GPIO_PIN(Button2, GpioInputPU, 21);` (second button)
+      - `GPIO_PIN(LED2, GpioOutputSafeLow, 22);`
+      - `GPIO_PIN(LED3, GpioOutputSafeLow, 23);`
+    - Update GpioInitializer: `typedef GpioInitializer<Button1_Pin, Button2_Pin, LED1_Pin, LED2_Pin, LED3_Pin> GpioInit;`
+    - For producers: Create individual instances or use Multi pattern if available
+      - `openlcb::ConfiguredProducer button1_producer(node, cfg.seg().buttons().entry<0>(), Button1_Pin());`
+      - `openlcb::ConfiguredProducer button2_producer(node, cfg.seg().buttons().entry<1>(), Button2_Pin());`
+      - Update RefreshLoop: `{ button1_producer.polling(), button2_producer.polling() }`
+    - For consumers: Use MultiConfiguredConsumer pattern
+      - `constexpr const Gpio *const led_pins[] = { LED1_Pin::instance(), LED2_Pin::instance(), LED3_Pin::instance() };`
+      - `openlcb::MultiConfiguredConsumer led_consumers(node, led_pins, ARRAYSIZE(led_pins), cfg.seg().leds());`
+  - Update FactoryResetHelper::factory_reset():
+    - Use factory_reset_names() for repeated groups:
+      - `openlcb::factory_reset_names(fd, cfg.seg().buttons(), "Button");` (creates "Button 1", "Button 2")
+      - `openlcb::factory_reset_names(fd, cfg.seg().leds(), "LED");` (creates "LED 1", "LED 2", "LED 3")
+    - Write independent event IDs for all buttons and LEDs (no cross-wiring in factory defaults)
+  - Test on hardware:
+    - Build and upload
+    - Verify all buttons produce events independently
+    - Verify all LEDs respond to events independently
+    - Use JMRI to create cross-wiring scenarios:
+      - Wire Button 1 → LED 2
+      - Wire Button 2 → LED 1 + LED 3 (same event ID to multiple consumers)
+    - Verify JMRI shows repeated groups with RepName labels ("Button 1", "Button 2", etc.)
+    - Confirm configuration persists and no factory reset occurred
+  - Write `src/06-gpio/scaling-multiple-io.md`:
+    - Explain RepeatedGroup<T, N> pattern for scalable configuration
+    - Document MultiConfiguredConsumer memory efficiency advantages:
+      - Single event handler for all LEDs vs N separate handlers
+      - Show memory savings calculation for 3 LEDs
+      - Explain user_arg encoding for pin indexing
+    - Show factory_reset_names() helper usage
+    - Demonstrate cross-wiring examples via JMRI
+    - Explain why producers use individual instances (or Multi if researched and available)
+    - Complete reserved space evolution walkthrough showing 32→20→8→0 byte progression
+- **Owner**: Next session
+- **Depends On**: T6.3
+- **Blocks**: T6.5
+
+### T6.5 - Finalize Chapter 6 and Evaluate Chapter 7 Scope
+- **Status**: ⏳ Not Started
+- **Priority**: HIGH
+- **Effort**: 2 hours
+- **Description**:
+  - Review and update `src/06-gpio/overview.md`:
+    - Update with tested GPIO assignments (18, 19, 21, 22, 23)
+    - Add ESP32 pin safety reference table:
+      - Safe pins for general use (18, 19, 21, 22, 23, 32, 33)
+      - Bootstrap pins with warnings (0, 2, 5, 12, 15)
+      - Input-only pins (34-39)
+      - Reserved pins to avoid (6-11 flash, 1/3 UART)
+    - Explain GPIO 20 reserved for future servo (PWM capable)
+  - Create Mermaid diagrams:
+    - Sequence diagram: Button press → Producer → Event transmission → Consumer → LED response
+    - Timing diagram: RefreshLoop polling cycle showing 33Hz frequency and debounce behavior
+    - State diagram: ConfigUpdateFlow applying configuration to producers/consumers
+  - Update `src/SUMMARY.md`:
+    - Add Chapter 6 subchapters:
+      - Configuration Evolution (01-enable-disable.md)
+      - Single Button and LED (single-button-led.md)
+      - Scaling to Multiple I/O (scaling-multiple-io.md)
+      - (Placeholder for servo if Chapter 6, or forward ref if Chapter 7)
+  - Evaluate chapter length and complexity:
+    - Count total pages/sections in Chapter 6
+    - Assess if servo should be:
+      - Option A: Chapter 6 final section (if chapter is <10 pages)
+      - Option B: New Chapter 7 "Advanced I/O: Servos and PWM" (if chapter is >10 pages)
+      - Option C: Chapter 7 "Scaling I/O" with both servo and additional digital I/O patterns
+  - Update planning files:
+    - `plan/PROJECT_STATUS.md`: Mark Phase 6 complete, document servo decision
+    - `plan/FORWARD_REFERENCES.md`: Add forward reference if servo becomes Chapter 7
+    - `plan/TASKS.md`: Add Phase 7 tasks if servo chapter is split out
+  - Document decision rationale:
+    - Chapter length considerations
+    - Pedagogical flow (simple→complex)
+    - Reader feedback if available
+- **Owner**: Next session
+- **Depends On**: T6.4
+- **Blocks**: Phase 7 (if servo becomes separate chapter)
 
 ---
 
-## Work Prioritization Summary
-
-**Session A (Next Implementation — T2.7):**
-1. Verify main.cpp on hardware ✅
-2. Revise esp32-arduino.md for LccPro (2 hours)
-3. Fix config comments for clarity (30 min)
-4. Update TASKS.md and documentation
-
-**Session B (Following Implementation — T5.1):**
-1. Enhance async_blink_esp32 with EVENT_INTERVAL config
-2. Create Configuration & Persistence chapter (3-4 hours)
-3. Document config versioning and schema evolution
-4. Hands-on JMRI walkthrough
-
-**If time is limited in future:**
-1. **Must Have (Blocking)**: T1.1, T1.2, T2.1, T2.3, T2.4, T2.7, T5.1
-2. **Should Have (High Value)**: T3.1, T3.2, T4.1
-3. **Nice to Have (Polish)**: T3.3, T4.2, T5.2, T5.3
-4. **Future**: CAN hardware, GPIO integration, advanced features
-
----
-
-**Last Updated**: 2025-12-22  
-**Next Review**: Before starting T2.7 implementation session
+**Last Updated**: 2025-12-29  
+**Next Review**: Before starting T6.1 implementation session

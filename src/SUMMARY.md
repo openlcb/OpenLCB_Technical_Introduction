@@ -35,3 +35,6 @@
   - [The Esp32HardwareTwai Class: Arduino Cores and the Name Change](./05-can/04-esp32-class-naming.md)
   - [Configuring JMRI for CAN](./05-can/05-jmri-configuration.md)
   - [TWAI Bus Diagnostics and Troubleshooting](./05-can/06-twai-diagnostics.md)
+- [GPIO and Physical I/O](./06-gpio/overview.md)
+  - [Adding an Enable/Disable Toggle](./06-gpio/01-enable-disable.md)
+  - [Adding a Physical Button Input](./06-gpio/02-button-input.md)

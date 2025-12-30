@@ -2,46 +2,51 @@
 
 > NOTE: This file is the immediate session playbook — a short, actionable subset of the canonical backlog in `plan/TASKS.md`.
 
-**Last Updated**: 2025-12-24  
-**Current Phase**: Phase 4 In Progress - Configuration & Persistence Chapter
+**Last Updated**: 2025-12-30  
+**Current Phase**: Phase 6 In Progress - GPIO/Physical I/O Implementation
 
 ## For Next Session: Start Here
 
-### ⚠️ IMMEDIATE TASK: T4.3 (Configuration Versioning Implementation)
-**This session's focus**: Code changes to validate versioning behavior and write Phase 3 documentation
+### ⚠️ IMMEDIATE TASK: T6.3 (Add Single LED Consumer with ConfiguredConsumer)
+**This session's focus**: LED output with ConfiguredConsumer pattern
 
 1. **Read These Files First** (10 minutes):
-   - **plan/TASKS.md** - T4.3 plan
-   - **plan/T4.2-RESEARCH.md** - Detailed standards and implementation analysis (reference)
-   - **OpenLCB_Technical_Introduction/src/04-configuration/** - All 4 existing Chapter 4 files (overview, storage-model, editing-in-jmri, factory-reset)
+   - **plan/TASKS.md** - T6.3 plan
+   - **OpenMRNLite/src/openlcb/ConfiguredConsumer.hxx** - ConfiguredConsumer implementation
+   - **src/06-gpio/02-button-input.md** - Just completed; understand button producer pattern
 
-2. **Execute T4.3** (2-2.5 hours): Code implementation + Phase 3 documentation
-   - Modify test/async_blink_esp32/include/config.h: Add EventInterval configurable field
-   - Modify test/async_blink_esp32/src/main.cpp: Implement enhanced apply_configuration()
-   - Test on ESP32 hardware: Change interval via JMRI, verify firmware responds
-   - Write new Chapter 4 section (content-driven): Configurable Settings, Versioning, Reserved Space, Best Practices
+2. **Execute T6.3** (2 hours): Add single LED with GPIO consumer
+   - Modify test/async_blink_esp32/include/config.h: Consume reserved space (20→8 bytes), add ConsumerConfig
+   - Modify test/async_blink_esp32/src/main.cpp: Add GPIO pin, ConfiguredConsumer
+   - Test on hardware: Wire LED to GPIO 19, configure via JMRI to respond to button events
+   - **DO NOT increment CANONICAL_VERSION** (consuming reserved space, file size unchanged)
 
-3. **After T4.3 Works**: Wrap-up (T4.4)
-   - Update SUMMARY.md references if needed
-   - Add cross-references from Chapter 3
-   - Verify mdbook build succeedsSessions (Completed)
+3. **After T6.3 Works**: Move to T6.4
+   - Scale to multiple I/O with Multi patterns
+   - Demonstrate RepeatedGroup configuration## Previous Sessions (Completed)
+
 - ✅ T0.1: Restructure intro.md for high-level overview
 - ✅ T1.1-T1.4: Initial content restructuring (archive STM32, create ESP32 chapter skeleton)
-- ✅ T2.0.1: OpenMRN-Lite CDI enhancement (working code on hardware)
+- ✅ T2.0-T2.0.1: OpenMRN-Lite CDI enhancement (working code on hardware)
+- ✅ T2.1-T2.2: Create async_blink_esp32 Arduino Sketch and PlatformIO configuration
+- ✅ T2.4: Create detailed JMRI TCP setup guide
 - ✅ T2.6-T2.7: Update Chapter 3 documentation and create OpenMRN-Lite architecture chapter
 - ✅ T3.1: Create Mermaid startup sequence diagram
-- ✅ T4.1: Write Phase 1 configuration content (5 sections, SUMMARY.md updated)
-- ✅ T4.2: Research configuration versioning and standards alignment
-- ✅ T2.2: platformio.ini teT4.3)
-- **plan/T4.2-RESEARCH.md** - ✨ Comprehensive analysis of standards, implementation, and gaps (CREATED)
+- ✅ T4.1-T4.4: Complete Chapter 4 Configuration & Persistence (all sections, tested on hardware)
+- ✅ T5.1: Complete Chapter 5 Switching to CAN Transport (all sections, tested with JMRI)
+- ✅ T6.1: Add reserved configuration space, enable/disable feature, Chapter 6 Part 1 documentation
+- ✅ T6.2: Add single button producer with ConfiguredProducer (GPIO 18, tested with LccPro)
+## Key Planning Files
+
+- **plan/TASKS.md** - Canonical backlog (T6.2 is next)
+- **plan/PROJECT_STATUS.md** - Current phase status and blockers
 - **plan/CHAPTERS.md** - Book structure and content status
-- **plan/DIAGRAMS.md** - What diagrams are planned and why
-- **plan/STYLE_GUIDE.md** - Writing style & tone to match existing content
-- **OpenMRNLite/README.md** - Official library documentation
-- **markdown/standards/S-9.7.4.*.md** - OpenLCB standards for reference during Phase 3 writing
+- **plan/RESEARCH.md** - Technical findings and discoveries
+- **plan/DIAGRAMS.md** - Diagram inventory and status
+- **plan/STYLE_GUIDE.md** - Writing style & tone
 - **plan/SUB_AGENT_GUIDE.md** - When to use sub-agents for research
-- **plan/STYLE_GUIDE.md** - Writing style & tone to match existing content
-- **OpenMRNLite/README.md** - Official library documentation (GPIO restrictions, WiFi setup, CAN details)
+- **OpenMRNLite/README.md** - Official library documentation
+- **markdown/standards/S-9.7.4.*.md** - OpenLCB standards for reference
 
 ### 4. During Work
 - Update TASKS.md as you progress (mark in-progress, completed)
@@ -135,67 +140,50 @@
 
 ---
 
-## Chapter 4 Configuration & Persistence (Multi-Session)
+## Workflow: GPIO Hardware Integration (Current Phase)
 
-**This is a 3-session effort**: Content writing (T4.1 ✅) → Research (T4.2 ✅) → Implementation & Phase 3 writing (T4.3 READY)
+**Phase 6 is a multi-session hardware integration effort**: Configuration patterns (T6.1 ✅) → Single I/O (T6.2-T6.3) → Multiple I/O (T6.4) → Chapter wrap-up (T6.5)
 
-### Session 1: Write Initial Configuration Content (T4.1) ✅
-✅ Completed 2025-12-24
-   - Created 4 markdown files in src/04-configuration/ (overview, storage-model, editing-in-jmri, factory-reset)
-   - Updated SUMMARY.md with Chapter 4 TOC
-   - Forward references added to Chapter 3
+**Standard workflow for GPIO tasks:** All code changes follow this pattern:
+1. **Update config.h first**: Add CDI entries, consume reserved space, update CANONICAL_VERSION only if total size changes
+2. **Update main.cpp second**: Add GPIO pins, create producer/consumer instances, update factory_reset()
+3. **Test on hardware**: Build, upload, verify with JMRI
+4. **Document**: Write corresponding chapter section with code diffs and wiring diagrams (follow STYLE_GUIDE.md)
 
-### Session 2: Research & Standards Analysis (T4.2) ✅
-✅ Completed 2025-12-24
-   - Created comprehensive T4.2-RESEARCH.md document
-   - Analyzed OpenLCB standards S-9.7.4.1/2/3
-   - Documented OpenMRNLite implementation architecture
-   - Identified 6 critical gaps and limitations
-   - Verified Chapter 4 content is factually correct
+**Best Practice - Use Sub-Agents for Research:**
+- For intensive research tasks (e.g., searching OpenMRNLite source code, understanding API patterns), launch a sub-agent
+- This preserves token budget in the main session for file editing and content writing
+- Research findings from sub-agent can be summarized and applied directly to code/docs
 
-### Session 3: Implementation & Phase 3 Content (T4.3) — NEXT
-**Ready to start**. Modify test/async_blink_esp32 to:
-   - Add EventInterval configurable field to config.h CDI
-   - Implement enhanced apply_configuration() to read and apply changes
-   - Test with JMRI: change interval, verify firmware responds
-   - Write new Chapter 4 section based on practical example: Configurable Settings, Versioning, Reserved Space, Best Practices
-   - Verify JMRI can connect via TCP
-3. **Execute T4.2 Part A** (45 minutes): Add EventInterval field with auto-extend test
-   - Update config.h: Add `EventInterval` uint16_t field with reserved space pattern
-   - Keep CANONICAL_VERSION = 0x0001 (unchanged)
-   - Build/upload to ESP32
-   - Observe: Does existing config file auto-extend? Does JMRI show new EventInterval field?
-   - Document findings
-4. **Execute T4.2 Part B** (45 minutes): Test version bump reset behavior
-   - Bump CANONICAL_VERSION to 0x0002
-   - Build/upload to ESP32
-   - Observe: Is config reset triggered? Does SNIP user data (name) persist? Serial output?
-   - Document what happens to ACDI data vs application config
-   - Take notes on implications for users
-5. **After T4.2**: Document findings in brief research notes, update TASKS.md, mark ready for Session 3
+### Session 1: Configuration Evolution (T6.1) ✅
+✅ Completed 2025-12-30
+   - Added `blink_enabled` configuration with Enabled/Disabled mapping
+   - Added 32 bytes of reserved configuration space
+   - Incremented CANONICAL_VERSION to 0x0003 (one-time factory reset)
+   - Created src/06-gpio/01-enable-disable.md documentation
+   - Updated src/06-gpio/overview.md for two-part chapter structure
+   - Tested on hardware with JMRI
 
-### Session 3: Complete Content & Implement Event Interval (T4.3 & T4.4)
-1. **Read These Files First** (10 minutes):
-   - plan/TASKS.md T4.3 and T4.4 sections
-   - Session 2 findings/notes from Phase 2 research
-2. **Execute T4.3 Part A** (1 hour): Write remaining configuration content
-   - Add sections to src/04-configuration/configuration-persistence.md:
-     - Configuration Versioning behavior (based on Phase 2 findings)
-     - Reserved Space Technique patterns
-     - Best Practices section
-   - Include code examples and JMRI workflow from Phase 2 testing
-3. **Execute T4.3 Part B** (1-1.5 hours): Implement configurable EventInterval
-   - Update test/async_blink_esp32 config.h: Add EventInterval to CDI (reset CANONICAL_VERSION to 0x0001)
-   - Update test/async_blink_esp32 main.cpp: Implement apply_configuration() to read interval
-   - Update loop(): Use configurable interval instead of hardcoded EVENT_INTERVAL
-   - Add logging to show when config changes detected
-   - Test with JMRI: Change EventInterval via Configure, verify firmware reads it and changes behavior
-4. **Execute T4.4** (30-45 minutes): Integrate into book
-   - Update src/SUMMARY.md: Add Chapter 4 entry
-   - Add cross-references from Chapter 3 to Chapter 4
-   - Update plan/CHAPTERS.md with Chapter 4 status
-   - Run `mdbook build` and verify no errors
-5. **After T4.3 & T4.4**: Update TASKS.md marking complete, update PROJECT_STATUS.md with accomplishments
+### Session 2: Add Single Button Producer (T6.2) — NEXT
+**Ready to start**. Add physical button input with GPIO producer:
+   - Wire button to GPIO 18 (breadboard + pullup)
+   - Consume reserved space (32→20 bytes) for ProducerConfig
+   - Create ConfiguredProducer instance with RefreshLoop polling
+   - Test with JMRI: press button, see events produced
+   - **DO NOT increment CANONICAL_VERSION** (reserved space pattern)
+
+### Session 3: Add Single LED Consumer (T6.3) — FUTURE
+   - Wire LED to GPIO 19 (breadboard + resistor)
+   - Consume reserved space (20→8 bytes) for ConsumerConfig
+   - Create ConfiguredConsumer instance
+   - Test cross-wiring via JMRI (configure LED to respond to button events)
+   - Document single-button-led.md with complete wiring and code walkthrough
+
+### Session 4: Scale to Multiple I/O (T6.4) — FUTURE
+   - Add second button (GPIO 21) and second LED (GPIO 22)
+   - Use RepeatedGroup pattern for scalable configuration
+   - Implement MultiConfiguredConsumer for memory efficiency
+   - Document scaling-multiple-io.md
 
 ---
 
@@ -205,11 +193,10 @@
 |------|-----------|-----|
 | plan/TASKS.md | Starting/ending tasks | Track progress |
 | plan/PROJECT_STATUS.md | End of session | Summarize accomplishments |
-| src/esp32-arduino.md | Creating new chapter | Main content file |
-| src/intro.md | Adding diagrams/content | Update existing sections |
-| src/start.md | Refactoring content | Add JMRI TCP section |
+| test/async_blink_esp32/include/config.h | Adding GPIO config | CDI definitions |
+| test/async_blink_esp32/src/main.cpp | Adding GPIO code | Hardware integration |
+| src/06-gpio/*.md | Writing GPIO docs | Chapter 6 content |
 | plan/RESEARCH.md | Finding new info | Document discoveries |
-| plan/DIAGRAMS.md | Creating diagrams | Track which are done |
 
 ---
 
@@ -249,17 +236,14 @@
 
 ✅ Book successfully builds with `mdbook build` (no errors)
 ✅ Chapter 1 (Intro) has Mermaid startup sequence + event state machine diagrams
-✅ Chapter 2 (Getting Started) updated with esp32 context and JMRI TCP section
-✅ Chapter 3 (ESP32 with Arduino & PlatformIO) is complete with:
-   - PlatformIO setup guide
-   - Hardware setup with breadboard circuit diagram
-   - async_blink_esp32.ino sketch with button/LED
-   - platformio.ini template
-   - JMRI verification steps
-   - Troubleshooting section
+✅ Chapter 2 (Getting Started) updated with ESP32 context and platform overview
+✅ Chapter 3 (Your First WiFi-Based OpenLCB Node) complete with CDI and JMRI monitoring
+✅ Chapter 4 (Configuration & Persistence) complete with configuration patterns and versioning
+✅ Chapter 5 (Switching to CAN Hardware) complete with hardware wiring and JMRI setup
+⏳ Chapter 6 Part 1 (Configuration Evolution) complete - Part 2 (GPIO hardware) in progress
+⏳ Chapter 6 Part 2 (GPIO/Physical I/O): Button/LED integration with ConfiguredProducer/Consumer
 ✅ Nucleo/STM32 content archived (not in main TOC)
-✅ "What's Next" preview section points to future chapters
-✅ Code examples are tested and working
+⏳ Code examples tested and working on ESP32 hardware
 ✅ All plan/ tracking files updated
 
 ---
@@ -274,6 +258,6 @@
 
 ---
 
-**Last Updated**: 2025-12-24  
-**Last Edit**: Added Chapter 4 Configuration multi-session workflow (T4.1-T4.4)  
-**Ready For**: Chapter 4 Session 1 (T4.1 - Write initial configuration content)
+**Last Updated**: 2025-12-30  
+**Last Edit**: Updated for Phase 6 GPIO implementation (T6.1 complete, T6.2 next)  
+**Ready For**: T6.2 - Add Single Button Producer with ConfiguredProducer
