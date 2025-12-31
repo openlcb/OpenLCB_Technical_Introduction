@@ -36,10 +36,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-e5dac756.js";
+            window.path_to_searchindex_js = "searchindex-6212e220.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-0aab397f.js"></script>
+        <script src="toc-038b4abc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -4074,9 +4074,7 @@ openmrn.add_can_port(&amp;can_driver);
 <h3 id="update-canonical_version"><a class="header" href="#update-canonical_version">Update CANONICAL_VERSION</a></h3>
 <p>Since we’re adding a new configuration field, increment the version number in <a href="d:&#92;src&#92;github&#92;LCC&#92;test&#92;async_blink_esp32&#92;include&#92;config.h">config.h</a>:</p>
 <pre><code class="language-diff"> /// Version number for the configuration structure
--/// NOTE: Incremented to 0x0003 when adding blink_enabled and reserved space
 -static constexpr uint16_t CANONICAL_VERSION = 0x0003;
-+/// NOTE: Incremented to 0x0004 when adding button configuration
 +static constexpr uint16_t CANONICAL_VERSION = 0x0004;
 </code></pre>
 <p>This triggers a factory reset on first boot, initializing the new button configuration.</p>
@@ -4358,6 +4356,500 @@ pull-up resistors, enabling pull-down is not possible.
 +  
    can_driver.hw_init();
    init_openlcb_stack();
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="adding-an-led-output"><a class="header" href="#adding-an-led-output">Adding an LED Output</a></h1>
+<p>Now that you have a working button input that produces events, let’s add an LED output that consumes events. This demonstrates the core producer/consumer model of OpenLCB: producers send events, consumers respond to them.</p>
+<h2 id="what-youll-build-1"><a class="header" href="#what-youll-build-1">What You’ll Build</a></h2>
+<p>In this section, you’ll:</p>
+<ul>
+<li>Wire an LED to GPIO 19</li>
+<li>Configure a <code>ConfiguredConsumer</code> to control the LED based on events</li>
+<li>Test the LED manually using LccPro’s Send Frame feature</li>
+<li>Link the button’s events to the LED’s actions, creating an interactive button-LED pair</li>
+</ul>
+<h2 id="additional-hardware-required-1"><a class="header" href="#additional-hardware-required-1">Additional Hardware Required</a></h2>
+<p>For this section, you’ll need:</p>
+<ul>
+<li><strong>1× LED</strong> (any color, standard 5mm or 3mm)</li>
+<li><strong>1× Current-limiting resistor</strong> (220Ω to 1kΩ recommended)</li>
+<li><strong>Jumper wires</strong> (you already have these)</li>
+</ul>
+<p><strong>Resistor value guide:</strong></p>
+<ul>
+<li><strong>220Ω</strong>: Brighter LED, safe for most 20mA LEDs</li>
+<li><strong>470Ω</strong>: Medium brightness, good general-purpose value</li>
+<li><strong>1kΩ</strong>: Dimmer but very safe, good for high-efficiency LEDs</li>
+</ul>
+<h2 id="hardware-setup-2"><a class="header" href="#hardware-setup-2">Hardware Setup</a></h2>
+<h3 id="breadboard-wiring-1"><a class="header" href="#breadboard-wiring-1">Breadboard Wiring</a></h3>
+<p><img src="06-gpio/images/ESP32-CAN-Button-LED.png" alt="Breadboard layout with button and LED">
+<em>Figure: ESP32 with CAN transceiver, button, and LED on breadboard</em></p>
+<p>Connect the LED as follows:</p>
+<ol>
+<li><strong>GPIO 19</strong> → <strong>Resistor</strong> → <strong>LED anode (+, longer leg)</strong></li>
+<li><strong>LED cathode (-, shorter leg)</strong> → <strong>GND</strong></li>
+</ol>
+<p><strong>Important:</strong> Always use a current-limiting resistor with LEDs. Without it, the LED will draw excessive current and may damage the ESP32’s GPIO pin or the LED itself.</p>
+<h3 id="how-it-works-1"><a class="header" href="#how-it-works-1">How It Works</a></h3>
+<p>This is an <strong>active-high</strong> configuration:</p>
+<ul>
+<li>GPIO 19 <strong>HIGH</strong> (3.3V) → Current flows through resistor and LED → LED <strong>on</strong></li>
+<li>GPIO 19 <strong>LOW</strong> (0V) → No current flow → LED <strong>off</strong></li>
+</ul>
+<p>Unlike the button (which uses active-low logic due to pull-up resistors), LEDs are simpler: setting the pin HIGH turns them on, setting it LOW turns them off.</p>
+<h2 id="understanding-the-code-changes-1"><a class="header" href="#understanding-the-code-changes-1">Understanding the Code Changes</a></h2>
+<p>We’ll add three components to make the LED work:</p>
+<h3 id="1-gpio-pin-definition"><a class="header" href="#1-gpio-pin-definition">1. GPIO Pin Definition</a></h3>
+<pre><code class="language-diff"> // Define GPIO pin for button input (active-low with internal pull-up)
+ // When button is pressed, pin reads LOW (0); when released, reads HIGH (1)
+ GPIO_PIN(BUTTON, GpioInputPU, 18);
+ 
++// Define GPIO pin for LED output (active-high)
++// When event ON received, LED turns on (HIGH); when event OFF received, LED turns off (LOW)
++GPIO_PIN(LED, GpioOutputSafeLow, 19);
++
+ // GPIO initializer - sets up all GPIO pins before OpenMRN stack starts
+-typedef GpioInitializer&lt;BUTTON_Pin&gt; GpioInit;
++typedef GpioInitializer&lt;BUTTON_Pin, LED_Pin&gt; GpioInit;
+</code></pre>
+<p><strong>Key points:</strong></p>
+<ul>
+<li><code>GpioOutputSafeLow</code> initializes the pin as an output, starting in the LOW (off) state</li>
+<li>The LED pin is added to the <code>GpioInitializer</code> list</li>
+<li>OpenMRNLite will manage the LED state—we don’t manually control it</li>
+</ul>
+<h3 id="2-configuration-in-configh-1"><a class="header" href="#2-configuration-in-configh-1">2. Configuration in config.h</a></h3>
+<p>Add <code>ConfiguredConsumer</code> include and a <code>ConsumerConfig</code> entry:</p>
+<pre><code class="language-diff"> #include "openlcb/ConfigRepresentation.hxx"
+ #include "openlcb/ConfiguredProducer.hxx"
++#include "openlcb/ConfiguredConsumer.hxx"
+ #include "openlcb/MemoryConfig.hxx"
+</code></pre>
+<pre><code class="language-diff"> /// Version number for the configuration structure
+-static constexpr uint16_t CANONICAL_VERSION = 0x0004;
++static constexpr uint16_t CANONICAL_VERSION = 0x0005;
+</code></pre>
+<pre><code class="language-diff"> CDI_GROUP_ENTRY(button, ProducerConfig,
+                 Name("Button 1"),
+                 Description("Physical button input on GPIO 18"));
++CDI_GROUP_ENTRY(led, ConsumerConfig,
++                Name("LED 1"),
++                Description("LED output on GPIO 19"));
+ CDI_GROUP_END();
+</code></pre>
+<p>This creates a configuration section for the LED with:</p>
+<ul>
+<li><strong>Description:</strong> User-editable label for this output</li>
+<li><strong>Event On:</strong> Event ID that turns the LED on</li>
+<li><strong>Event Off:</strong> Event ID that turns the LED off</li>
+</ul>
+<h3 id="3-consumer-instance"><a class="header" href="#3-consumer-instance">3. Consumer Instance</a></h3>
+<pre><code class="language-diff"> // Button producer - monitors GPIO 18 and produces events on state changes
+ // Uses RefreshLoop for 33Hz polling (debounce handled by ConfiguredProducer)
+ openlcb::ConfiguredProducer button_producer(
+     openmrn.stack()-&gt;node(), cfg.seg().button(), BUTTON_Pin());
+ 
++// LED consumer - listens for events and controls GPIO 19
++openlcb::ConfiguredConsumer led_consumer(
++    openmrn.stack()-&gt;node(), cfg.seg().led(), LED_Pin());
++
+ // RefreshLoop - polls button at 33Hz and handles debouncing
+ openlcb::RefreshLoop button_refresh_loop(openmrn.stack()-&gt;node(),
+     {button_producer.polling()});
+</code></pre>
+<p><strong>How it works:</strong></p>
+<ul>
+<li><code>ConfiguredConsumer</code> automatically registers with the OpenMRN event system</li>
+<li>When any node on the network produces a matching event:
+<ol>
+<li>OpenMRN routes the event to the consumer</li>
+<li>Consumer compares event ID to configured ON/OFF events</li>
+<li>If match found → sets GPIO pin to appropriate state</li>
+</ol>
+</li>
+<li>No polling required—event-driven design</li>
+</ul>
+<h3 id="4-factory-reset-updates-1"><a class="header" href="#4-factory-reset-updates-1">4. Factory Reset Updates</a></h3>
+<p>Initialize the LED configuration with default values:</p>
+<pre><code class="language-diff">     // Initialize button producer configuration
+     // Event IDs use NODE_ID base with unique offsets to avoid collision
+     cfg.seg().button().description().write(fd, "Button 1");
+     cfg.seg().button().event_on().write(fd, NODE_ID + 0x0100);   // Released (HIGH)
+     cfg.seg().button().event_off().write(fd, NODE_ID + 0x0101);  // Pressed (LOW)
+     CDI_FACTORY_RESET(cfg.seg().button().debounce);  // Default: 3 (90ms at 33Hz)
+     
++    // Initialize LED consumer configuration
++    cfg.seg().led().description().write(fd, "LED 1");
++    cfg.seg().led().event_on().write(fd, NODE_ID + 0x0200);   // Turn LED on
++    cfg.seg().led().event_off().write(fd, NODE_ID + 0x0201);  // Turn LED off
++    
+     Serial.println("Factory reset: wrote defaults (blink_enabled=Enabled, blink_interval=1000 ms)");
+     Serial.printf("Button events: ON=0x%016llX, OFF=0x%016llX\n", 
+                   NODE_ID + 0x0100, NODE_ID + 0x0101);
++    Serial.printf("LED events: ON=0x%016llX, OFF=0x%016llX\n", 
++                  NODE_ID + 0x0200, NODE_ID + 0x0201);
+ }
+</code></pre>
+<p><strong>Event ID strategy:</strong></p>
+<ul>
+<li>LED uses offset <code>+0x0200</code> and <code>+0x0201</code> to keep it distinct from button events (<code>+0x0100</code>/<code>+0x0101</code>)</li>
+<li>This makes it easy to identify which events control which I/O when looking at traffic</li>
+</ul>
+<h2 id="building-and-flashing-1"><a class="header" href="#building-and-flashing-1">Building and Flashing</a></h2>
+<h3 id="update-canonical_version-1"><a class="header" href="#update-canonical_version-1">Update CANONICAL_VERSION</a></h3>
+<p>We’ve already incremented the version to <code>0x0005</code> in the code above. This triggers a factory reset on first boot, initializing the LED configuration.</p>
+<h3 id="build-flash-and-monitor-1"><a class="header" href="#build-flash-and-monitor-1">Build, Flash, and Monitor</a></h3>
+<p>Use PlatformIO’s <strong>Upload and Monitor</strong> task as before.</p>
+<h3 id="expected-serial-output-1"><a class="header" href="#expected-serial-output-1">Expected Serial Output</a></h3>
+<pre><code>=== OpenLCB async_blink ESP32 Example ===
+Node ID: 0x050201020200
+Event 0: 0x0502010202000000
+Event 1: 0x0502010202000001
+
+Initializing SPIFFS...
+SPIFFS initialized successfully
+GPIO initialized: Button on GPIO 18 (active-low with pull-up), LED on GPIO 19 (active-high)
+ESP-TWAI: Configuring TWAI (TX:5, RX:4, EXT-CLK:-1, BUS-CTRL:-1)
+
+Creating CDI configuration descriptor...
+[CDI] Updating /spiffs/cdi.xml (len 2748)
+Initializing OpenLCB configuration...
+Factory reset: wrote defaults (blink_enabled=Enabled, blink_interval=1000 ms)
+Button events: ON=0x0000050201020300, OFF=0x0000050201020301
+LED events: ON=0x0000050201020400, OFF=0x0000050201020401
+
+Starting OpenLCB stack...
+OpenLCB node initialization complete!
+</code></pre>
+<p><strong>Key observations:</strong></p>
+<ul>
+<li>Factory reset detected (version changed from 0x0004 to 0x0005)</li>
+<li>LED events initialized:
+<ul>
+<li>ON: <code>0x0000050201020400</code> (NODE_ID + 0x0200)</li>
+<li>OFF: <code>0x0000050201020401</code> (NODE_ID + 0x0201)</li>
+</ul>
+</li>
+</ul>
+<h2 id="testing-the-led"><a class="header" href="#testing-the-led">Testing the LED</a></h2>
+<p>We’ll test the LED in two ways:</p>
+<ol>
+<li><strong>Manual testing</strong> with LccPro’s Send Frame feature (verifies the LED consumer works)</li>
+<li><strong>Configuration</strong> to link the button’s events to the LED’s actions (creates interactive behavior)</li>
+</ol>
+<h3 id="method-1-manual-testing-with-send-frame"><a class="header" href="#method-1-manual-testing-with-send-frame">Method 1: Manual Testing with Send Frame</a></h3>
+<p>This procedure uses LccPro to send events manually, confirming your LED responds correctly before linking it to the button.</p>
+<h4 id="steps"><a class="header" href="#steps">Steps</a></h4>
+<ol>
+<li>
+<p>Open <strong>JMRI</strong> and launch <strong>LccPro</strong></p>
+</li>
+<li>
+<p>In the menu bar, choose <strong>LCC → Send Frame</strong></p>
+<p><img src="06-gpio/images/SendFrameDialog.png" alt="LccPro Send Frame dialog"></p>
+<p><em>Figure: LccPro Send Frame dialog</em></p>
+</li>
+<li>
+<p>Locate the section titled <strong>Send OpenLCB event message with eventID</strong></p>
+</li>
+<li>
+<p>In the <strong>eventID</strong> field, enter your LED’s ON event in dot-separated hex format:</p>
+<pre><code>00.00.05.02.01.02.04.00
+</code></pre>
+</li>
+<li>
+<p>In the <strong>Status</strong> dropdown, select <strong>Valid</strong></p>
+<ul>
+<li>“Valid” means “this event is being produced/asserted by a producer”</li>
+</ul>
+</li>
+<li>
+<p>Click the button labeled <strong>Send Event Produced</strong></p>
+</li>
+</ol>
+<p><strong>What happens:</strong></p>
+<ul>
+<li>LccPro broadcasts a Producer/Consumer Event Report with your event ID</li>
+<li>Your node’s LED consumer receives it</li>
+<li>LED turns <strong>on</strong></li>
+</ul>
+<ol start="7">
+<li>Now test the OFF event. Enter:
+<pre><code>00.00.05.02.01.02.04.01
+</code></pre>
+</li>
+<li>Status: <strong>Valid</strong> → Click <strong>Send Event Produced</strong></li>
+<li>LED turns <strong>off</strong></li>
+</ol>
+<p><strong>Success criteria:</strong></p>
+<ul>
+<li>✅ LED turns on when you send the ON event</li>
+<li>✅ LED turns off when you send the OFF event</li>
+<li>✅ LED responds immediately (within ~100ms)</li>
+</ul>
+<p>If the LED doesn’t respond, check:</p>
+<ul>
+<li>Wiring (resistor, LED polarity)</li>
+<li>Event IDs match exactly (check serial output for actual values)</li>
+<li>Node is online (visible in LccPro node list)</li>
+</ul>
+<h3 id="method-2-linking-button-to-led"><a class="header" href="#method-2-linking-button-to-led">Method 2: Linking Button to LED</a></h3>
+<p>Once you’ve confirmed the LED responds to events, you can configure it to respond to your button’s producer events. This creates true interactive behavior: press the button, LED changes state.</p>
+<p>Because both the button and LED are part of the same node, you can wire them together entirely inside that node’s <strong>Configure</strong> dialog by copying the button’s producer event IDs and pasting them into the LED’s consumer event fields.</p>
+<h4 id="steps-1"><a class="header" href="#steps-1">Steps</a></h4>
+<ol>
+<li>
+<p>In LccPro, click the <strong>Configure</strong> button for your node in the node list</p>
+<p><img src="06-gpio/images/ConfigureLedButton.png" alt="Node Configure dialog showing Button 1 and LED 1"></p>
+<p><em>Figure: Node Configure dialog showing Button 1 and LED 1 sections</em></p>
+</li>
+</ol>
+<p><strong>What you see:</strong></p>
+<ul>
+<li><strong>Button 1</strong> section with Event On and Event Off fields (each has a <strong>Copy</strong> button)</li>
+<li><strong>LED 1</strong> section with Event On and Event Off fields (each has a <strong>Paste</strong> button)</li>
+</ul>
+<h4 id="understanding-button-event-naming"><a class="header" href="#understanding-button-event-naming">Understanding Button Event Naming</a></h4>
+<p>The button’s event naming refers to the <strong>electrical state of the GPIO pin</strong>, not the physical button action:</p>
+<ul>
+<li><strong>Event On</strong>: Produced when GPIO goes <strong>HIGH</strong> (button <strong>released</strong>)</li>
+<li><strong>Event Off</strong>: Produced when GPIO goes <strong>LOW</strong> (button <strong>pressed</strong>)</li>
+</ul>
+<p>This is due to the active-low pull-up wiring we used in the button section.</p>
+<h4 id="connecting-button-to-led-pressed--led-on"><a class="header" href="#connecting-button-to-led-pressed--led-on">Connecting Button to LED (Pressed = LED On)</a></h4>
+<p>To make pressing the button turn the LED <strong>on</strong>, we need to map:</p>
+<ul>
+<li>Button’s “Event <strong>Off</strong>” (pressed) → LED’s “Event <strong>On</strong>” (turn on)</li>
+<li>Button’s “Event <strong>On</strong>” (released) → LED’s “Event <strong>Off</strong>” (turn off)</li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol start="4">
+<li>
+<p>In the <strong>Button 1</strong> section, click <strong>Copy</strong> next to the <strong>Event Off</strong> field</p>
+<ul>
+<li>This copies the button’s “pressed” event ID to the clipboard</li>
+</ul>
+</li>
+<li>
+<p>In the <strong>LED 1</strong> section, click <strong>Paste</strong> next to the LED’s <strong>Event On</strong> field</p>
+<ul>
+<li>This tells the LED to turn <strong>on</strong> when the button is pressed</li>
+</ul>
+</li>
+<li>
+<p>Return to the <strong>Button 1</strong> section, click <strong>Copy</strong> next to the <strong>Event On</strong> field</p>
+<ul>
+<li>This copies the button’s “released” event ID</li>
+</ul>
+</li>
+<li>
+<p>In the <strong>LED 1</strong> section, click <strong>Paste</strong> next to the LED’s <strong>Event Off</strong> field</p>
+<ul>
+<li>This tells the LED to turn <strong>off</strong> when the button is released</li>
+</ul>
+</li>
+<li>
+<p>Click <strong>Write</strong> next to each changed field (or use <strong>Save Changes</strong> at the bottom)</p>
+</li>
+</ol>
+<h4 id="what-this-mapping-does"><a class="header" href="#what-this-mapping-does">What This Mapping Does</a></h4>
+<p>You’ve just configured:</p>
+<ul>
+<li><strong>Button pressed</strong> (produces Event Off <code>...03.01</code>) → <strong>LED turns on</strong></li>
+<li><strong>Button released</strong> (produces Event On <code>...03.00</code>) → <strong>LED turns off</strong></li>
+</ul>
+<p>This creates <strong>momentary button behavior</strong> with the expected physical action: pressing the button turns on the LED.</p>
+<h4 id="testing-interactive-behavior"><a class="header" href="#testing-interactive-behavior">Testing Interactive Behavior</a></h4>
+<ol>
+<li><strong>Press the button</strong> → LED turns <strong>on</strong></li>
+<li><strong>Release the button</strong> → LED turns <strong>off</strong></li>
+</ol>
+<h4 id="experimenting-further"><a class="header" href="#experimenting-further">Experimenting Further</a></h4>
+<p>Now that you understand the basics, try these exercises to deepen your understanding:</p>
+<p><strong>Restore Original Event IDs:</strong>
+If you want to restore the LED’s original event IDs (without reflashing firmware), click the <strong>More…</strong> button in the Configure dialog and select <strong>Factory Reset</strong>. This will restore all configuration values to their defaults, including the LED’s event IDs.</p>
+<p><strong>Try Different Event Sources:</strong>
+Instead of mapping the button to the LED, try mapping the async_blink events to control the LED. These events are hardcoded in the firmware (not configurable via JMRI):</p>
+<ul>
+<li>Async Blink Event 0: <code>05.02.01.02.02.00.00.00</code></li>
+<li>Async Blink Event 1: <code>05.02.01.02.02.00.00.01</code></li>
+</ul>
+<p>You can map them to the LED:</p>
+<ul>
+<li>Copy Event 0 to LED’s Event Off</li>
+<li>Copy Event 1 to LED’s Event On</li>
+<li>The LED will now blink in sync with the alternating events (if blink is enabled)</li>
+</ul>
+<p>This demonstrates that consumers can respond to <em>any</em> producer on the network—the LED doesn’t “know” or “care” whether events come from a button, a timer, or another node entirely.</p>
+<h4 id="why-copypaste-instead-of-automatic-linking"><a class="header" href="#why-copypaste-instead-of-automatic-linking">Why Copy/Paste Instead of Automatic Linking?</a></h4>
+<p>You might wonder why OpenLCB requires manually copying event IDs rather than just selecting “connect to Button 1.” This is because:</p>
+<ul>
+<li><strong>Event IDs are the fundamental unit</strong> of OpenLCB—all communication is event-based</li>
+<li><strong>Flexibility</strong>: Your LED could respond to events from <em>any</em> producer on the network, not just your local button</li>
+<li><strong>Multiple consumers</strong>: One button can control many LEDs, servos, relays, etc.</li>
+<li><strong>Cross-node wiring</strong>: Events work identically whether the producer and consumer are in the same node or across the layout</li>
+</ul>
+<p>The copy/paste workflow in the Configure dialog is simply a convenience for the common case of wiring two I/O points within the same node.</p>
+<h2 id="understanding-configuredconsumer"><a class="header" href="#understanding-configuredconsumer">Understanding ConfiguredConsumer</a></h2>
+<p>The <code>ConfiguredConsumer</code> class provides event-driven GPIO control:</p>
+<p><strong>How it works internally:</strong></p>
+<ol>
+<li>During initialization, consumer registers its event IDs with OpenMRN’s event system</li>
+<li>When <strong>any</strong> node on the network produces an event:
+<ul>
+<li>OpenMRN checks all registered consumers (when <code>openmrn.loop()</code> is called)</li>
+<li>If event ID matches consumer’s ON event → calls consumer’s <code>set(true)</code> method</li>
+<li>If event ID matches consumer’s OFF event → calls consumer’s <code>set(false)</code> method</li>
+</ul>
+</li>
+<li>Consumer’s <code>set()</code> method updates the GPIO pin state</li>
+</ol>
+<p><strong>Key characteristics:</strong></p>
+<ul>
+<li><strong>Event-driven GPIO control:</strong> Consumer doesn’t poll the GPIO pin; it only sets it when events arrive</li>
+<li><strong>Requires openmrn.loop():</strong> OpenMRNLite is single-threaded, so <code>openmrn.loop()</code> must be called frequently to process incoming CAN/network messages and dispatch events to consumers</li>
+<li><strong>Network-agnostic:</strong> Works with any producer on the network (local or remote)</li>
+<li><strong>Configurable:</strong> Event IDs can be changed via JMRI without reflashing firmware</li>
+</ul>
+<p><strong>Comparison to ConfiguredProducer:</strong></p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Feature</th><th>ConfiguredProducer</th><th>ConfiguredConsumer</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Direction</strong></td><td>GPIO → Events</td><td>Events → GPIO</td></tr>
+<tr><td><strong>GPIO Polling</strong></td><td>Yes (via RefreshLoop at 33Hz)</td><td>No (only sets GPIO when event received)</td></tr>
+<tr><td><strong>Network Processing</strong></td><td>Requires openmrn.loop()</td><td>Requires openmrn.loop()</td></tr>
+<tr><td><strong>Debounce</strong></td><td>Yes (configurable)</td><td>N/A</td></tr>
+<tr><td><strong>Use cases</strong></td><td>Buttons, sensors, detectors</td><td>LEDs, relays, servos</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>Note on openmrn.loop():</strong> In the full OpenMRN implementation (used on platforms with RTOS like FreeRTOS), event processing happens in separate threads. In OpenMRNLite (Arduino), everything is single-threaded, so <code>openmrn.loop()</code> must be called frequently in your main <code>loop()</code> function to process incoming messages—this is true for both producers and consumers.</p>
+<h2 id="node-event-ids-summary"><a class="header" href="#node-event-ids-summary">Node Event IDs Summary</a></h2>
+<p>Your node now handles multiple event IDs:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Event</th><th>Offset</th><th>Full Event ID</th><th>Purpose</th><th>Type</th></tr>
+</thead>
+<tbody>
+<tr><td>Async Blink 0</td><td><code>+0x00</code></td><td><code>05.02.01.02.02.00.00.00</code></td><td>Alternating event (state 0)</td><td>Producer</td></tr>
+<tr><td>Async Blink 1</td><td><code>+0x01</code></td><td><code>05.02.01.02.02.00.00.01</code></td><td>Alternating event (state 1)</td><td>Producer</td></tr>
+<tr><td>Button 1 ON</td><td><code>+0x0100</code></td><td><code>00.00.05.02.01.02.03.00</code></td><td>Button released (HIGH)</td><td>Producer</td></tr>
+<tr><td>Button 1 OFF</td><td><code>+0x0101</code></td><td><code>00.00.05.02.01.02.03.01</code></td><td>Button pressed (LOW)</td><td>Producer</td></tr>
+<tr><td>LED 1 ON</td><td><code>+0x0200</code></td><td><code>00.00.05.02.01.02.04.00</code></td><td>Turn LED on</td><td>Consumer</td></tr>
+<tr><td>LED 1 OFF</td><td><code>+0x0201</code></td><td><code>00.00.05.02.01.02.04.01</code></td><td>Turn LED off</td><td>Consumer</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="common-issues-and-troubleshooting-1"><a class="header" href="#common-issues-and-troubleshooting-1">Common Issues and Troubleshooting</a></h2>
+<h3 id="led-doesnt-respond-to-send-frame-events"><a class="header" href="#led-doesnt-respond-to-send-frame-events">LED doesn’t respond to Send Frame events</a></h3>
+<p><strong>Symptom:</strong> Sending events via LccPro has no effect on LED.</p>
+<p><strong>Fixes:</strong></p>
+<ol>
+<li><strong>Check wiring:</strong> Verify resistor is in series, LED polarity is correct (long leg to resistor)</li>
+<li><strong>Verify event IDs:</strong> Use serial monitor output to confirm actual event IDs</li>
+<li><strong>Check GPIO pin:</strong> Ensure no conflict with other peripherals (WiFi, etc.)</li>
+<li><strong>Test GPIO manually:</strong> Temporarily add <code>LED_Pin::set(true)</code> in setup() to verify wiring</li>
+</ol>
+<h3 id="led-works-with-send-frame-but-not-with-button"><a class="header" href="#led-works-with-send-frame-but-not-with-button">LED works with Send Frame but not with button</a></h3>
+<p><strong>Symptom:</strong> Manual events work, but button press doesn’t control LED.</p>
+<p><strong>Fixes:</strong></p>
+<ol>
+<li><strong>Verify mapping:</strong> Open LccPro Configure Nodes → Consumers tab, confirm button events are mapped</li>
+<li><strong>Check button producer:</strong> Verify button events appear in Traffic Monitor when pressed</li>
+<li><strong>Restart LccPro:</strong> Clear CDI cache after any firmware changes</li>
+<li><strong>Write to Node:</strong> Ensure you clicked “Write to Node” after configuring</li>
+</ol>
+<h3 id="led-behavior-is-inverted-pressed--on-instead-of-off"><a class="header" href="#led-behavior-is-inverted-pressed--on-instead-of-off">LED behavior is inverted (pressed = on instead of off)</a></h3>
+<p><strong>Symptom:</strong> LED turns on when you want it off, and vice versa.</p>
+<p><strong>Not actually a problem!</strong> This is due to active-low button logic. See “Why is it inverted?” above for solutions.</p>
+<h3 id="led-stays-on-or-flickers-randomly"><a class="header" href="#led-stays-on-or-flickers-randomly">LED stays on or flickers randomly</a></h3>
+<p><strong>Symptom:</strong> LED doesn’t turn off cleanly or flickers.</p>
+<p><strong>Possible causes:</strong></p>
+<ol>
+<li><strong>No current-limiting resistor:</strong> LED drawing too much current, damaging GPIO</li>
+<li><strong>Loose wiring:</strong> Check breadboard connections</li>
+<li><strong>Wrong event mapping:</strong> Two producers sending conflicting events</li>
+<li><strong>Electrical noise:</strong> Try adding 0.1µF capacitor between GPIO 19 and GND</li>
+</ol>
+<h2 id="whats-next-5"><a class="header" href="#whats-next-5">What’s Next</a></h2>
+<p>You’ve now built a complete interactive OpenLCB I/O node with:</p>
+<ul>
+<li>✅ Button input producing events</li>
+<li>✅ LED output consuming events</li>
+<li>✅ Configuration via LccPro</li>
+<li>✅ Manual testing with Send Frame</li>
+<li>✅ Button-to-LED mapping for interactive behavior</li>
+</ul>
+<p>This is the foundation of all OpenLCB control panels, layout automation, and accessory control. Every turnout, signal, detector, and indicator uses this same producer/consumer pattern—just scaled up.</p>
+<p>In the next section, we’ll explore how to <strong>scale to multiple buttons and LEDs</strong> efficiently using OpenMRNLite’s <code>RepeatedGroup</code> pattern and <code>MultiConfiguredConsumer</code> for memory optimization.</p>
+<h2 id="complete-code-files-1"><a class="header" href="#complete-code-files-1">Complete Code Files</a></h2>
+<p>For reference, here are the key code changes:</p>
+<h3 id="configh-led-consumer-addition"><a class="header" href="#configh-led-consumer-addition">config.h (LED consumer addition)</a></h3>
+<pre><code class="language-diff"> #include "openlcb/ConfigRepresentation.hxx"
+ #include "openlcb/ConfiguredProducer.hxx"
++#include "openlcb/ConfiguredConsumer.hxx"
+ #include "openlcb/MemoryConfig.hxx"
+ 
+...
+
+ /// Version number for the configuration structure
+-/// NOTE: Incremented to 0x0004 when adding button configuration
+-static constexpr uint16_t CANONICAL_VERSION = 0x0004;
++/// NOTE: Incremented to 0x0005 when adding LED consumer
++static constexpr uint16_t CANONICAL_VERSION = 0x0005;
+ 
+...
+
+ CDI_GROUP_ENTRY(button, ProducerConfig,
+                 Name("Button 1"),
+                 Description("Physical button input on GPIO 18"));
++CDI_GROUP_ENTRY(led, ConsumerConfig,
++                Name("LED 1"),
++                Description("LED output on GPIO 19"));
+ CDI_GROUP_END();
+</code></pre>
+<h3 id="maincpp-led-consumer-implementation"><a class="header" href="#maincpp-led-consumer-implementation">main.cpp (LED consumer implementation)</a></h3>
+<pre><code class="language-diff"> GPIO_PIN(BUTTON, GpioInputPU, 18);
+ 
++// Define GPIO pin for LED output (active-high)
++GPIO_PIN(LED, GpioOutputSafeLow, 19);
++
+ // GPIO initializer - sets up all GPIO pins before OpenMRN stack starts
+-typedef GpioInitializer&lt;BUTTON_Pin&gt; GpioInit;
++typedef GpioInitializer&lt;BUTTON_Pin, LED_Pin&gt; GpioInit;
+ 
+...
+
+ openlcb::ConfiguredProducer button_producer(
+     openmrn.stack()-&gt;node(), cfg.seg().button(), BUTTON_Pin());
+ 
++// LED consumer - listens for events and controls GPIO 19
++openlcb::ConfiguredConsumer led_consumer(
++    openmrn.stack()-&gt;node(), cfg.seg().led(), LED_Pin());
++
+ openlcb::RefreshLoop button_refresh_loop(openmrn.stack()-&gt;node(),
+     {button_producer.polling()});
+ 
+...
+
+     cfg.seg().button().event_off().write(fd, NODE_ID + 0x0101);
+     CDI_FACTORY_RESET(cfg.seg().button().debounce);
+     
++    // Initialize LED consumer configuration
++    cfg.seg().led().description().write(fd, "LED 1");
++    cfg.seg().led().event_on().write(fd, NODE_ID + 0x0200);
++    cfg.seg().led().event_off().write(fd, NODE_ID + 0x0201);
++    
+     Serial.println("Factory reset: wrote defaults...");
+     Serial.printf("Button events: ON=0x%016llX, OFF=0x%016llX\n", 
+                   NODE_ID + 0x0100, NODE_ID + 0x0101);
++    Serial.printf("LED events: ON=0x%016llX, OFF=0x%016llX\n", 
++                  NODE_ID + 0x0200, NODE_ID + 0x0201);
 </code></pre>
 
                     </main>

@@ -1,0 +1,724 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Adding an LED Output - OpenLCB Programmer&#x27;s Guide</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-2459343d.css">
+        <link rel="stylesheet" href="../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex-6212e220.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc-038b4abc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">OpenLCB Programmer&#x27;s Guide</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="adding-an-led-output"><a class="header" href="#adding-an-led-output">Adding an LED Output</a></h1>
+<p>Now that you have a working button input that produces events, let’s add an LED output that consumes events. This demonstrates the core producer/consumer model of OpenLCB: producers send events, consumers respond to them.</p>
+<h2 id="what-youll-build"><a class="header" href="#what-youll-build">What You’ll Build</a></h2>
+<p>In this section, you’ll:</p>
+<ul>
+<li>Wire an LED to GPIO 19</li>
+<li>Configure a <code>ConfiguredConsumer</code> to control the LED based on events</li>
+<li>Test the LED manually using LccPro’s Send Frame feature</li>
+<li>Link the button’s events to the LED’s actions, creating an interactive button-LED pair</li>
+</ul>
+<h2 id="additional-hardware-required"><a class="header" href="#additional-hardware-required">Additional Hardware Required</a></h2>
+<p>For this section, you’ll need:</p>
+<ul>
+<li><strong>1× LED</strong> (any color, standard 5mm or 3mm)</li>
+<li><strong>1× Current-limiting resistor</strong> (220Ω to 1kΩ recommended)</li>
+<li><strong>Jumper wires</strong> (you already have these)</li>
+</ul>
+<p><strong>Resistor value guide:</strong></p>
+<ul>
+<li><strong>220Ω</strong>: Brighter LED, safe for most 20mA LEDs</li>
+<li><strong>470Ω</strong>: Medium brightness, good general-purpose value</li>
+<li><strong>1kΩ</strong>: Dimmer but very safe, good for high-efficiency LEDs</li>
+</ul>
+<h2 id="hardware-setup"><a class="header" href="#hardware-setup">Hardware Setup</a></h2>
+<h3 id="breadboard-wiring"><a class="header" href="#breadboard-wiring">Breadboard Wiring</a></h3>
+<p><img src="images/ESP32-CAN-Button-LED.png" alt="Breadboard layout with button and LED">
+<em>Figure: ESP32 with CAN transceiver, button, and LED on breadboard</em></p>
+<p>Connect the LED as follows:</p>
+<ol>
+<li><strong>GPIO 19</strong> → <strong>Resistor</strong> → <strong>LED anode (+, longer leg)</strong></li>
+<li><strong>LED cathode (-, shorter leg)</strong> → <strong>GND</strong></li>
+</ol>
+<p><strong>Important:</strong> Always use a current-limiting resistor with LEDs. Without it, the LED will draw excessive current and may damage the ESP32’s GPIO pin or the LED itself.</p>
+<h3 id="how-it-works"><a class="header" href="#how-it-works">How It Works</a></h3>
+<p>This is an <strong>active-high</strong> configuration:</p>
+<ul>
+<li>GPIO 19 <strong>HIGH</strong> (3.3V) → Current flows through resistor and LED → LED <strong>on</strong></li>
+<li>GPIO 19 <strong>LOW</strong> (0V) → No current flow → LED <strong>off</strong></li>
+</ul>
+<p>Unlike the button (which uses active-low logic due to pull-up resistors), LEDs are simpler: setting the pin HIGH turns them on, setting it LOW turns them off.</p>
+<h2 id="understanding-the-code-changes"><a class="header" href="#understanding-the-code-changes">Understanding the Code Changes</a></h2>
+<p>We’ll add three components to make the LED work:</p>
+<h3 id="1-gpio-pin-definition"><a class="header" href="#1-gpio-pin-definition">1. GPIO Pin Definition</a></h3>
+<pre><code class="language-diff"> // Define GPIO pin for button input (active-low with internal pull-up)
+ // When button is pressed, pin reads LOW (0); when released, reads HIGH (1)
+ GPIO_PIN(BUTTON, GpioInputPU, 18);
+ 
++// Define GPIO pin for LED output (active-high)
++// When event ON received, LED turns on (HIGH); when event OFF received, LED turns off (LOW)
++GPIO_PIN(LED, GpioOutputSafeLow, 19);
++
+ // GPIO initializer - sets up all GPIO pins before OpenMRN stack starts
+-typedef GpioInitializer&lt;BUTTON_Pin&gt; GpioInit;
++typedef GpioInitializer&lt;BUTTON_Pin, LED_Pin&gt; GpioInit;
+</code></pre>
+<p><strong>Key points:</strong></p>
+<ul>
+<li><code>GpioOutputSafeLow</code> initializes the pin as an output, starting in the LOW (off) state</li>
+<li>The LED pin is added to the <code>GpioInitializer</code> list</li>
+<li>OpenMRNLite will manage the LED state—we don’t manually control it</li>
+</ul>
+<h3 id="2-configuration-in-configh"><a class="header" href="#2-configuration-in-configh">2. Configuration in config.h</a></h3>
+<p>Add <code>ConfiguredConsumer</code> include and a <code>ConsumerConfig</code> entry:</p>
+<pre><code class="language-diff"> #include "openlcb/ConfigRepresentation.hxx"
+ #include "openlcb/ConfiguredProducer.hxx"
++#include "openlcb/ConfiguredConsumer.hxx"
+ #include "openlcb/MemoryConfig.hxx"
+</code></pre>
+<pre><code class="language-diff"> /// Version number for the configuration structure
+-static constexpr uint16_t CANONICAL_VERSION = 0x0004;
++static constexpr uint16_t CANONICAL_VERSION = 0x0005;
+</code></pre>
+<pre><code class="language-diff"> CDI_GROUP_ENTRY(button, ProducerConfig,
+                 Name("Button 1"),
+                 Description("Physical button input on GPIO 18"));
++CDI_GROUP_ENTRY(led, ConsumerConfig,
++                Name("LED 1"),
++                Description("LED output on GPIO 19"));
+ CDI_GROUP_END();
+</code></pre>
+<p>This creates a configuration section for the LED with:</p>
+<ul>
+<li><strong>Description:</strong> User-editable label for this output</li>
+<li><strong>Event On:</strong> Event ID that turns the LED on</li>
+<li><strong>Event Off:</strong> Event ID that turns the LED off</li>
+</ul>
+<h3 id="3-consumer-instance"><a class="header" href="#3-consumer-instance">3. Consumer Instance</a></h3>
+<pre><code class="language-diff"> // Button producer - monitors GPIO 18 and produces events on state changes
+ // Uses RefreshLoop for 33Hz polling (debounce handled by ConfiguredProducer)
+ openlcb::ConfiguredProducer button_producer(
+     openmrn.stack()-&gt;node(), cfg.seg().button(), BUTTON_Pin());
+ 
++// LED consumer - listens for events and controls GPIO 19
++openlcb::ConfiguredConsumer led_consumer(
++    openmrn.stack()-&gt;node(), cfg.seg().led(), LED_Pin());
++
+ // RefreshLoop - polls button at 33Hz and handles debouncing
+ openlcb::RefreshLoop button_refresh_loop(openmrn.stack()-&gt;node(),
+     {button_producer.polling()});
+</code></pre>
+<p><strong>How it works:</strong></p>
+<ul>
+<li><code>ConfiguredConsumer</code> automatically registers with the OpenMRN event system</li>
+<li>When any node on the network produces a matching event:
+<ol>
+<li>OpenMRN routes the event to the consumer</li>
+<li>Consumer compares event ID to configured ON/OFF events</li>
+<li>If match found → sets GPIO pin to appropriate state</li>
+</ol>
+</li>
+<li>No polling required—event-driven design</li>
+</ul>
+<h3 id="4-factory-reset-updates"><a class="header" href="#4-factory-reset-updates">4. Factory Reset Updates</a></h3>
+<p>Initialize the LED configuration with default values:</p>
+<pre><code class="language-diff">     // Initialize button producer configuration
+     // Event IDs use NODE_ID base with unique offsets to avoid collision
+     cfg.seg().button().description().write(fd, "Button 1");
+     cfg.seg().button().event_on().write(fd, NODE_ID + 0x0100);   // Released (HIGH)
+     cfg.seg().button().event_off().write(fd, NODE_ID + 0x0101);  // Pressed (LOW)
+     CDI_FACTORY_RESET(cfg.seg().button().debounce);  // Default: 3 (90ms at 33Hz)
+     
++    // Initialize LED consumer configuration
++    cfg.seg().led().description().write(fd, "LED 1");
++    cfg.seg().led().event_on().write(fd, NODE_ID + 0x0200);   // Turn LED on
++    cfg.seg().led().event_off().write(fd, NODE_ID + 0x0201);  // Turn LED off
++    
+     Serial.println("Factory reset: wrote defaults (blink_enabled=Enabled, blink_interval=1000 ms)");
+     Serial.printf("Button events: ON=0x%016llX, OFF=0x%016llX\n", 
+                   NODE_ID + 0x0100, NODE_ID + 0x0101);
++    Serial.printf("LED events: ON=0x%016llX, OFF=0x%016llX\n", 
++                  NODE_ID + 0x0200, NODE_ID + 0x0201);
+ }
+</code></pre>
+<p><strong>Event ID strategy:</strong></p>
+<ul>
+<li>LED uses offset <code>+0x0200</code> and <code>+0x0201</code> to keep it distinct from button events (<code>+0x0100</code>/<code>+0x0101</code>)</li>
+<li>This makes it easy to identify which events control which I/O when looking at traffic</li>
+</ul>
+<h2 id="building-and-flashing"><a class="header" href="#building-and-flashing">Building and Flashing</a></h2>
+<h3 id="update-canonical_version"><a class="header" href="#update-canonical_version">Update CANONICAL_VERSION</a></h3>
+<p>We’ve already incremented the version to <code>0x0005</code> in the code above. This triggers a factory reset on first boot, initializing the LED configuration.</p>
+<h3 id="build-flash-and-monitor"><a class="header" href="#build-flash-and-monitor">Build, Flash, and Monitor</a></h3>
+<p>Use PlatformIO’s <strong>Upload and Monitor</strong> task as before.</p>
+<h3 id="expected-serial-output"><a class="header" href="#expected-serial-output">Expected Serial Output</a></h3>
+<pre><code>=== OpenLCB async_blink ESP32 Example ===
+Node ID: 0x050201020200
+Event 0: 0x0502010202000000
+Event 1: 0x0502010202000001
+
+Initializing SPIFFS...
+SPIFFS initialized successfully
+GPIO initialized: Button on GPIO 18 (active-low with pull-up), LED on GPIO 19 (active-high)
+ESP-TWAI: Configuring TWAI (TX:5, RX:4, EXT-CLK:-1, BUS-CTRL:-1)
+
+Creating CDI configuration descriptor...
+[CDI] Updating /spiffs/cdi.xml (len 2748)
+Initializing OpenLCB configuration...
+Factory reset: wrote defaults (blink_enabled=Enabled, blink_interval=1000 ms)
+Button events: ON=0x0000050201020300, OFF=0x0000050201020301
+LED events: ON=0x0000050201020400, OFF=0x0000050201020401
+
+Starting OpenLCB stack...
+OpenLCB node initialization complete!
+</code></pre>
+<p><strong>Key observations:</strong></p>
+<ul>
+<li>Factory reset detected (version changed from 0x0004 to 0x0005)</li>
+<li>LED events initialized:
+<ul>
+<li>ON: <code>0x0000050201020400</code> (NODE_ID + 0x0200)</li>
+<li>OFF: <code>0x0000050201020401</code> (NODE_ID + 0x0201)</li>
+</ul>
+</li>
+</ul>
+<h2 id="testing-the-led"><a class="header" href="#testing-the-led">Testing the LED</a></h2>
+<p>We’ll test the LED in two ways:</p>
+<ol>
+<li><strong>Manual testing</strong> with LccPro’s Send Frame feature (verifies the LED consumer works)</li>
+<li><strong>Configuration</strong> to link the button’s events to the LED’s actions (creates interactive behavior)</li>
+</ol>
+<h3 id="method-1-manual-testing-with-send-frame"><a class="header" href="#method-1-manual-testing-with-send-frame">Method 1: Manual Testing with Send Frame</a></h3>
+<p>This procedure uses LccPro to send events manually, confirming your LED responds correctly before linking it to the button.</p>
+<h4 id="steps"><a class="header" href="#steps">Steps</a></h4>
+<ol>
+<li>
+<p>Open <strong>JMRI</strong> and launch <strong>LccPro</strong></p>
+</li>
+<li>
+<p>In the menu bar, choose <strong>LCC → Send Frame</strong></p>
+<p><img src="images/SendFrameDialog.png" alt="LccPro Send Frame dialog"></p>
+<p><em>Figure: LccPro Send Frame dialog</em></p>
+</li>
+<li>
+<p>Locate the section titled <strong>Send OpenLCB event message with eventID</strong></p>
+</li>
+<li>
+<p>In the <strong>eventID</strong> field, enter your LED’s ON event in dot-separated hex format:</p>
+<pre><code>00.00.05.02.01.02.04.00
+</code></pre>
+</li>
+<li>
+<p>In the <strong>Status</strong> dropdown, select <strong>Valid</strong></p>
+<ul>
+<li>“Valid” means “this event is being produced/asserted by a producer”</li>
+</ul>
+</li>
+<li>
+<p>Click the button labeled <strong>Send Event Produced</strong></p>
+</li>
+</ol>
+<p><strong>What happens:</strong></p>
+<ul>
+<li>LccPro broadcasts a Producer/Consumer Event Report with your event ID</li>
+<li>Your node’s LED consumer receives it</li>
+<li>LED turns <strong>on</strong></li>
+</ul>
+<ol start="7">
+<li>Now test the OFF event. Enter:
+<pre><code>00.00.05.02.01.02.04.01
+</code></pre>
+</li>
+<li>Status: <strong>Valid</strong> → Click <strong>Send Event Produced</strong></li>
+<li>LED turns <strong>off</strong></li>
+</ol>
+<p><strong>Success criteria:</strong></p>
+<ul>
+<li>✅ LED turns on when you send the ON event</li>
+<li>✅ LED turns off when you send the OFF event</li>
+<li>✅ LED responds immediately (within ~100ms)</li>
+</ul>
+<p>If the LED doesn’t respond, check:</p>
+<ul>
+<li>Wiring (resistor, LED polarity)</li>
+<li>Event IDs match exactly (check serial output for actual values)</li>
+<li>Node is online (visible in LccPro node list)</li>
+</ul>
+<h3 id="method-2-linking-button-to-led"><a class="header" href="#method-2-linking-button-to-led">Method 2: Linking Button to LED</a></h3>
+<p>Once you’ve confirmed the LED responds to events, you can configure it to respond to your button’s producer events. This creates true interactive behavior: press the button, LED changes state.</p>
+<p>Because both the button and LED are part of the same node, you can wire them together entirely inside that node’s <strong>Configure</strong> dialog by copying the button’s producer event IDs and pasting them into the LED’s consumer event fields.</p>
+<h4 id="steps-1"><a class="header" href="#steps-1">Steps</a></h4>
+<ol>
+<li>
+<p>In LccPro, click the <strong>Configure</strong> button for your node in the node list</p>
+<p><img src="images/ConfigureLedButton.png" alt="Node Configure dialog showing Button 1 and LED 1"></p>
+<p><em>Figure: Node Configure dialog showing Button 1 and LED 1 sections</em></p>
+</li>
+</ol>
+<p><strong>What you see:</strong></p>
+<ul>
+<li><strong>Button 1</strong> section with Event On and Event Off fields (each has a <strong>Copy</strong> button)</li>
+<li><strong>LED 1</strong> section with Event On and Event Off fields (each has a <strong>Paste</strong> button)</li>
+</ul>
+<h4 id="understanding-button-event-naming"><a class="header" href="#understanding-button-event-naming">Understanding Button Event Naming</a></h4>
+<p>The button’s event naming refers to the <strong>electrical state of the GPIO pin</strong>, not the physical button action:</p>
+<ul>
+<li><strong>Event On</strong>: Produced when GPIO goes <strong>HIGH</strong> (button <strong>released</strong>)</li>
+<li><strong>Event Off</strong>: Produced when GPIO goes <strong>LOW</strong> (button <strong>pressed</strong>)</li>
+</ul>
+<p>This is due to the active-low pull-up wiring we used in the button section.</p>
+<h4 id="connecting-button-to-led-pressed--led-on"><a class="header" href="#connecting-button-to-led-pressed--led-on">Connecting Button to LED (Pressed = LED On)</a></h4>
+<p>To make pressing the button turn the LED <strong>on</strong>, we need to map:</p>
+<ul>
+<li>Button’s “Event <strong>Off</strong>” (pressed) → LED’s “Event <strong>On</strong>” (turn on)</li>
+<li>Button’s “Event <strong>On</strong>” (released) → LED’s “Event <strong>Off</strong>” (turn off)</li>
+</ul>
+<p><strong>Steps:</strong></p>
+<ol start="4">
+<li>
+<p>In the <strong>Button 1</strong> section, click <strong>Copy</strong> next to the <strong>Event Off</strong> field</p>
+<ul>
+<li>This copies the button’s “pressed” event ID to the clipboard</li>
+</ul>
+</li>
+<li>
+<p>In the <strong>LED 1</strong> section, click <strong>Paste</strong> next to the LED’s <strong>Event On</strong> field</p>
+<ul>
+<li>This tells the LED to turn <strong>on</strong> when the button is pressed</li>
+</ul>
+</li>
+<li>
+<p>Return to the <strong>Button 1</strong> section, click <strong>Copy</strong> next to the <strong>Event On</strong> field</p>
+<ul>
+<li>This copies the button’s “released” event ID</li>
+</ul>
+</li>
+<li>
+<p>In the <strong>LED 1</strong> section, click <strong>Paste</strong> next to the LED’s <strong>Event Off</strong> field</p>
+<ul>
+<li>This tells the LED to turn <strong>off</strong> when the button is released</li>
+</ul>
+</li>
+<li>
+<p>Click <strong>Write</strong> next to each changed field (or use <strong>Save Changes</strong> at the bottom)</p>
+</li>
+</ol>
+<h4 id="what-this-mapping-does"><a class="header" href="#what-this-mapping-does">What This Mapping Does</a></h4>
+<p>You’ve just configured:</p>
+<ul>
+<li><strong>Button pressed</strong> (produces Event Off <code>...03.01</code>) → <strong>LED turns on</strong></li>
+<li><strong>Button released</strong> (produces Event On <code>...03.00</code>) → <strong>LED turns off</strong></li>
+</ul>
+<p>This creates <strong>momentary button behavior</strong> with the expected physical action: pressing the button turns on the LED.</p>
+<h4 id="testing-interactive-behavior"><a class="header" href="#testing-interactive-behavior">Testing Interactive Behavior</a></h4>
+<ol>
+<li><strong>Press the button</strong> → LED turns <strong>on</strong></li>
+<li><strong>Release the button</strong> → LED turns <strong>off</strong></li>
+</ol>
+<h4 id="experimenting-further"><a class="header" href="#experimenting-further">Experimenting Further</a></h4>
+<p>Now that you understand the basics, try these exercises to deepen your understanding:</p>
+<p><strong>Restore Original Event IDs:</strong>
+If you want to restore the LED’s original event IDs (without reflashing firmware), click the <strong>More…</strong> button in the Configure dialog and select <strong>Factory Reset</strong>. This will restore all configuration values to their defaults, including the LED’s event IDs.</p>
+<p><strong>Try Different Event Sources:</strong>
+Instead of mapping the button to the LED, try mapping the async_blink events to control the LED. These events are hardcoded in the firmware (not configurable via JMRI):</p>
+<ul>
+<li>Async Blink Event 0: <code>05.02.01.02.02.00.00.00</code></li>
+<li>Async Blink Event 1: <code>05.02.01.02.02.00.00.01</code></li>
+</ul>
+<p>You can map them to the LED:</p>
+<ul>
+<li>Copy Event 0 to LED’s Event Off</li>
+<li>Copy Event 1 to LED’s Event On</li>
+<li>The LED will now blink in sync with the alternating events (if blink is enabled)</li>
+</ul>
+<p>This demonstrates that consumers can respond to <em>any</em> producer on the network—the LED doesn’t “know” or “care” whether events come from a button, a timer, or another node entirely.</p>
+<h4 id="why-copypaste-instead-of-automatic-linking"><a class="header" href="#why-copypaste-instead-of-automatic-linking">Why Copy/Paste Instead of Automatic Linking?</a></h4>
+<p>You might wonder why OpenLCB requires manually copying event IDs rather than just selecting “connect to Button 1.” This is because:</p>
+<ul>
+<li><strong>Event IDs are the fundamental unit</strong> of OpenLCB—all communication is event-based</li>
+<li><strong>Flexibility</strong>: Your LED could respond to events from <em>any</em> producer on the network, not just your local button</li>
+<li><strong>Multiple consumers</strong>: One button can control many LEDs, servos, relays, etc.</li>
+<li><strong>Cross-node wiring</strong>: Events work identically whether the producer and consumer are in the same node or across the layout</li>
+</ul>
+<p>The copy/paste workflow in the Configure dialog is simply a convenience for the common case of wiring two I/O points within the same node.</p>
+<h2 id="understanding-configuredconsumer"><a class="header" href="#understanding-configuredconsumer">Understanding ConfiguredConsumer</a></h2>
+<p>The <code>ConfiguredConsumer</code> class provides event-driven GPIO control:</p>
+<p><strong>How it works internally:</strong></p>
+<ol>
+<li>During initialization, consumer registers its event IDs with OpenMRN’s event system</li>
+<li>When <strong>any</strong> node on the network produces an event:
+<ul>
+<li>OpenMRN checks all registered consumers (when <code>openmrn.loop()</code> is called)</li>
+<li>If event ID matches consumer’s ON event → calls consumer’s <code>set(true)</code> method</li>
+<li>If event ID matches consumer’s OFF event → calls consumer’s <code>set(false)</code> method</li>
+</ul>
+</li>
+<li>Consumer’s <code>set()</code> method updates the GPIO pin state</li>
+</ol>
+<p><strong>Key characteristics:</strong></p>
+<ul>
+<li><strong>Event-driven GPIO control:</strong> Consumer doesn’t poll the GPIO pin; it only sets it when events arrive</li>
+<li><strong>Requires openmrn.loop():</strong> OpenMRNLite is single-threaded, so <code>openmrn.loop()</code> must be called frequently to process incoming CAN/network messages and dispatch events to consumers</li>
+<li><strong>Network-agnostic:</strong> Works with any producer on the network (local or remote)</li>
+<li><strong>Configurable:</strong> Event IDs can be changed via JMRI without reflashing firmware</li>
+</ul>
+<p><strong>Comparison to ConfiguredProducer:</strong></p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Feature</th><th>ConfiguredProducer</th><th>ConfiguredConsumer</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Direction</strong></td><td>GPIO → Events</td><td>Events → GPIO</td></tr>
+<tr><td><strong>GPIO Polling</strong></td><td>Yes (via RefreshLoop at 33Hz)</td><td>No (only sets GPIO when event received)</td></tr>
+<tr><td><strong>Network Processing</strong></td><td>Requires openmrn.loop()</td><td>Requires openmrn.loop()</td></tr>
+<tr><td><strong>Debounce</strong></td><td>Yes (configurable)</td><td>N/A</td></tr>
+<tr><td><strong>Use cases</strong></td><td>Buttons, sensors, detectors</td><td>LEDs, relays, servos</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>Note on openmrn.loop():</strong> In the full OpenMRN implementation (used on platforms with RTOS like FreeRTOS), event processing happens in separate threads. In OpenMRNLite (Arduino), everything is single-threaded, so <code>openmrn.loop()</code> must be called frequently in your main <code>loop()</code> function to process incoming messages—this is true for both producers and consumers.</p>
+<h2 id="node-event-ids-summary"><a class="header" href="#node-event-ids-summary">Node Event IDs Summary</a></h2>
+<p>Your node now handles multiple event IDs:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Event</th><th>Offset</th><th>Full Event ID</th><th>Purpose</th><th>Type</th></tr>
+</thead>
+<tbody>
+<tr><td>Async Blink 0</td><td><code>+0x00</code></td><td><code>05.02.01.02.02.00.00.00</code></td><td>Alternating event (state 0)</td><td>Producer</td></tr>
+<tr><td>Async Blink 1</td><td><code>+0x01</code></td><td><code>05.02.01.02.02.00.00.01</code></td><td>Alternating event (state 1)</td><td>Producer</td></tr>
+<tr><td>Button 1 ON</td><td><code>+0x0100</code></td><td><code>00.00.05.02.01.02.03.00</code></td><td>Button released (HIGH)</td><td>Producer</td></tr>
+<tr><td>Button 1 OFF</td><td><code>+0x0101</code></td><td><code>00.00.05.02.01.02.03.01</code></td><td>Button pressed (LOW)</td><td>Producer</td></tr>
+<tr><td>LED 1 ON</td><td><code>+0x0200</code></td><td><code>00.00.05.02.01.02.04.00</code></td><td>Turn LED on</td><td>Consumer</td></tr>
+<tr><td>LED 1 OFF</td><td><code>+0x0201</code></td><td><code>00.00.05.02.01.02.04.01</code></td><td>Turn LED off</td><td>Consumer</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="common-issues-and-troubleshooting"><a class="header" href="#common-issues-and-troubleshooting">Common Issues and Troubleshooting</a></h2>
+<h3 id="led-doesnt-respond-to-send-frame-events"><a class="header" href="#led-doesnt-respond-to-send-frame-events">LED doesn’t respond to Send Frame events</a></h3>
+<p><strong>Symptom:</strong> Sending events via LccPro has no effect on LED.</p>
+<p><strong>Fixes:</strong></p>
+<ol>
+<li><strong>Check wiring:</strong> Verify resistor is in series, LED polarity is correct (long leg to resistor)</li>
+<li><strong>Verify event IDs:</strong> Use serial monitor output to confirm actual event IDs</li>
+<li><strong>Check GPIO pin:</strong> Ensure no conflict with other peripherals (WiFi, etc.)</li>
+<li><strong>Test GPIO manually:</strong> Temporarily add <code>LED_Pin::set(true)</code> in setup() to verify wiring</li>
+</ol>
+<h3 id="led-works-with-send-frame-but-not-with-button"><a class="header" href="#led-works-with-send-frame-but-not-with-button">LED works with Send Frame but not with button</a></h3>
+<p><strong>Symptom:</strong> Manual events work, but button press doesn’t control LED.</p>
+<p><strong>Fixes:</strong></p>
+<ol>
+<li><strong>Verify mapping:</strong> Open LccPro Configure Nodes → Consumers tab, confirm button events are mapped</li>
+<li><strong>Check button producer:</strong> Verify button events appear in Traffic Monitor when pressed</li>
+<li><strong>Restart LccPro:</strong> Clear CDI cache after any firmware changes</li>
+<li><strong>Write to Node:</strong> Ensure you clicked “Write to Node” after configuring</li>
+</ol>
+<h3 id="led-behavior-is-inverted-pressed--on-instead-of-off"><a class="header" href="#led-behavior-is-inverted-pressed--on-instead-of-off">LED behavior is inverted (pressed = on instead of off)</a></h3>
+<p><strong>Symptom:</strong> LED turns on when you want it off, and vice versa.</p>
+<p><strong>Not actually a problem!</strong> This is due to active-low button logic. See “Why is it inverted?” above for solutions.</p>
+<h3 id="led-stays-on-or-flickers-randomly"><a class="header" href="#led-stays-on-or-flickers-randomly">LED stays on or flickers randomly</a></h3>
+<p><strong>Symptom:</strong> LED doesn’t turn off cleanly or flickers.</p>
+<p><strong>Possible causes:</strong></p>
+<ol>
+<li><strong>No current-limiting resistor:</strong> LED drawing too much current, damaging GPIO</li>
+<li><strong>Loose wiring:</strong> Check breadboard connections</li>
+<li><strong>Wrong event mapping:</strong> Two producers sending conflicting events</li>
+<li><strong>Electrical noise:</strong> Try adding 0.1µF capacitor between GPIO 19 and GND</li>
+</ol>
+<h2 id="whats-next"><a class="header" href="#whats-next">What’s Next</a></h2>
+<p>You’ve now built a complete interactive OpenLCB I/O node with:</p>
+<ul>
+<li>✅ Button input producing events</li>
+<li>✅ LED output consuming events</li>
+<li>✅ Configuration via LccPro</li>
+<li>✅ Manual testing with Send Frame</li>
+<li>✅ Button-to-LED mapping for interactive behavior</li>
+</ul>
+<p>This is the foundation of all OpenLCB control panels, layout automation, and accessory control. Every turnout, signal, detector, and indicator uses this same producer/consumer pattern—just scaled up.</p>
+<p>In the next section, we’ll explore how to <strong>scale to multiple buttons and LEDs</strong> efficiently using OpenMRNLite’s <code>RepeatedGroup</code> pattern and <code>MultiConfiguredConsumer</code> for memory optimization.</p>
+<h2 id="complete-code-files"><a class="header" href="#complete-code-files">Complete Code Files</a></h2>
+<p>For reference, here are the key code changes:</p>
+<h3 id="configh-led-consumer-addition"><a class="header" href="#configh-led-consumer-addition">config.h (LED consumer addition)</a></h3>
+<pre><code class="language-diff"> #include "openlcb/ConfigRepresentation.hxx"
+ #include "openlcb/ConfiguredProducer.hxx"
++#include "openlcb/ConfiguredConsumer.hxx"
+ #include "openlcb/MemoryConfig.hxx"
+ 
+...
+
+ /// Version number for the configuration structure
+-/// NOTE: Incremented to 0x0004 when adding button configuration
+-static constexpr uint16_t CANONICAL_VERSION = 0x0004;
++/// NOTE: Incremented to 0x0005 when adding LED consumer
++static constexpr uint16_t CANONICAL_VERSION = 0x0005;
+ 
+...
+
+ CDI_GROUP_ENTRY(button, ProducerConfig,
+                 Name("Button 1"),
+                 Description("Physical button input on GPIO 18"));
++CDI_GROUP_ENTRY(led, ConsumerConfig,
++                Name("LED 1"),
++                Description("LED output on GPIO 19"));
+ CDI_GROUP_END();
+</code></pre>
+<h3 id="maincpp-led-consumer-implementation"><a class="header" href="#maincpp-led-consumer-implementation">main.cpp (LED consumer implementation)</a></h3>
+<pre><code class="language-diff"> GPIO_PIN(BUTTON, GpioInputPU, 18);
+ 
++// Define GPIO pin for LED output (active-high)
++GPIO_PIN(LED, GpioOutputSafeLow, 19);
++
+ // GPIO initializer - sets up all GPIO pins before OpenMRN stack starts
+-typedef GpioInitializer&lt;BUTTON_Pin&gt; GpioInit;
++typedef GpioInitializer&lt;BUTTON_Pin, LED_Pin&gt; GpioInit;
+ 
+...
+
+ openlcb::ConfiguredProducer button_producer(
+     openmrn.stack()-&gt;node(), cfg.seg().button(), BUTTON_Pin());
+ 
++// LED consumer - listens for events and controls GPIO 19
++openlcb::ConfiguredConsumer led_consumer(
++    openmrn.stack()-&gt;node(), cfg.seg().led(), LED_Pin());
++
+ openlcb::RefreshLoop button_refresh_loop(openmrn.stack()-&gt;node(),
+     {button_producer.polling()});
+ 
+...
+
+     cfg.seg().button().event_off().write(fd, NODE_ID + 0x0101);
+     CDI_FACTORY_RESET(cfg.seg().button().debounce);
+     
++    // Initialize LED consumer configuration
++    cfg.seg().led().description().write(fd, "LED 1");
++    cfg.seg().led().event_on().write(fd, NODE_ID + 0x0200);
++    cfg.seg().led().event_off().write(fd, NODE_ID + 0x0201);
++    
+     Serial.println("Factory reset: wrote defaults...");
+     Serial.printf("Button events: ON=0x%016llX, OFF=0x%016llX\n", 
+                   NODE_ID + 0x0100, NODE_ID + 0x0101);
++    Serial.printf("LED events: ON=0x%016llX, OFF=0x%016llX\n", 
++                  NODE_ID + 0x0200, NODE_ID + 0x0201);
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../06-gpio/02-button-input.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../06-gpio/02-button-input.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-c2a407aa.js"></script>
+
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../mermaid-eefea253.min.js"></script>
+        <script src="../mermaid-init-ccf746f1.js"></script>
+        <script src="../theme/fix-highlighting-7091ef83.js"></script>
+
+
+
+    </div>
+    </body>
+</html>
