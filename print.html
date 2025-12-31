@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-6212e220.js";
+            window.path_to_searchindex_js = "searchindex-2a214abe.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-038b4abc.js"></script>
@@ -3066,7 +3066,7 @@ Produced event: 0x0502010202000001 (state: 1)
 </tbody>
 </table>
 </div>
-<p>Note that the recessive voltage (~2.37V) is set by the LCC infrastructure’s bias network, not by the transceiver. The exact voltages you observe will depend on your specific transceiver, its supply voltage, and the LCC infrastructure you’re using. What matters for reliable communication is the <strong>differential voltage</strong> (CANH - CANL), not the absolute voltage on either line.</p>
+<p>Note that the recessive voltage (~2.37V) is set by the LCC infrastructure’s bias network, not by the transceiver. However, the exact voltages you observe—particularly during dominant periods—will vary significantly depending on your transceiver’s supply voltage. What matters for reliable communication is the <strong>differential voltage</strong> (CANH - CANL), not the absolute voltage on either line.</p>
 <h4 id="visualizing-the-differential-signal"><a class="header" href="#visualizing-the-differential-signal">Visualizing the Differential Signal</a></h4>
 <p>Here’s what this looks like on an oscilloscope during actual CAN bus communication:</p>
 <p><img src="05-can/images/ScopeCapture3.png" alt="Oscilloscope capture showing CANH, CANL, and differential signal"></p>
@@ -3089,6 +3089,23 @@ Produced event: 0x0502010202000001 (state: 1)
 </li>
 </ol>
 <p>The CAN receiver in your transceiver looks only at this differential voltage, not the absolute voltage on either wire. This is why CAN is so reliable in electrically noisy environments like model railroads and industrial settings.</p>
+<h4 id="comparison-33v-vs-5v-powered-transceivers"><a class="header" href="#comparison-33v-vs-5v-powered-transceivers">Comparison: 3.3V vs. 5V Powered Transceivers</a></h4>
+<p>The transceiver’s supply voltage significantly affects the bus voltage levels you’ll measure. Here’s a comparison showing traffic from a <strong>RR-CirKits Tower-LCC node</strong> (which uses a 5V-powered transceiver):</p>
+<p><img src="05-can/images/Tower-LCC-CAN.png" alt="Oscilloscope capture from Tower-LCC showing higher voltage swing"></p>
+<p>In this capture from the Tower-LCC:</p>
+<ul>
+<li><strong>CANH</strong> (cyan trace): Rises to <strong>3.43V</strong> during dominant periods</li>
+<li><strong>CANL</strong> (yellow trace): Drops to <strong>1.60V</strong> during dominant periods</li>
+<li><strong>Differential</strong> (purple trace): Shows a much larger voltage swing (~1.83V vs. ~0.96V from the 3.3V transceiver)</li>
+</ul>
+<p><strong>Key observation</strong>: Notice the RC drop visible during recessive periods. Because the Tower-LCC’s 5V transceiver pulls CANH higher than our 3.3V transceiver during dominant periods, you can see the bus voltage gradually settling during the recessive (idle) periods as the bias network pulls it back toward ~2.5V. This exponential decay is the cable capacitance discharging through the bias network.</p>
+<p><strong>Why this matters</strong>: The 5V-powered transceiver provides:</p>
+<ul>
+<li><strong>Larger voltage margins</strong>: The ~1.83V differential is nearly twice as large as the 0.96V from a 3.3V transceiver</li>
+<li><strong>Better noise immunity</strong>: Larger voltage swings are more resistant to electrical interference</li>
+<li><strong>Improved reliability</strong>: More robust signaling, especially on longer bus runs or in noisy environments</li>
+</ul>
+<p>If you’re building a permanent LCC installation, using a <strong>5V-powered transceiver</strong> (like the MCP2551 or SN65HVD251) instead of a 3.3V version (SN65HVD230) will give you more robust bus performance. The ESP32 can still interface with a 5V transceiver—just use a level shifter on the TX line, or use a transceiver with 3.3V-tolerant logic inputs.</p>
 <h3 id="the-transceivers-role"><a class="header" href="#the-transceivers-role">The Transceiver’s Role</a></h3>
 <p>Your transceiver does one essential job: <strong>convert the ESP32’s logic signals (0V/3.3V) into differential voltages on the CAN bus</strong>.</p>
 <ul>
