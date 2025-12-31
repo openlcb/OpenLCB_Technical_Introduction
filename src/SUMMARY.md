@@ -38,3 +38,4 @@
 - [GPIO and Physical I/O](./06-gpio/overview.md)
   - [Adding an Enable/Disable Toggle](./06-gpio/01-enable-disable.md)
   - [Adding a Physical Button Input](./06-gpio/02-button-input.md)
+  - [Adding an LED Output](./06-gpio/03-led-output.md)

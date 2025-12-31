@@ -172,9 +172,7 @@ Since we're adding a new configuration field, increment the version number in [c
 
 ```diff
  /// Version number for the configuration structure
--/// NOTE: Incremented to 0x0003 when adding blink_enabled and reserved space
 -static constexpr uint16_t CANONICAL_VERSION = 0x0003;
-+/// NOTE: Incremented to 0x0004 when adding button configuration
 +static constexpr uint16_t CANONICAL_VERSION = 0x0004;
 ```
 

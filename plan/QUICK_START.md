@@ -7,23 +7,29 @@
 
 ## For Next Session: Start Here
 
-### ⚠️ IMMEDIATE TASK: T6.3 (Add Single LED Consumer with ConfiguredConsumer)
-**This session's focus**: LED output with ConfiguredConsumer pattern
+### ✅ COMPLETED: T6.3 (Add Single LED Consumer with ConfiguredConsumer)
+**Completed**: 2025-12-30
 
-1. **Read These Files First** (10 minutes):
-   - **plan/TASKS.md** - T6.3 plan
-   - **OpenMRNLite/src/openlcb/ConfiguredConsumer.hxx** - ConfiguredConsumer implementation
-   - **src/06-gpio/02-button-input.md** - Just completed; understand button producer pattern
+LED consumer successfully implemented:
+- ✅ Added ConsumerConfig to config.h
+- ✅ Added GPIO 19 pin definition and ConfiguredConsumer instance
+- ✅ Incremented CANONICAL_VERSION to 0x0005
+- ✅ Tested on hardware with LccPro Send Frame
+- ✅ Documented in src/06-gpio/03-led-output.md
 
-2. **Execute T6.3** (2 hours): Add single LED with GPIO consumer
-   - Modify test/async_blink_esp32/include/config.h: Consume reserved space (20→8 bytes), add ConsumerConfig
-   - Modify test/async_blink_esp32/src/main.cpp: Add GPIO pin, ConfiguredConsumer
-   - Test on hardware: Wire LED to GPIO 19, configure via JMRI to respond to button events
-   - **DO NOT increment CANONICAL_VERSION** (consuming reserved space, file size unchanged)
+### ⚠️ NEXT TASK: T6.4 (Scale to Multiple I/O)
+**This session's focus**: Multiple buttons/LEDs with RepeatedGroup pattern
 
-3. **After T6.3 Works**: Move to T6.4
-   - Scale to multiple I/O with Multi patterns
-   - Demonstrate RepeatedGroup configuration## Previous Sessions (Completed)
+1. **Read These Files First**:
+   - **plan/TASKS.md** - T6.4 plan
+   - **OpenMRNLite/src/openlcb/MultiConfiguredConsumer.hxx** - Multi consumer pattern
+   - **src/06-gpio/03-led-output.md** - Just completed; understand single consumer pattern
+
+2. **Execute T6.4**: Scale to multiple I/O
+   - Add second button (GPIO 21) and second LED (GPIO 22)
+   - Implement RepeatedGroup pattern for scalable configuration
+   - Use MultiConfiguredConsumer for memory efficiency
+   - Document in src/06-gpio/04-scaling-multiple-io.md## Previous Sessions (Completed)
 
 - ✅ T0.1: Restructure intro.md for high-level overview
 - ✅ T1.1-T1.4: Initial content restructuring (archive STM32, create ESP32 chapter skeleton)
@@ -164,22 +170,25 @@
    - Updated src/06-gpio/overview.md for two-part chapter structure
    - Tested on hardware with JMRI
 
-### Session 2: Add Single Button Producer (T6.2) — NEXT
-**Ready to start**. Add physical button input with GPIO producer:
-   - Wire button to GPIO 18 (breadboard + pullup)
-   - Consume reserved space (32→20 bytes) for ProducerConfig
-   - Create ConfiguredProducer instance with RefreshLoop polling
-   - Test with JMRI: press button, see events produced
-   - **DO NOT increment CANONICAL_VERSION** (reserved space pattern)
+### Session 2: Add Single Button Producer (T6.2) ✅
+**Completed** 2025-12-30. Added physical button input with GPIO producer:
+   - Wired button to GPIO 18 (breadboard + pullup)
+   - Added ProducerConfig to CDI structure
+   - Created ConfiguredProducer instance with RefreshLoop polling
+   - Tested with LccPro: pressed button, saw events produced
+   - Incremented CANONICAL_VERSION to 0x0004
+   - Documented in src/06-gpio/02-button-input.md
 
-### Session 3: Add Single LED Consumer (T6.3) — FUTURE
-   - Wire LED to GPIO 19 (breadboard + resistor)
-   - Consume reserved space (20→8 bytes) for ConsumerConfig
-   - Create ConfiguredConsumer instance
-   - Test cross-wiring via JMRI (configure LED to respond to button events)
-   - Document single-button-led.md with complete wiring and code walkthrough
+### Session 3: Add Single LED Consumer (T6.3) ✅
+**Completed** 2025-12-30. Added LED output with GPIO consumer:
+   - Wired LED to GPIO 19 (breadboard + resistor)
+   - Added ConsumerConfig to CDI structure
+   - Created ConfiguredConsumer instance
+   - Tested with LccPro Send Frame and Configure Nodes
+   - Incremented CANONICAL_VERSION to 0x0005
+   - Documented in src/06-gpio/03-led-output.md
 
-### Session 4: Scale to Multiple I/O (T6.4) — FUTURE
+### Session 4: Scale to Multiple I/O (T6.4) — NEXT
    - Add second button (GPIO 21) and second LED (GPIO 22)
    - Use RepeatedGroup pattern for scalable configuration
    - Implement MultiConfiguredConsumer for memory efficiency
@@ -259,5 +268,5 @@
 ---
 
 **Last Updated**: 2025-12-30  
-**Last Edit**: Updated for Phase 6 GPIO implementation (T6.1 complete, T6.2 next)  
-**Ready For**: T6.2 - Add Single Button Producer with ConfiguredProducer
+**Last Edit**: Updated for Phase 6 GPIO implementation (T6.1, T6.2, T6.3 complete)  
+**Ready For**: T6.4 - Scale to Multiple I/O with RepeatedGroup Pattern

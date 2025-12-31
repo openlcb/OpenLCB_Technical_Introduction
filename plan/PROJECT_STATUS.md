@@ -88,22 +88,22 @@
 ## Upcoming Priority Tasks
 
 ### Phase 6: GPIO/Physical I/O Implementation (IN PROGRESS) 🔄
-- **T6.1** ⏳ NOT STARTED: Add Reserved Configuration Space
-  - Add 32-byte BytesConfigEntry<32> to config.h ⏳
-  - Test configuration persistence without version increment ⏳
-  - Write 01-enable-disable.md explaining binary config pattern ✅
-  - Add forward reference from Chapter 4 ⏳
-- **T6.2** ⏳ NOT STARTED: Add Single Button Producer
-  - Research GPIO initialization timing ⏳
-  - Add ConfiguredProducer with GPIO 18 button ⏳
-  - Add RefreshLoop for 33Hz polling ⏳
-  - Consume 12 bytes from reserved space ⏳
-  - Test button events in JMRI LccPro ⏳
-- **T6.3** ⏳ NOT STARTED: Add Single LED Consumer
-  - Add ConfiguredConsumer with GPIO 19 LED ⏳
-  - Consume 12 more bytes from reserved space ⏳
-  - Test JMRI configuration workflow to wire button→LED ⏳
-  - Write single-button-led.md documentation ⏳
+- **T6.1** ✅ COMPLETED: Add Reserved Configuration Space
+  - ✅ Added blink_enabled and blink_interval configuration
+  - ✅ Incremented CANONICAL_VERSION to 0x0003
+  - ✅ Wrote 01-enable-disable.md explaining binary config pattern
+  - ✅ Tested configuration persistence
+- **T6.2** ✅ COMPLETED: Add Single Button Producer
+  - ✅ Added ConfiguredProducer with GPIO 18 button
+  - ✅ Added RefreshLoop for 33Hz polling
+  - ✅ Incremented CANONICAL_VERSION to 0x0004
+  - ✅ Tested button events in LccPro
+  - ✅ Wrote 02-button-input.md documentation
+- **T6.3** ✅ COMPLETED: Add Single LED Consumer
+  - ✅ Added ConfiguredConsumer with GPIO 19 LED
+  - ✅ Incremented CANONICAL_VERSION to 0x0005
+  - ✅ Tested LccPro Send Frame and Configure workflows
+  - ✅ Wrote 03-led-output.md documentation
 - **T6.4** ⏳ NOT STARTED: Scale to Multiple I/O
   - Research MultiConfiguredProducer/Consumer patterns ⏳
   - Add RepeatedGroup<ProducerConfig, 2> and RepeatedGroup<ConsumerConfig, 3> ⏳

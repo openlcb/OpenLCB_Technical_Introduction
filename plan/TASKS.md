@@ -507,47 +507,41 @@
 - **Blocks**: T6.3
 
 ### T6.3 - Add Single LED Consumer with ConfiguredConsumer
-- **Status**: ⏳ Not Started
+- **Status**: ✅ Completed
 - **Priority**: HIGH
 - **Effort**: 2 hours
 - **Description**:
-  - Modify `test/async_blink_esp32/include/config.h`:
-    - Reduce reserved space from 20 to 8 bytes (consuming ~12 bytes for ConsumerConfig)
-    - Add `CDI_GROUP_ENTRY(led, ConsumerConfig, Name("LED 1"))` before reserved entry
-    - **DO NOT increment CANONICAL_VERSION**
-  - Modify `test/async_blink_esp32/src/main.cpp`:
-    - Add GPIO pin definition: `GPIO_PIN(LED1, GpioOutputSafeLow, 19);`
-    - Update GpioInitializer: `typedef GpioInitializer<Button1_Pin, LED1_Pin> GpioInit;`
-    - Create ConfiguredConsumer instance: `openlcb::ConfiguredConsumer led_consumer(openmrn.stack()->node(), cfg.seg().led(), LED1_Pin());`
-  - Update FactoryResetHelper::factory_reset():
-    - Write independent event IDs for LED (different from button)
-    - Example: led event_on = NODE_ID + 0x0200, event_off = NODE_ID + 0x0201
-    - Write default description: "LED 1"
-  - Test on hardware:
-    - Build and upload
-    - Verify LED doesn't respond to button initially (different event IDs)
-    - Use JMRI to reconfigure LED's event_on to match button's event_on
-    - Use JMRI to reconfigure LED's event_off to match button's event_off
-    - Verify button→LED workflow works after JMRI configuration
-    - Test configuration persists across power cycles
-  - Write `src/06-gpio/single-button-led.md`:
-    - Breadboard wiring diagram (button on GPIO 18, LED on GPIO 19 with current-limiting resistor)
-    - Complete code walkthrough showing:
-      - GPIO pin definitions (GpioInputPU vs GpioOutputSafeLow)
-      - ConfiguredProducer and ConfiguredConsumer setup
-      - RefreshLoop polling pattern (why producers need it, consumers don't)
-      - Reserved space consumption pattern (show config.h evolution)
-    - JMRI configuration workflow (high-level with key screenshots):
-      - Open LccPro and connect to node
-      - Navigate to CDI configuration
-      - Edit LED event IDs to match button events
-      - Save and verify button controls LED
-    - Troubleshooting section:
-      - Button events not appearing (check RefreshLoop)
-      - LED not responding (verify event IDs match)
-      - Configuration not persisting (SPIFFS issues)
-- **Owner**: Next session
-- **Depends On**: T6.2
+  - ✅ Modified `test/async_blink_esp32/include/config.h`:
+    - Added `#include "openlcb/ConfiguredConsumer.hxx"`
+    - Added `CDI_GROUP_ENTRY(led, ConsumerConfig, Name("LED 1"), Description("LED output on GPIO 19"))`
+    - Incremented CANONICAL_VERSION to 0x0005
+  - ✅ Modified `test/async_blink_esp32/src/main.cpp`:
+    - Added GPIO pin definition: `GPIO_PIN(LED, GpioOutputSafeLow, 19);`
+    - Updated GpioInitializer: `typedef GpioInitializer<BUTTON_Pin, LED_Pin> GpioInit;`
+    - Created ConfiguredConsumer instance: `openlcb::ConfiguredConsumer led_consumer(openmrn.stack()->node(), cfg.seg().led(), LED_Pin());`
+  - ✅ Updated FactoryResetHelper::factory_reset():
+    - Wrote independent event IDs for LED: event_on = NODE_ID + 0x0200, event_off = NODE_ID + 0x0201
+    - Wrote default description: "LED 1"
+    - Added serial output for LED event IDs
+  - ✅ Tested on hardware:
+    - Built and uploaded successfully
+    - Verified LED responds to manual events via LccPro Send Frame
+    - Successfully configured LED to respond to button events via Configure dialog
+    - Verified button→LED workflow (press button = LED on)
+    - Configuration persists across power cycles
+  - ✅ Wrote `src/06-gpio/03-led-output.md`:
+    - Breadboard wiring diagram with resistor selection guide
+    - Complete code walkthrough with diffs
+    - Two testing methods:
+      - Manual testing with LccPro Send Frame
+      - Configuration workflow with copy/paste event IDs
+    - ConfiguredConsumer explanation with openmrn.loop() clarification
+    - Active-high LED vs active-low button logic explanation
+    - Experimenting section (Factory Reset, trying blink events)
+    - Comprehensive troubleshooting section
+  - ✅ Updated `src/SUMMARY.md` with new section
+- **Owner**: Completed 2025-12-30
+- **Depends On**: T6.2 ✅
 - **Blocks**: T6.4
 
 ### T6.4 - Scale to Multiple I/O with Multi Patterns
