@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-2a214abe.js";
+            window.path_to_searchindex_js = "searchindex-9ff00359.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-038b4abc.js"></script>
@@ -4404,17 +4404,23 @@ pull-up resistors, enabling pull-down is not possible.
 <em>Figure: ESP32 with CAN transceiver, button, and LED on breadboard</em></p>
 <p>Connect the LED as follows:</p>
 <ol>
-<li><strong>GPIO 19</strong> → <strong>Resistor</strong> → <strong>LED anode (+, longer leg)</strong></li>
-<li><strong>LED cathode (-, shorter leg)</strong> → <strong>GND</strong></li>
+<li><strong>Power supply</strong> → <strong>LED anode (+, longer leg)</strong></li>
+<li><strong>LED cathode (-, shorter leg)</strong> → <strong>Resistor</strong> → <strong>GPIO 19</strong></li>
 </ol>
 <p><strong>Important:</strong> Always use a current-limiting resistor with LEDs. Without it, the LED will draw excessive current and may damage the ESP32’s GPIO pin or the LED itself.</p>
+<p><strong>Note on Architecture:</strong> In this design, the ESP32 is <strong>not providing the power</strong> to light the LED. The external power supply provides the LED current, and the ESP32’s GPIO pin controls whether the LED is on or off. The GPIO actively drives both HIGH (LED off) and LOW (LED on), which is safe because the circuit topology (LED cathode connected to GPIO) means driving HIGH produces no current through the LED.</p>
 <h3 id="how-it-works-1"><a class="header" href="#how-it-works-1">How It Works</a></h3>
-<p>This is an <strong>active-high</strong> configuration:</p>
+<p>This is an <strong>active-low</strong> configuration:</p>
 <ul>
-<li>GPIO 19 <strong>HIGH</strong> (3.3V) → Current flows through resistor and LED → LED <strong>on</strong></li>
-<li>GPIO 19 <strong>LOW</strong> (0V) → No current flow → LED <strong>off</strong></li>
+<li>GPIO 19 <strong>LOW</strong> (0V) → Current flows from external power through resistor and LED → LED <strong>on</strong></li>
+<li>GPIO 19 <strong>HIGH</strong> (3.3V) → No current flow through LED → LED <strong>off</strong></li>
 </ul>
-<p>Unlike the button (which uses active-low logic due to pull-up resistors), LEDs are simpler: setting the pin HIGH turns them on, setting it LOW turns them off.</p>
+<p>We use <code>GpioOutputSafeHigh</code> which means:</p>
+<ul>
+<li><strong>During initialization</strong> (boot/startup): GPIO 19 is actively driven HIGH, keeping the LED off until the OpenMRN stack fully initializes</li>
+<li><strong>During operation</strong>: OpenMRN controls the pin to turn the LED on (by driving LOW) or off (by driving HIGH) based on events</li>
+</ul>
+<p>The <code>GpioOutputSafeHigh</code> initialization ensures the LED is safely off during startup, which is important when the external power source for the LED circuit is independent of the ESP32. This matches the button’s active-low logic: pulling the pin LOW activates the device.</p>
 <h2 id="understanding-the-code-changes-1"><a class="header" href="#understanding-the-code-changes-1">Understanding the Code Changes</a></h2>
 <p>We’ll add three components to make the LED work:</p>
 <h3 id="1-gpio-pin-definition"><a class="header" href="#1-gpio-pin-definition">1. GPIO Pin Definition</a></h3>
@@ -4422,9 +4428,9 @@ pull-up resistors, enabling pull-down is not possible.
  // When button is pressed, pin reads LOW (0); when released, reads HIGH (1)
  GPIO_PIN(BUTTON, GpioInputPU, 18);
  
-+// Define GPIO pin for LED output (active-high)
-+// When event ON received, LED turns on (HIGH); when event OFF received, LED turns off (LOW)
-+GPIO_PIN(LED, GpioOutputSafeLow, 19);
++// Define GPIO pin for LED output (active-low)
++// When event ON received, LED turns on (LOW); when event OFF received, LED turns off (HIGH)
++GPIO_PIN(LED, GpioOutputSafeHigh, 19);
 +
  // GPIO initializer - sets up all GPIO pins before OpenMRN stack starts
 -typedef GpioInitializer&lt;BUTTON_Pin&gt; GpioInit;
@@ -4432,7 +4438,8 @@ pull-up resistors, enabling pull-down is not possible.
 </code></pre>
 <p><strong>Key points:</strong></p>
 <ul>
-<li><code>GpioOutputSafeLow</code> initializes the pin as an output, starting in the LOW (off) state</li>
+<li><code>GpioOutputSafeHigh</code> initializes the pin as HIGH during startup, safely keeping the LED off until OpenMRN is ready</li>
+<li>The LED uses active-low logic (pulling LOW turns the LED on) with <code>GpioOutputSafeHigh</code> for safe initialization</li>
 <li>The LED pin is added to the <code>GpioInitializer</code> list</li>
 <li>OpenMRNLite will manage the LED state—we don’t manually control it</li>
 </ul>
