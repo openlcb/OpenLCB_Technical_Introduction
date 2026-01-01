@@ -30,18 +30,24 @@ For this section, you'll need:
 *Figure: ESP32 with CAN transceiver, button, and LED on breadboard*
 
 Connect the LED as follows:
-1. **GPIO 19** → **Resistor** → **LED anode (+, longer leg)**
-2. **LED cathode (-, shorter leg)** → **GND**
+1. **Power supply** → **LED anode (+, longer leg)**
+2. **LED cathode (-, shorter leg)** → **Resistor** → **GPIO 19**
 
 **Important:** Always use a current-limiting resistor with LEDs. Without it, the LED will draw excessive current and may damage the ESP32's GPIO pin or the LED itself.
 
+**Note on Architecture:** In this design, the ESP32 is **not providing the power** to light the LED. The external power supply provides the LED current, and the ESP32's GPIO pin controls whether the LED is on or off. The GPIO actively drives both HIGH (LED off) and LOW (LED on), which is safe because the circuit topology (LED cathode connected to GPIO) means driving HIGH produces no current through the LED.
+
 ### How It Works
 
-This is an **active-high** configuration:
-- GPIO 19 **HIGH** (3.3V) → Current flows through resistor and LED → LED **on**
-- GPIO 19 **LOW** (0V) → No current flow → LED **off**
+This is an **active-low** configuration:
+- GPIO 19 **LOW** (0V) → Current flows from external power through resistor and LED → LED **on**
+- GPIO 19 **HIGH** (3.3V) → No current flow through LED → LED **off**
 
-Unlike the button (which uses active-low logic due to pull-up resistors), LEDs are simpler: setting the pin HIGH turns them on, setting it LOW turns them off.
+We use `GpioOutputSafeHigh` which means:
+- **During initialization** (boot/startup): GPIO 19 is actively driven HIGH, keeping the LED off until the OpenMRN stack fully initializes
+- **During operation**: OpenMRN controls the pin to turn the LED on (by driving LOW) or off (by driving HIGH) based on events
+
+The `GpioOutputSafeHigh` initialization ensures the LED is safely off during startup, which is important when the external power source for the LED circuit is independent of the ESP32. This matches the button's active-low logic: pulling the pin LOW activates the device.
 
 ## Understanding the Code Changes
 
@@ -54,9 +60,9 @@ We'll add three components to make the LED work:
  // When button is pressed, pin reads LOW (0); when released, reads HIGH (1)
  GPIO_PIN(BUTTON, GpioInputPU, 18);
  
-+// Define GPIO pin for LED output (active-high)
-+// When event ON received, LED turns on (HIGH); when event OFF received, LED turns off (LOW)
-+GPIO_PIN(LED, GpioOutputSafeLow, 19);
++// Define GPIO pin for LED output (active-low)
++// When event ON received, LED turns on (LOW); when event OFF received, LED turns off (HIGH)
++GPIO_PIN(LED, GpioOutputSafeHigh, 19);
 +
  // GPIO initializer - sets up all GPIO pins before OpenMRN stack starts
 -typedef GpioInitializer<BUTTON_Pin> GpioInit;
@@ -64,7 +70,8 @@ We'll add three components to make the LED work:
 ```
 
 **Key points:**
-- `GpioOutputSafeLow` initializes the pin as an output, starting in the LOW (off) state
+- `GpioOutputSafeHigh` initializes the pin as HIGH during startup, safely keeping the LED off until OpenMRN is ready
+- The LED uses active-low logic (pulling LOW turns the LED on) with `GpioOutputSafeHigh` for safe initialization
 - The LED pin is added to the `GpioInitializer` list
 - OpenMRNLite will manage the LED state—we don't manually control it
 
