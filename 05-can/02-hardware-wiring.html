@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-9ff00359.js";
+            window.path_to_searchindex_js = "../searchindex-231d57b1.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-038b4abc.js"></script>
@@ -191,7 +191,7 @@
 <tr><th>Pin</th><th>Function</th><th>ESP32 Connection</th></tr>
 </thead>
 <tbody>
-<tr><td>VCC (3.3V)</td><td>Power</td><td>3.3V rail</td></tr>
+<tr><td>VCC (Power)</td><td>Power</td><td>See below</td></tr>
 <tr><td>GND</td><td>Ground</td><td>GND rail</td></tr>
 <tr><td>CRX (CAN RX)</td><td>Receive signal</td><td>GPIO4</td></tr>
 <tr><td>CTX (CAN TX)</td><td>Transmit signal</td><td>GPIO5</td></tr>
@@ -200,10 +200,23 @@
 </tbody>
 </table>
 </div>
+<h3 id="power-connection-depends-on-your-transceiver"><a class="header" href="#power-connection-depends-on-your-transceiver">Power Connection Depends on Your Transceiver</a></h3>
+<p><strong>SN65HVD230 (3.3V transceiver)</strong>:</p>
+<ul>
+<li>VCC connects to <strong>3.3V rail</strong></li>
+</ul>
+<p><strong>MCP2551 (5V transceiver)</strong>:</p>
+<ul>
+<li>VCC connects to <strong>ESP32 VIN pin</strong> (which provides ~5V from USB or external power)</li>
+<li>This gives you the performance benefits of a 5V transceiver without needing a separate power supply</li>
+<li>The ESP32 can handle 5V on its RX line; most MCP2551 breakouts have 3.3V-tolerant inputs on TX, so no level shifter is needed</li>
+</ul>
+<p>Either choice works fine—the MCP2551 just requires this one extra connection to VIN instead of 3.3V.</p>
 <h2 id="wiring"><a class="header" href="#wiring">Wiring</a></h2>
 <p>The CAN transceiver breakout board connects directly to your ESP32 with six jumper wires, then to an RJ-45 breakout board for your LCC bus connection.</p>
 <p><strong>Visual reference:</strong></p>
 <p><img src="./images/esp32-can-breadboard.png" alt="ESP32 with CAN Breadboard Layout"></p>
+<p><strong>Note</strong>: This breadboard diagram shows the wiring for an <strong>SN65HVD230 breakout board</strong> (VCC to 3.3V rail). If you’re using an <strong>MCP2551</strong>, the only difference is that its VCC wire goes to <strong>ESP32 VIN</strong> instead of 3.3V; all other connections remain the same.</p>
 <p><strong>CAN Transceiver to RJ-45 Breakout (LCC Bus)</strong>:</p>
 <div class="table-wrapper">
 <table>
@@ -227,20 +240,20 @@
 </pre>
 
 <p><strong>Critical</strong>: Terminating resistors go at the <em>physical ends</em> of the bus, not in the middle. You need exactly one 120Ω terminator at each end. Extra termination in the middle causes signal reflections and errors.</p>
-<h3 id="which-transceiver-includes-termination"><a class="header" href="#which-transceiver-includes-termination">Which Transceiver Includes Termination?</a></h3>
+<h3 id="which-transceiver-breakout-board-to-choose"><a class="header" href="#which-transceiver-breakout-board-to-choose">Which Transceiver Breakout Board to Choose?</a></h3>
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>Transceiver</th><th>Built-in Termination</th><th>When to Use</th></tr>
+<tr><th>Breakout Board</th><th>Built-in Termination</th><th>Voltage</th><th>Best For</th></tr>
 </thead>
 <tbody>
-<tr><td><strong>SN65HVD230</strong></td><td>No (external 120Ω required)</td><td>You’re adding nodes in the <em>middle</em> of a bus</td></tr>
-<tr><td><strong>MCP2551</strong></td><td>Yes (built-in 120Ω)</td><td>You’re a <em>single node</em> at the end of a bus</td></tr>
+<tr><td><strong>SN65HVD230</strong></td><td>Yes (built-in 120Ω)</td><td>3.3V</td><td>Learning or prototyping</td></tr>
+<tr><td><strong>MCP2551</strong></td><td>Yes (built-in 120Ω)</td><td>5V</td><td>Production; better signal quality and noise immunity</td></tr>
 </tbody>
 </table>
 </div>
-<p><strong>For this section</strong>: If your ESP32 is a standalone node (one transceiver on the bus), the <strong>MCP2551</strong> saves you the hassle of adding a resistor. If you’re building a multi-node setup later, the <strong>SN65HVD230</strong> gives you full control. Either choice works fine—pick what suits your immediate needs.</p>
-<p><strong>Important</strong>: Never put multiple transceivers with termination on the same bus (whether built-in or external). Termination belongs only at the <em>physical ends</em>.</p>
+<p>Both breakout boards include a 120Ω termination resistor (the bare transceiver chips don’t have this). So you don’t need to add external resistors. The main difference is power supply and waveform quality—the MCP2551’s 5V operation produces much cleaner signals (as shown in the previous section) and is recommended for any permanent installation.</p>
+<p><strong>Important note for production</strong>: These breakout boards are designed for learning and simple setups. For a proper multi-node production installation, your node should <strong>not</strong> have a built-in termination resistor. Instead, use a design with dual RJ-45 jacks connected together (pass-through), allowing you to daisy-chain nodes along the bus. Place a single 120Ω terminator only at each physical end of the bus, not on intermediate nodes. This ensures clean signal integrity across the entire network.</p>
 <p><strong>Next</strong>: Let’s modify the code to use CAN instead of WiFi.</p>
 
                     </main>

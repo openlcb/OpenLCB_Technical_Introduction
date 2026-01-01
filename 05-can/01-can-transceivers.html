@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-9ff00359.js";
+            window.path_to_searchindex_js = "../searchindex-231d57b1.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-038b4abc.js"></script>
@@ -177,7 +177,7 @@
                         <h1 id="understanding-can-transceivers"><a class="header" href="#understanding-can-transceivers">Understanding CAN Transceivers</a></h1>
 <p>A <strong>CAN transceiver</strong> is a small IC (integrated circuit) that bridges the gap between your microcontroller’s CAN controller and the physical CAN bus. It’s essential—you can’t connect an ESP32 directly to a CAN bus; you need a transceiver in between.</p>
 <h2 id="what-a-can-transceiver-does"><a class="header" href="#what-a-can-transceiver-does">What a CAN Transceiver Does</a></h2>
-<p>Your ESP32 has a built-in <strong>CAN controller</strong> (called <strong>TWAI</strong> on ESP32—that’s Espressif’s acronym for “Two-Wire Automotive Interface,” which is their legal-safe name for CAN). This controller handles the CAN protocol logic. But the controller communicates with logic-level signals (0V/3.3V). The CAN <strong>bus</strong> itself uses <strong>differential signaling</strong> on two wires—CANH (CAN high) and CANL (CAN low)—with voltage levels established by the bus biasing and termination network.</p>
+<p>Your ESP32 has a built-in <strong>CAN controller</strong> (called <strong>TWAI</strong> on ESP32—that’s Espressif’s acronym for “Two-Wire Automotive Interface,” which they use because the ESP32’s implementation is a subset of the full CAN specification). This controller handles the CAN protocol logic. But the controller communicates with logic-level signals (0V/3.3V). The CAN <strong>bus</strong> itself uses <strong>differential signaling</strong> on two wires—CANH (CAN high) and CANL (CAN low)—with voltage levels established by the bus biasing and termination network.</p>
 <p>The transceiver’s job: <strong>convert between logic levels and bus levels</strong>.</p>
 <pre class="mermaid">graph TD
     A["ESP32 TWAI Controller&lt;br/&gt;(Logic Level)"] --&gt;|3.3V Signals| B["CAN Transceiver"]
@@ -198,7 +198,6 @@
 <h4 id="recessive-idle-state"><a class="header" href="#recessive-idle-state">Recessive (Idle) State</a></h4>
 <p>In the <strong>recessive state</strong>, the transceiver outputs are <strong>high-impedance</strong>—essentially disconnected from the bus. The transceiver isn’t driving the lines at all; it has “let go” of them.</p>
 <p>With no active driving, the <strong>bias network</strong> in your LCC infrastructure pulls both CANH and CANL to nearly the <strong>same voltage</strong>. For typical LCC infrastructure (like the RR-CirKits Power-Point or SPROG POWER-LCC), this is around 2.5V, though the exact voltage depends on the specific device. When fully settled, there’s almost no differential voltage between them.</p>
-<p><strong>Important</strong>: After a dominant period, the bus doesn’t instantly jump to the bias voltage. The bias network charges the bus through the cable capacitance, creating an <strong>RC charging curve</strong>. During short recessive periods (between bits), the voltage may not fully settle to the bias level.</p>
 <h4 id="dominant-transmission-state"><a class="header" href="#dominant-transmission-state">Dominant (Transmission) State</a></h4>
 <p>When any node wants to send a <strong>dominant 0 bit</strong>, its CAN transceiver <strong>actively drives</strong> both outputs:</p>
 <ul>
@@ -211,21 +210,8 @@
 <li>The <strong>termination resistors</strong> (120Ω at each end of the bus) load the drivers</li>
 <li>The drivers and bias network “fight” each other, settling at intermediate voltages</li>
 </ol>
-<p><strong>Example: From my test setup</strong> (SN65HVD230 transceiver with VDD=3.3V, connected to LCC infrastructure), measurements showed:</p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>State</th><th>CANH</th><th>CANL</th><th>Differential</th></tr>
-</thead>
-<tbody>
-<tr><td><strong>Recessive (1)</strong></td><td>~2.37V</td><td>~2.37V</td><td>~0.00V</td></tr>
-<tr><td><strong>Dominant (0)</strong></td><td>~2.14V</td><td>~1.18V</td><td>~0.96V</td></tr>
-</tbody>
-</table>
-</div>
-<p>Note that the recessive voltage (~2.37V) is set by the LCC infrastructure’s bias network, not by the transceiver. However, the exact voltages you observe—particularly during dominant periods—will vary significantly depending on your transceiver’s supply voltage. What matters for reliable communication is the <strong>differential voltage</strong> (CANH - CANL), not the absolute voltage on either line.</p>
-<h4 id="visualizing-the-differential-signal"><a class="header" href="#visualizing-the-differential-signal">Visualizing the Differential Signal</a></h4>
-<p>Here’s what this looks like on an oscilloscope during actual CAN bus communication:</p>
+<h4 id="visualizing-the-differential-signal-33v-transceiver"><a class="header" href="#visualizing-the-differential-signal-33v-transceiver">Visualizing the Differential Signal: 3.3V Transceiver</a></h4>
+<p>Here’s what the 3.3V SN65HVD230 looks like on an oscilloscope during actual CAN bus communication:</p>
 <p><img src="images/ScopeCapture3.png" alt="Oscilloscope capture showing CANH, CANL, and differential signal"></p>
 <p>In this capture:</p>
 <ul>
@@ -236,33 +222,68 @@
 <p><strong>Key observations</strong>:</p>
 <ol>
 <li>
-<p><strong>RC Charging Behavior</strong>: Notice the curved rise at the end of each dominant pulse (when returning to recessive). This is the bias network charging the cable capacitance. The voltage doesn’t instantly snap to the bias level—it gradually rises following an exponential curve.</p>
+<p><strong>Smaller Voltage Swing</strong>: The differential voltage (~0.96V) is relatively modest. This is what caused confusion for some—the waveforms look somewhat “soft” compared to what you might expect from a digital signal.</p>
 </li>
 <li>
-<p><strong>Longer vs. Shorter Recessive Periods</strong>: During longer idle periods (left side of the capture), both lines fully settle to ~2.37V. During shorter recessive periods between bits, the voltage doesn’t have time to fully charge and settles at a lower intermediate voltage.</p>
+<p><strong>RC Charging Behavior and Incomplete Settling</strong>: Notice the curved rise at the end of each dominant pulse (when returning to recessive)—this is the bias network charging the cable capacitance. The voltage doesn’t instantly snap to the bias level; it gradually rises following an exponential curve. More importantly, during shorter recessive periods between bits, the voltage may not have time to fully settle back to the idle level, leaving the bus partially charged. As we’ll see in the next section, this behavior is related to the transceiver’s limited drive capability.</p>
 </li>
 <li>
 <p><strong>Clean Differential Signal</strong>: While the individual CANH and CANL voltages show complex behavior (active driving, RC charging, partial settling), the <strong>differential signal (CANH-CANL) is very clean</strong>. This is the magic of differential signaling—noise, voltage shifts, and charging effects that affect both wires equally cancel out when you subtract them, leaving a robust digital signal.</p>
 </li>
 </ol>
 <p>The CAN receiver in your transceiver looks only at this differential voltage, not the absolute voltage on either wire. This is why CAN is so reliable in electrically noisy environments like model railroads and industrial settings.</p>
-<h4 id="comparison-33v-vs-5v-powered-transceivers"><a class="header" href="#comparison-33v-vs-5v-powered-transceivers">Comparison: 3.3V vs. 5V Powered Transceivers</a></h4>
-<p>The transceiver’s supply voltage significantly affects the bus voltage levels you’ll measure. Here’s a comparison showing traffic from a <strong>RR-CirKits Tower-LCC node</strong> (which uses a 5V-powered transceiver):</p>
-<p><img src="images/Tower-LCC-CAN.png" alt="Oscilloscope capture from Tower-LCC showing higher voltage swing"></p>
-<p>In this capture from the Tower-LCC:</p>
+<h4 id="comparing-different-transceiver-voltages"><a class="header" href="#comparing-different-transceiver-voltages">Comparing Different Transceiver Voltages</a></h4>
+<p>Now that I’ve shown what a 3.3V-powered transceiver produces, the question becomes: can we do better? Let me compare measurements from my test setups with different transceiver supplies:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Transceiver</th><th>VDD</th><th>CANH (Dom)</th><th>CANL (Dom)</th><th>Differential</th><th>CANH (Rec)</th><th>CANL (Rec)</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>SN65HVD230</strong></td><td>3.3V</td><td>~2.14V</td><td>~1.18V</td><td>~0.96V</td><td>~2.37V</td><td>~2.37V</td></tr>
+<tr><td><strong>MCP2551</strong></td><td>5.0V</td><td>~3.77V</td><td>~1.28V</td><td>~2.49V</td><td>~2.50V</td><td>~2.50V</td></tr>
+</tbody>
+</table>
+</div>
+<p>The key insight: the <strong>recessive voltage is always set by the LCC infrastructure’s bias network</strong> (~2.50V in both cases). The difference between 3.3V and 5V transceivers isn’t the idle voltage—it’s what happens during dominant periods. The 3.3V transceiver’s weaker drivers try to pull CANH high (toward 3.3V) and CANL low (toward GND), but the bias network pulls back, limiting CANH to only ~2.14V. The 5V transceiver’s stronger drivers can overcome the bias network’s resistance much better, pulling CANH all the way to ~3.77V while pulling CANL down to ~1.28V, creating a much larger differential voltage. The bias network and termination resistors resist all active driving, but the transceiver’s VDD supply voltage determines how hard it can push back against that resistance.</p>
+<h4 id="visualizing-the-differential-signal-5v-transceiver"><a class="header" href="#visualizing-the-differential-signal-5v-transceiver">Visualizing the Differential Signal: 5V Transceiver</a></h4>
+<p>Here’s the practical payoff. When I switched to a 5V-powered transceiver like the MCP2551, the waveforms became dramatically clearer:</p>
+<p><img src="images/MCP2551-5V.png" alt="Oscilloscope capture from MCP2551 5V transceiver showing higher voltage swing"></p>
+<p>Compare this to the 3.3V capture above—the difference is striking. In this capture:</p>
 <ul>
-<li><strong>CANH</strong> (cyan trace): Rises to <strong>3.43V</strong> during dominant periods</li>
-<li><strong>CANL</strong> (yellow trace): Drops to <strong>1.60V</strong> during dominant periods</li>
-<li><strong>Differential</strong> (purple trace): Shows a much larger voltage swing (~1.83V vs. ~0.96V from the 3.3V transceiver)</li>
+<li><strong>CANH</strong> (cyan trace): Rises to <strong>~3.77V</strong> during dominant periods</li>
+<li><strong>CANL</strong> (yellow trace): Drops to <strong>~1.28V</strong> during dominant periods</li>
+<li><strong>Differential</strong> (purple trace): Shows a much larger, cleaner voltage swing (~2.49V vs. ~0.96V from the 3.3V transceiver)</li>
 </ul>
-<p><strong>Key observation</strong>: Notice the RC drop visible during recessive periods. Because the Tower-LCC’s 5V transceiver pulls CANH higher than our 3.3V transceiver during dominant periods, you can see the bus voltage gradually settling during the recessive (idle) periods as the bias network pulls it back toward ~2.5V. This exponential decay is the cable capacitance discharging through the bias network.</p>
-<p><strong>Why this matters</strong>: The 5V-powered transceiver provides:</p>
+<p><strong>Key advantages</strong>:</p>
+<ol>
+<li>
+<p><strong>Much Larger Voltage Swing</strong>: The nearly 2.5x larger differential voltage (2.49V vs. 0.96V) makes the signal far more robust and easier for receivers to detect reliably.</p>
+</li>
+<li>
+<p><strong>Better Noise Immunity</strong>: Larger voltage margins mean the signal is far more resistant to electrical interference—critical in noisy environments like model railroads.</p>
+</li>
+<li>
+<p><strong>Cleaner Waveforms</strong>: Notice how sharp and digital the transitions are. The larger voltage swing and stronger drivers result in waveforms that look like classic digital signals rather than analog-like curves.</p>
+</li>
+<li>
+<p><strong>Improved Reliability</strong>: This is why 5V transceivers are standard in professional CAN installations—the extra voltage swing translates directly to more reliable communication, especially on longer bus runs.</p>
+</li>
+</ol>
+<h4 id="real-world-comparison-commercial-lcc-nodes"><a class="header" href="#real-world-comparison-commercial-lcc-nodes">Real-World Comparison: Commercial LCC Nodes</a></h4>
+<p>To show what I observed from existing LCC infrastructure, here’s a capture from actual message traffic between a <strong>RR-CirKits Buffer-USB node</strong> and a <strong>Tower-LCC node</strong>. This shows real CAN bus activity: a write command I sent from the computer to the Tower-LCC via the Buffer-USB.</p>
+<p><img src="images/Tower-LCC-CAN.png" alt="Oscilloscope capture from Tower-LCC and Buffer-USB showing commercial LCC node traffic"></p>
+<p><strong>Important context</strong>: This particular capture was taken while my test node was still using a 3.3V SN65HVD230 transceiver. The waveforms are noticeably messier compared to when all nodes use 5V transceivers.</p>
+<blockquote>
+<p><strong>Impact of Weak Transceivers on the Entire Bus</strong>: When I switched my test node to a 5V MCP2551, the transformation was dramatic: not only did my node’s output become crisp and clean, but the Tower-LCC’s signal also became equally clean. This reveals an important principle: <strong>the quality of one node’s transceiver affects signal quality for the entire bus</strong>, not just that node’s local output. A weak transceiver on any node degrades margins for everyone; upgrading that one node improves the whole network.</p>
+</blockquote>
+<h4 id="practical-guidance-choosing-a-transceiver"><a class="header" href="#practical-guidance-choosing-a-transceiver">Practical Guidance: Choosing a Transceiver</a></h4>
+<p>Now that you understand why 5V transceivers produce better waveforms, you have options:</p>
 <ul>
-<li><strong>Larger voltage margins</strong>: The ~1.83V differential is nearly twice as large as the 0.96V from a 3.3V transceiver</li>
-<li><strong>Better noise immunity</strong>: Larger voltage swings are more resistant to electrical interference</li>
-<li><strong>Improved reliability</strong>: More robust signaling, especially on longer bus runs or in noisy environments</li>
+<li><strong>SN65HVD230 (3.3V)</strong>: Lower cost, but you’ll see the “soft” waveforms described earlier. Good for learning, not ideal for production.</li>
+<li><strong>MCP2551 (5V)</strong>: Better performance with cleaner waveforms and 2.5x larger differential voltage. You can power it directly from the ESP32’s VIN pin without a separate power supply. Recommended for any permanent installation.</li>
 </ul>
-<p>If you’re building a permanent LCC installation, using a <strong>5V-powered transceiver</strong> (like the MCP2551 or SN65HVD251) instead of a 3.3V version (SN65HVD230) will give you more robust bus performance. The ESP32 can still interface with a 5V transceiver—just use a level shifter on the TX line, or use a transceiver with 3.3V-tolerant logic inputs.</p>
+<p>The next section shows the detailed wiring for both options, including how to connect the MCP2551 to get 5V operation.</p>
 <h3 id="the-transceivers-role"><a class="header" href="#the-transceivers-role">The Transceiver’s Role</a></h3>
 <p>Your transceiver does one essential job: <strong>convert the ESP32’s logic signals (0V/3.3V) into differential voltages on the CAN bus</strong>.</p>
 <ul>
