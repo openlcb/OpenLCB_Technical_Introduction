@@ -174,6 +174,15 @@ This means users can change the blink speed through JMRI without recompiling the
 
 The OpenLCB protocol stack is completely independent of the physical transport layer. This is excellent software architecture—change WiFi to CAN, and the node behaves identically.
 
+## Complete Working Code
+
+> The complete working code at this point is available on GitHub:
+>
+> - **PlatformIO version:** [code/platformio/chapter5/final/](https://github.com/openlcb/OpenLCB_Technical_Introduction/tree/master/code/platformio/chapter5/final/)
+> - **Arduino IDE version:** [code/arduino/chapter5/final/](https://github.com/openlcb/OpenLCB_Technical_Introduction/tree/master/code/arduino/chapter5/final/)
+>
+> You can download or clone the repository and open either version to get the exact code with CAN transport implemented.
+
 ## Compiling and Uploading
 
 The code is ready to compile and upload using the same method as Chapter 3: click **Upload and Monitor** in the PlatformIO project tasks.

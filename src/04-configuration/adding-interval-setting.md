@@ -205,6 +205,15 @@ void setup() {
 }
 ```
 
+## Complete Working Code
+
+> The complete working code at this point is available on GitHub:
+>
+> - **PlatformIO version:** [code/platformio/chapter4/final/](https://github.com/openlcb/OpenLCB_Technical_Introduction/tree/master/code/platformio/chapter4/final/)
+> - **Arduino IDE version:** [code/arduino/chapter4/final/](https://github.com/openlcb/OpenLCB_Technical_Introduction/tree/master/code/arduino/chapter4/final/)
+>
+> You can download or clone the repository and open either version to get the exact code with the configurable interval feature implemented.
+
 ## Testing with LccPro
 
 Now that the code is modified, compile, upload to your ESP32, and test:

@@ -164,6 +164,15 @@ Add GPIO initialization before starting the OpenMRN stack:
 
 **Critical:** GPIO must be initialized **before** `openmrn.begin()` so the producer has a valid pin state to read.
 
+## Complete Working Code
+
+> The complete working code at this point is available on GitHub:
+>
+> - **PlatformIO version:** [code/platformio/chapter6/v2_button/](https://github.com/openlcb/OpenLCB_Technical_Introduction/tree/master/code/platformio/chapter6/v2_button/)
+> - **Arduino IDE version:** [code/arduino/chapter6/v2_button/](https://github.com/openlcb/OpenLCB_Technical_Introduction/tree/master/code/arduino/chapter6/v2_button/)
+
+You can download or clone the repository and open either version to get the exact code with the button input implemented.
+
 ## Building and Flashing
 
 ### Update CANONICAL_VERSION

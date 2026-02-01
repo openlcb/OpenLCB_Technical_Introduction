@@ -161,6 +161,15 @@ Initialize the LED configuration with default values:
 - LED uses offset `+0x0200` and `+0x0201` to keep it distinct from button events (`+0x0100`/`+0x0101`)
 - This makes it easy to identify which events control which I/O when looking at traffic
 
+## Complete Working Code
+
+> The complete working code at this point is available on GitHub:
+>
+> - **PlatformIO version:** [code/platformio/chapter6/final/](https://github.com/openlcb/OpenLCB_Technical_Introduction/tree/master/code/platformio/chapter6/final/)
+> - **Arduino IDE version:** [code/arduino/chapter6/final/](https://github.com/openlcb/OpenLCB_Technical_Introduction/tree/master/code/arduino/chapter6/final/)
+>
+> You can download or clone the repository and open either version to get the exact code with both button input and LED output implemented.
+
 ## Building and Flashing
 
 ### Update CANONICAL_VERSION

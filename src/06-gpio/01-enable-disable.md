@@ -130,6 +130,15 @@ Update `loop()` to check the enabled flag before producing events:
  }
 ```
 
+## Complete Working Code
+
+> The complete working code at this point is available on GitHub:
+>
+> - **PlatformIO version:** [code/platformio/chapter6/v1_toggle/](https://github.com/openlcb/OpenLCB_Technical_Introduction/tree/master/code/platformio/chapter6/v1_toggle/)
+> - **Arduino IDE version:** [code/arduino/chapter6/v1_toggle/](https://github.com/openlcb/OpenLCB_Technical_Introduction/tree/master/code/arduino/chapter6/v1_toggle/)
+>
+> You can download or clone the repository and open either version to get the exact code with the enable/disable toggle implemented.
+
 ### Step 2: Test the Configuration
 
 After building and uploading the firmware:

@@ -248,3 +248,12 @@ void loop() {
 ### What Happens Next
 
 Now that you understand how the code works, the next section covers building this code and uploading it to your ESP32. You'll see all of these initialization steps happen in the serial monitor, and we'll verify everything is working correctly.
+
+## Complete Working Code
+
+> The complete working code at this point is available on GitHub:
+>
+> - **PlatformIO version:** [code/platformio/chapter3/final/](https://github.com/openlcb/OpenLCB_Technical_Introduction/tree/master/code/platformio/chapter3/final/)
+> - **Arduino IDE version:** [code/arduino/chapter3/final/](https://github.com/openlcb/OpenLCB_Technical_Introduction/tree/master/code/arduino/chapter3/final/)
+>
+> You can download or clone the repository and open either version to get the exact code shown in this chapter, ready to build and upload.
