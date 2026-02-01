@@ -51,7 +51,7 @@ void setup() {
 - init_network();
 + can_driver.hw_init();
   init_openlcb_stack();
-- init_network();
+- init_tcp_hub();
 + openmrn.add_can_port_select("/dev/twai/twai0");
   
   Serial.println("OpenLCB node initialization complete!");

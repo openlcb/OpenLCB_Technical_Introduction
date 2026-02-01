@@ -1,1 +1,4 @@
 book
+code/**/.gitignore
+code/**/.vscode/
+**/build/

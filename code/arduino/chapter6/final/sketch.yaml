@@ -1,0 +1,28 @@
+profiles:
+  ESP32-DevKit:
+    fqbn: esp32:esp32:esp32doit-devkit-v1:UploadSpeed=921600,FlashFreq=80,DebugLevel=none,EraseFlash=none
+    platforms:
+      - platform: esp32:esp32 (3.3.5)
+    libraries:
+      - OpenMRNLite (2.2.1)
+    programmer: ""
+    port: COM5
+    port_config:
+      baudrate: "115200"
+      bits: "8"
+      parity: none
+      stop_bits: "1"
+  ESP32-C3-Pro-Micro:
+    fqbn: esp32:esp32:sparkfun_pro_micro_esp32c3:UploadSpeed=921600,CDCOnBoot=cdc,CPUFreq=160,FlashFreq=80,FlashMode=qio,FlashSize=4M,PartitionScheme=default,DebugLevel=none,EraseFlash=none,JTAGAdapter=default
+    platforms:
+      - platform: esp32:esp32 (3.3.5)
+    libraries:
+      - OpenMRNLite (2.2.1)
+    programmer: ""
+    port: COM4
+    port_config:
+      baudrate: "115200"
+      bits: "8"
+      parity: none
+      stop_bits: one
+default_profile: ESP32-C3-Pro-Micro
