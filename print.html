@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-935571c1.js";
+            window.path_to_searchindex_js = "searchindex-a0051594.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-038b4abc.js"></script>
@@ -1753,6 +1753,15 @@ public:
 <p><strong>Why use the executor?</strong> OpenLCB message handling runs in a separate execution context. The <code>executor()-&gt;add()</code> pattern ensures thread-safe event production.</p>
 <h3 id="what-happens-next"><a class="header" href="#what-happens-next">What Happens Next</a></h3>
 <p>Now that you understand how the code works, the next section covers building this code and uploading it to your ESP32. You’ll see all of these initialization steps happen in the serial monitor, and we’ll verify everything is working correctly.</p>
+<h2 id="complete-working-code"><a class="header" href="#complete-working-code">Complete Working Code</a></h2>
+<blockquote>
+<p>The complete working code at this point is available on GitHub:</p>
+<ul>
+<li><strong>PlatformIO version:</strong> <a href="https://github.com/openlcb/OpenLCB_Technical_Introduction/tree/master/code/platformio/chapter3/final/">code/platformio/chapter3/final/</a></li>
+<li><strong>Arduino IDE version:</strong> <a href="https://github.com/openlcb/OpenLCB_Technical_Introduction/tree/master/code/arduino/chapter3/final/">code/arduino/chapter3/final/</a></li>
+</ul>
+<p>You can download or clone the repository and open either version to get the exact code shown in this chapter, ready to build and upload.</p>
+</blockquote>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="build-and-upload"><a href="#build-and-upload" class="header">Build and Upload</a></h1>
 <h2 id="building-and-uploading-to-esp32"><a class="header" href="#building-and-uploading-to-esp32">Building and Uploading to ESP32</a></h2>
@@ -2837,6 +2846,15 @@ public:
   last_event_time = millis();
 }
 </code></pre>
+<h2 id="complete-working-code-1"><a class="header" href="#complete-working-code-1">Complete Working Code</a></h2>
+<blockquote>
+<p>The complete working code at this point is available on GitHub:</p>
+<ul>
+<li><strong>PlatformIO version:</strong> <a href="https://github.com/openlcb/OpenLCB_Technical_Introduction/tree/master/code/platformio/chapter4/final/">code/platformio/chapter4/final/</a></li>
+<li><strong>Arduino IDE version:</strong> <a href="https://github.com/openlcb/OpenLCB_Technical_Introduction/tree/master/code/arduino/chapter4/final/">code/arduino/chapter4/final/</a></li>
+</ul>
+<p>You can download or clone the repository and open either version to get the exact code with the configurable interval feature implemented.</p>
+</blockquote>
 <h2 id="testing-with-lccpro"><a class="header" href="#testing-with-lccpro">Testing with LccPro</a></h2>
 <p>Now that the code is modified, compile, upload to your ESP32, and test:</p>
 <h3 id="step-1-verify-initial-boot-output"><a class="header" href="#step-1-verify-initial-boot-output">Step 1: Verify Initial Boot Output</a></h3>
@@ -3384,6 +3402,15 @@ Produced event: 0x0502010202000001 (state: 1)
 </ol>
 <p>This means users can change the blink speed through JMRI without recompiling the firmware.</p>
 <p>The OpenLCB protocol stack is completely independent of the physical transport layer. This is excellent software architecture—change WiFi to CAN, and the node behaves identically.</p>
+<h2 id="complete-working-code-2"><a class="header" href="#complete-working-code-2">Complete Working Code</a></h2>
+<blockquote>
+<p>The complete working code at this point is available on GitHub:</p>
+<ul>
+<li><strong>PlatformIO version:</strong> <a href="https://github.com/openlcb/OpenLCB_Technical_Introduction/tree/master/code/platformio/chapter5/final/">code/platformio/chapter5/final/</a></li>
+<li><strong>Arduino IDE version:</strong> <a href="https://github.com/openlcb/OpenLCB_Technical_Introduction/tree/master/code/arduino/chapter5/final/">code/arduino/chapter5/final/</a></li>
+</ul>
+<p>You can download or clone the repository and open either version to get the exact code with CAN transport implemented.</p>
+</blockquote>
 <h2 id="compiling-and-uploading"><a class="header" href="#compiling-and-uploading">Compiling and Uploading</a></h2>
 <p>The code is ready to compile and upload using the same method as Chapter 3: click <strong>Upload and Monitor</strong> in the PlatformIO project tasks.</p>
 <p>When the upload completes and the device boots, you’ll see the same startup messages as before:</p>
@@ -3909,6 +3936,15 @@ openmrn.add_can_port(&amp;can_driver);
    }
  }
 </code></pre>
+<h2 id="complete-working-code-3"><a class="header" href="#complete-working-code-3">Complete Working Code</a></h2>
+<blockquote>
+<p>The complete working code at this point is available on GitHub:</p>
+<ul>
+<li><strong>PlatformIO version:</strong> <a href="https://github.com/openlcb/OpenLCB_Technical_Introduction/tree/master/code/platformio/chapter6/v1_toggle/">code/platformio/chapter6/v1_toggle/</a></li>
+<li><strong>Arduino IDE version:</strong> <a href="https://github.com/openlcb/OpenLCB_Technical_Introduction/tree/master/code/arduino/chapter6/v1_toggle/">code/arduino/chapter6/v1_toggle/</a></li>
+</ul>
+<p>You can download or clone the repository and open either version to get the exact code with the enable/disable toggle implemented.</p>
+</blockquote>
 <h3 id="step-2-test-the-configuration"><a class="header" href="#step-2-test-the-configuration">Step 2: Test the Configuration</a></h3>
 <p>After building and uploading the firmware:</p>
 <ol>
@@ -4121,6 +4157,15 @@ openmrn.add_can_port(&amp;can_driver);
    openmrn.add_can_port_select("/dev/twai/twai0");
 </code></pre>
 <p><strong>Critical:</strong> GPIO must be initialized <strong>before</strong> <code>openmrn.begin()</code> so the producer has a valid pin state to read.</p>
+<h2 id="complete-working-code-4"><a class="header" href="#complete-working-code-4">Complete Working Code</a></h2>
+<blockquote>
+<p>The complete working code at this point is available on GitHub:</p>
+<ul>
+<li><strong>PlatformIO version:</strong> <a href="https://github.com/openlcb/OpenLCB_Technical_Introduction/tree/master/code/platformio/chapter6/v2_button/">code/platformio/chapter6/v2_button/</a></li>
+<li><strong>Arduino IDE version:</strong> <a href="https://github.com/openlcb/OpenLCB_Technical_Introduction/tree/master/code/arduino/chapter6/v2_button/">code/arduino/chapter6/v2_button/</a></li>
+</ul>
+</blockquote>
+<p>You can download or clone the repository and open either version to get the exact code with the button input implemented.</p>
 <h2 id="building-and-flashing"><a class="header" href="#building-and-flashing">Building and Flashing</a></h2>
 <h3 id="update-canonical_version"><a class="header" href="#update-canonical_version">Update CANONICAL_VERSION</a></h3>
 <p>Since we’re adding a new configuration field, increment the version number in <a href="d:&#92;src&#92;github&#92;LCC&#92;test&#92;async_blink_esp32&#92;include&#92;config.h">config.h</a>:</p>
@@ -4554,6 +4599,15 @@ pull-up resistors, enabling pull-down is not possible.
 <li>LED uses offset <code>+0x0200</code> and <code>+0x0201</code> to keep it distinct from button events (<code>+0x0100</code>/<code>+0x0101</code>)</li>
 <li>This makes it easy to identify which events control which I/O when looking at traffic</li>
 </ul>
+<h2 id="complete-working-code-5"><a class="header" href="#complete-working-code-5">Complete Working Code</a></h2>
+<blockquote>
+<p>The complete working code at this point is available on GitHub:</p>
+<ul>
+<li><strong>PlatformIO version:</strong> <a href="https://github.com/openlcb/OpenLCB_Technical_Introduction/tree/master/code/platformio/chapter6/final/">code/platformio/chapter6/final/</a></li>
+<li><strong>Arduino IDE version:</strong> <a href="https://github.com/openlcb/OpenLCB_Technical_Introduction/tree/master/code/arduino/chapter6/final/">code/arduino/chapter6/final/</a></li>
+</ul>
+<p>You can download or clone the repository and open either version to get the exact code with both button input and LED output implemented.</p>
+</blockquote>
 <h2 id="building-and-flashing-1"><a class="header" href="#building-and-flashing-1">Building and Flashing</a></h2>
 <h3 id="update-canonical_version-1"><a class="header" href="#update-canonical_version-1">Update CANONICAL_VERSION</a></h3>
 <p>We’ve already incremented the version to <code>0x0005</code> in the code above. This triggers a factory reset on first boot, initializing the LED configuration.</p>

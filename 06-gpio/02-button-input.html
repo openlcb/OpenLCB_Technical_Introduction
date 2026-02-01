@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-935571c1.js";
+            window.path_to_searchindex_js = "../searchindex-a0051594.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-038b4abc.js"></script>
@@ -316,6 +316,15 @@
    openmrn.add_can_port_select("/dev/twai/twai0");
 </code></pre>
 <p><strong>Critical:</strong> GPIO must be initialized <strong>before</strong> <code>openmrn.begin()</code> so the producer has a valid pin state to read.</p>
+<h2 id="complete-working-code"><a class="header" href="#complete-working-code">Complete Working Code</a></h2>
+<blockquote>
+<p>The complete working code at this point is available on GitHub:</p>
+<ul>
+<li><strong>PlatformIO version:</strong> <a href="https://github.com/openlcb/OpenLCB_Technical_Introduction/tree/master/code/platformio/chapter6/v2_button/">code/platformio/chapter6/v2_button/</a></li>
+<li><strong>Arduino IDE version:</strong> <a href="https://github.com/openlcb/OpenLCB_Technical_Introduction/tree/master/code/arduino/chapter6/v2_button/">code/arduino/chapter6/v2_button/</a></li>
+</ul>
+</blockquote>
+<p>You can download or clone the repository and open either version to get the exact code with the button input implemented.</p>
 <h2 id="building-and-flashing"><a class="header" href="#building-and-flashing">Building and Flashing</a></h2>
 <h3 id="update-canonical_version"><a class="header" href="#update-canonical_version">Update CANONICAL_VERSION</a></h3>
 <p>Since we’re adding a new configuration field, increment the version number in <a href="d:&#92;src&#92;github&#92;LCC&#92;test&#92;async_blink_esp32&#92;include&#92;config.h">config.h</a>:</p>

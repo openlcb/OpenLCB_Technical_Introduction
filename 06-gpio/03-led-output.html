@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-935571c1.js";
+            window.path_to_searchindex_js = "../searchindex-a0051594.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-038b4abc.js"></script>
@@ -319,6 +319,15 @@
 <li>LED uses offset <code>+0x0200</code> and <code>+0x0201</code> to keep it distinct from button events (<code>+0x0100</code>/<code>+0x0101</code>)</li>
 <li>This makes it easy to identify which events control which I/O when looking at traffic</li>
 </ul>
+<h2 id="complete-working-code"><a class="header" href="#complete-working-code">Complete Working Code</a></h2>
+<blockquote>
+<p>The complete working code at this point is available on GitHub:</p>
+<ul>
+<li><strong>PlatformIO version:</strong> <a href="https://github.com/openlcb/OpenLCB_Technical_Introduction/tree/master/code/platformio/chapter6/final/">code/platformio/chapter6/final/</a></li>
+<li><strong>Arduino IDE version:</strong> <a href="https://github.com/openlcb/OpenLCB_Technical_Introduction/tree/master/code/arduino/chapter6/final/">code/arduino/chapter6/final/</a></li>
+</ul>
+<p>You can download or clone the repository and open either version to get the exact code with both button input and LED output implemented.</p>
+</blockquote>
 <h2 id="building-and-flashing"><a class="header" href="#building-and-flashing">Building and Flashing</a></h2>
 <h3 id="update-canonical_version"><a class="header" href="#update-canonical_version">Update CANONICAL_VERSION</a></h3>
 <p>We’ve already incremented the version to <code>0x0005</code> in the code above. This triggers a factory reset on first boot, initializing the LED configuration.</p>
