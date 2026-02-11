@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-a0051594.js";
+            window.path_to_searchindex_js = "../searchindex-0056d67f.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-038b4abc.js"></script>
@@ -197,111 +197,56 @@
 <p><strong>Key concept</strong>: The transceiver operates in two fundamentally different modes—<strong>high-impedance (recessive)</strong> and <strong>active driving (dominant)</strong>. The bias network in your LCC infrastructure (like RR-CirKits LCC Power-Point or SPROG POWER-LCC) provides the reference voltage, but the transceiver’s behavior determines what you actually measure.</p>
 <h4 id="recessive-idle-state"><a class="header" href="#recessive-idle-state">Recessive (Idle) State</a></h4>
 <p>In the <strong>recessive state</strong>, the transceiver outputs are <strong>high-impedance</strong>—essentially disconnected from the bus. The transceiver isn’t driving the lines at all; it has “let go” of them.</p>
-<p>With no active driving, the <strong>bias network</strong> in your LCC infrastructure pulls both CANH and CANL to nearly the <strong>same voltage</strong>. For typical LCC infrastructure (like the RR-CirKits Power-Point or SPROG POWER-LCC), this is around 2.5V, though the exact voltage depends on the specific device. When fully settled, there’s almost no differential voltage between them.</p>
+<p>With no active driving, the <strong>bias network</strong> in your LCC infrastructure pulls both CANH and CANL to nearly the <strong>same voltage</strong>. For typical LCC infrastructure (like the RR-CirKits Power-Point or SPROG POWER-LCC), this is around 2.3V, though the exact voltage depends on the specific device. When fully settled, there’s almost no differential voltage between them.</p>
 <h4 id="dominant-transmission-state"><a class="header" href="#dominant-transmission-state">Dominant (Transmission) State</a></h4>
 <p>When any node wants to send a <strong>dominant 0 bit</strong>, its CAN transceiver <strong>actively drives</strong> both outputs:</p>
 <ul>
-<li><strong>CANH driver</strong> pulls toward the transceiver’s VDD supply voltage (e.g., 3.3V for SN65HVD230)</li>
+<li><strong>CANH driver</strong> pulls toward the transceiver’s VDD supply voltage (e.g., 5.0V for MCP2551)</li>
 <li><strong>CANL driver</strong> pulls toward GND (0V)</li>
 </ul>
 <p>This creates a significant differential voltage between the two lines. However, the actual voltages you measure are <strong>not</strong> VDD and GND because:</p>
 <ol>
-<li>The <strong>bias network is still connected</strong> and pulls both lines toward the bias voltage (~2.5V)</li>
+<li>The <strong>bias network is still connected</strong> and pulls both lines toward the bias voltage (~2.3V)</li>
 <li>The <strong>termination resistors</strong> (120Ω at each end of the bus) load the drivers</li>
 <li>The drivers and bias network “fight” each other, settling at intermediate voltages</li>
 </ol>
-<h4 id="visualizing-the-differential-signal-33v-transceiver"><a class="header" href="#visualizing-the-differential-signal-33v-transceiver">Visualizing the Differential Signal: 3.3V Transceiver</a></h4>
-<p>Here’s what the 3.3V SN65HVD230 looks like on an oscilloscope during actual CAN bus communication:</p>
-<p><img src="images/ScopeCapture3.png" alt="Oscilloscope capture showing CANH, CANL, and differential signal"></p>
+<h4 id="visualizing-proper-can-transceiver-output"><a class="header" href="#visualizing-proper-can-transceiver-output">Visualizing Proper CAN Transceiver Output</a></h4>
+<p>Here’s what a genuine CAN transceiver looks like on an oscilloscope during actual CAN bus communication. This example uses an MCP2551 (5V transceiver), showing what you should expect from any properly functioning CAN transceiver:</p>
+<p><img src="images/MCP2551-5V.png" alt="Oscilloscope capture from MCP2551 5V transceiver showing proper voltage swing"></p>
 <p>In this capture:</p>
-<ul>
-<li><strong>Yellow trace (CANL)</strong>: Shows the low line being actively driven low during dominant periods, then charging back up during recessive periods</li>
-<li><strong>Cyan trace (CANH)</strong>: Shows the high line behavior during the same transmission</li>
-<li><strong>Purple trace (CANH-CANL)</strong>: The differential signal - notice how clean and digital it is!</li>
-</ul>
-<p><strong>Key observations</strong>:</p>
-<ol>
-<li>
-<p><strong>Smaller Voltage Swing</strong>: The differential voltage (~0.96V) is relatively modest. This is what caused confusion for some—the waveforms look somewhat “soft” compared to what you might expect from a digital signal.</p>
-</li>
-<li>
-<p><strong>RC Charging Behavior and Incomplete Settling</strong>: Notice the curved rise at the end of each dominant pulse (when returning to recessive)—this is the bias network charging the cable capacitance. The voltage doesn’t instantly snap to the bias level; it gradually rises following an exponential curve. More importantly, during shorter recessive periods between bits, the voltage may not have time to fully settle back to the idle level, leaving the bus partially charged. As we’ll see in the next section, this behavior is related to the transceiver’s limited drive capability.</p>
-</li>
-<li>
-<p><strong>Clean Differential Signal</strong>: While the individual CANH and CANL voltages show complex behavior (active driving, RC charging, partial settling), the <strong>differential signal (CANH-CANL) is very clean</strong>. This is the magic of differential signaling—noise, voltage shifts, and charging effects that affect both wires equally cancel out when you subtract them, leaving a robust digital signal.</p>
-</li>
-</ol>
-<p>The CAN receiver in your transceiver looks only at this differential voltage, not the absolute voltage on either wire. This is why CAN is so reliable in electrically noisy environments like model railroads and industrial settings.</p>
-<h4 id="comparing-different-transceiver-voltages"><a class="header" href="#comparing-different-transceiver-voltages">Comparing Different Transceiver Voltages</a></h4>
-<p>Now that I’ve shown what a 3.3V-powered transceiver produces, the question becomes: can we do better? Let me compare measurements from my test setups with different transceiver supplies:</p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Transceiver</th><th>VDD</th><th>CANH (Dom)</th><th>CANL (Dom)</th><th>Differential</th><th>CANH (Rec)</th><th>CANL (Rec)</th></tr>
-</thead>
-<tbody>
-<tr><td><strong>SN65HVD230</strong></td><td>3.3V</td><td>~2.14V</td><td>~1.18V</td><td>~0.96V</td><td>~2.37V</td><td>~2.37V</td></tr>
-<tr><td><strong>MCP2551</strong></td><td>5.0V</td><td>~3.77V</td><td>~1.28V</td><td>~2.49V</td><td>~2.50V</td><td>~2.50V</td></tr>
-</tbody>
-</table>
-</div>
-<p>The key insight: the <strong>recessive voltage is always set by the LCC infrastructure’s bias network</strong> (~2.50V in both cases). The difference between 3.3V and 5V transceivers isn’t the idle voltage—it’s what happens during dominant periods. The 3.3V transceiver’s weaker drivers try to pull CANH high (toward 3.3V) and CANL low (toward GND), but the bias network pulls back, limiting CANH to only ~2.14V. The 5V transceiver’s stronger drivers can overcome the bias network’s resistance much better, pulling CANH all the way to ~3.77V while pulling CANL down to ~1.28V, creating a much larger differential voltage. The bias network and termination resistors resist all active driving, but the transceiver’s VDD supply voltage determines how hard it can push back against that resistance.</p>
-<h4 id="visualizing-the-differential-signal-5v-transceiver"><a class="header" href="#visualizing-the-differential-signal-5v-transceiver">Visualizing the Differential Signal: 5V Transceiver</a></h4>
-<p>Here’s the practical payoff. When I switched to a 5V-powered transceiver like the MCP2551, the waveforms became dramatically clearer:</p>
-<p><img src="images/MCP2551-5V.png" alt="Oscilloscope capture from MCP2551 5V transceiver showing higher voltage swing"></p>
-<p>Compare this to the 3.3V capture above—the difference is striking. In this capture:</p>
 <ul>
 <li><strong>CANH</strong> (cyan trace): Rises to <strong>~3.77V</strong> during dominant periods</li>
 <li><strong>CANL</strong> (yellow trace): Drops to <strong>~1.28V</strong> during dominant periods</li>
-<li><strong>Differential</strong> (purple trace): Shows a much larger, cleaner voltage swing (~2.49V vs. ~0.96V from the 3.3V transceiver)</li>
+<li><strong>Differential</strong> (purple trace): Shows a clean, robust voltage swing of ~2.49V</li>
+<li><strong>Recessive voltage</strong>: Both lines settle to <strong>~2.30V</strong> (set by the LCC infrastructure’s bias network)</li>
 </ul>
-<p><strong>Key advantages</strong>:</p>
+<p><strong>Key characteristics of proper operation</strong>:</p>
 <ol>
 <li>
-<p><strong>Much Larger Voltage Swing</strong>: The nearly 2.5x larger differential voltage (2.49V vs. 0.96V) makes the signal far more robust and easier for receivers to detect reliably.</p>
+<p><strong>Strong Differential Voltage</strong>: The ~2.49V differential provides robust signal margins for reliable communication.</p>
 </li>
 <li>
-<p><strong>Better Noise Immunity</strong>: Larger voltage margins mean the signal is far more resistant to electrical interference—critical in noisy environments like model railroads.</p>
+<p><strong>Symmetric Drive Capability</strong>: Both the high-side driver (pulling CANH up) and low-side driver (pulling CANL down) work properly, creating clean transitions.</p>
 </li>
 <li>
-<p><strong>Cleaner Waveforms</strong>: Notice how sharp and digital the transitions are. The larger voltage swing and stronger drivers result in waveforms that look like classic digital signals rather than analog-like curves.</p>
+<p><strong>Sharp Waveforms</strong>: Notice how the transitions are crisp and digital-looking, not soft or rounded.</p>
 </li>
 <li>
-<p><strong>Improved Reliability</strong>: This is why 5V transceivers are standard in professional CAN installations—the extra voltage swing translates directly to more reliable communication, especially on longer bus runs.</p>
+<p><strong>Noise Immunity</strong>: The large voltage swing means the signal is resistant to electrical interference—critical in noisy environments like model railroads.</p>
 </li>
 </ol>
-<h4 id="real-world-comparison-commercial-lcc-nodes"><a class="header" href="#real-world-comparison-commercial-lcc-nodes">Real-World Comparison: Commercial LCC Nodes</a></h4>
-<p>To show what I observed from existing LCC infrastructure, here’s a capture from actual message traffic between a <strong>RR-CirKits Buffer-USB node</strong> and a <strong>Tower-LCC node</strong>. This shows real CAN bus activity: a write command I sent from the computer to the Tower-LCC via the Buffer-USB.</p>
-<p><img src="images/Tower-LCC-CAN.png" alt="Oscilloscope capture from Tower-LCC and Buffer-USB showing commercial LCC node traffic"></p>
-<p><strong>Important context</strong>: This particular capture was taken while my test node was still using a 3.3V SN65HVD230 transceiver. The waveforms are noticeably messier compared to when all nodes use 5V transceivers.</p>
-<blockquote>
-<p><strong>Impact of Weak Transceivers on the Entire Bus</strong>: When I switched my test node to a 5V MCP2551, the transformation was dramatic: not only did my node’s output become crisp and clean, but the Tower-LCC’s signal also became equally clean. This reveals an important principle: <strong>the quality of one node’s transceiver affects signal quality for the entire bus</strong>, not just that node’s local output. A weak transceiver on any node degrades margins for everyone; upgrading that one node improves the whole network.</p>
-</blockquote>
-<h4 id="practical-guidance-choosing-a-transceiver"><a class="header" href="#practical-guidance-choosing-a-transceiver">Practical Guidance: Choosing a Transceiver</a></h4>
-<p>Now that you understand why 5V transceivers produce better waveforms, you have options:</p>
-<ul>
-<li><strong>SN65HVD230 (3.3V)</strong>: Lower cost, but you’ll see the “soft” waveforms described earlier. Good for learning, not ideal for production.</li>
-<li><strong>MCP2551 (5V)</strong>: Better performance with cleaner waveforms and 2.5x larger differential voltage. You can power it directly from the ESP32’s VIN pin without a separate power supply. Recommended for any permanent installation.</li>
-</ul>
-<p>The next section shows the detailed wiring for both options, including how to connect the MCP2551 to get 5V operation.</p>
-<h3 id="the-transceivers-role"><a class="header" href="#the-transceivers-role">The Transceiver’s Role</a></h3>
-<p>Your transceiver does one essential job: <strong>convert the ESP32’s logic signals (0V/3.3V) into differential voltages on the CAN bus</strong>.</p>
-<ul>
-<li><strong>Recessive (logic 1)</strong>: Transceiver goes <strong>high-impedance</strong>, releasing the bus and allowing the bias network to set the voltage</li>
-<li><strong>Dominant (logic 0)</strong>: Transceiver <strong>actively drives</strong> CANH toward VCC and CANL toward GND, creating a differential voltage</li>
-</ul>
-<p>Everything else—the bias voltage, termination, ground reference—comes from your LCC infrastructure (such as the RR-CirKits LCC Power-Point or SPROG POWER-LCC). The transceiver’s drivers work against this infrastructure during dominant periods, which is why the measured voltages are intermediate values rather than full VCC/GND.</p>
-<h3 id="the-wired-and-behavior"><a class="header" href="#the-wired-and-behavior">The Wired-AND Behavior</a></h3>
-<p>This dominant/recessive behavior is the foundation of CAN’s arbitration—if two nodes transmit simultaneously, the one sending 0 (dominant) wins without any other node knowing a collision happened. This is covered in detail in Chapter 1.</p>
+<p>The CAN receiver in your transceiver looks only at the differential voltage (CANH-CANL), not the absolute voltage on either wire. This is why CAN is so reliable in electrically noisy environments—common-mode noise that affects both wires equally cancels out when you subtract them.</p>
+<h2 id="system-requirements-what-you-need-beyond-the-transceiver"><a class="header" href="#system-requirements-what-you-need-beyond-the-transceiver">System Requirements: What You Need Beyond the Transceiver</a></h2>
+<p>Before we dive into selecting and purchasing a transceiver, you need to understand the complete system. Your transceiver alone can’t run the bus—it needs supporting infrastructure.</p>
 <h3 id="why-you-need-the-lcc-power-point-or-similar-device"><a class="header" href="#why-you-need-the-lcc-power-point-or-similar-device">Why You Need the LCC Power-Point (or Similar Device)</a></h3>
-<p>Your transceiver alone can’t run the bus. You need external infrastructure to provide:</p>
+<p>Your transceiver converts between logic levels and differential signals, but it doesn’t create the electrical environment those signals operate in. You need external infrastructure to provide:</p>
 <ul>
 <li><strong>Bias network</strong>: Sets the idle (recessive) voltage that CANH and CANL rest at when no one is driving</li>
 <li><strong>Ground reference</strong>: A stable common point between all nodes</li>
 <li><strong>Termination resistors</strong> (120Ω): At each physical end of the bus to prevent signal reflections</li>
 </ul>
-<p>The first two are provided by devices like the <strong>RR-CirKits LCC Power-Point</strong> or <strong>SPROG POWER-LCC</strong>. Without them, the bus has no defined idle state, reflections corrupt signals, and nodes disagree on what voltages mean.</p>
-<p><strong>In this section</strong>, we focus on connecting the three signal wires—CANH, CANL, and GND—from your ESP32 to the LCC infrastructure. The infrastructure handles the rest.</p>
+<p>The bias network and ground reference are provided by devices like the <strong>RR-CirKits LCC Power-Point</strong> or <strong>SPROG POWER-LCC</strong>. Without them, the bus has no defined idle state, reflections corrupt signals, and nodes disagree on what voltages mean.</p>
+<p>This is why the oscilloscope traces above show ~2.3V as the recessive voltage—that comes from the LCC infrastructure’s bias network, not from the transceiver itself.</p>
 <h3 id="ground-connection-the-third-signal-wire"><a class="header" href="#ground-connection-the-third-signal-wire">Ground Connection: The Third Signal Wire</a></h3>
 <p>Your transceiver’s ground connection is just as critical as CANH and CANL. While a learning bench might work with USB providing a common ground, <strong>a proper LCC installation requires an explicit ground wire</strong> connecting your ESP32 to the LCC bus infrastructure.</p>
 <p>This ground wire:</p>
@@ -310,7 +255,108 @@
 <li>Ensures consistent behavior regardless of USB or power supply topology</li>
 <li>Maintains proper signal margins as specified by the CAN standard</li>
 </ul>
-<p>The next section shows exactly where to connect this wire on your breadboard and LCC interface.</p>
+<p><strong>In the practical wiring sections that follow</strong>, we’ll show exactly where to connect CANH, CANL, and GND on your breadboard and LCC interface.</p>
+<h2 id="selecting-your-transceiver"><a class="header" href="#selecting-your-transceiver">Selecting Your Transceiver</a></h2>
+<p>Now that you understand the complete system, let’s talk about choosing the right transceiver for your ESP32.</p>
+<h3 id="-warning-counterfeit-can-transceivers"><a class="header" href="#-warning-counterfeit-can-transceivers">⚠️ Warning: Counterfeit CAN Transceivers</a></h3>
+<p><strong>Before you buy a CAN transceiver breakout board</strong>, you need to know about a serious problem in the hobbyist electronics market: <strong>counterfeit transceiver chips</strong>.</p>
+<p>Cheap breakout boards sold on Amazon, eBay, AliExpress, and similar marketplaces <strong>commonly contain counterfeit chips</strong>, particularly SN65HVD230 boards. These counterfeits have a characteristic defect: <strong>missing or severely degraded high-side drivers</strong>. While the low-side driver (pulling CANL toward GND) works reasonably well, the high-side driver fails to properly pull CANH up.</p>
+<h4 id="what-counterfeit-transceivers-look-like"><a class="header" href="#what-counterfeit-transceivers-look-like">What Counterfeit Transceivers Look Like</a></h4>
+<p>Here’s an oscilloscope capture from a counterfeit SN65HVD230 chip on an inexpensive breakout board:</p>
+<p><img src="images/ScopeCapture3.png" alt="Oscilloscope capture showing CANH, CANL, and differential signal from counterfeit chip"></p>
+<p>Notice the problems:</p>
+<ul>
+<li><strong>CANH actually drops</strong>: Falls to ~2.14V during dominant periods (compared to ~2.37V idle)—instead of rising, the defective high-side driver allows CANH to droop 0.23V below the bias voltage</li>
+<li><strong>CANL works somewhat</strong>: Drops to ~1.18V (the low-side driver functions)</li>
+<li><strong>Weak differential</strong>: Only ~0.96V instead of the minimum 1.2V required by CAN specifications. A genuine SN65HVD230 should produce 1.5-2.0V differential.</li>
+<li><strong>Soft, rounded waveforms</strong>: The pronounced RC charging curves during recessive periods show the bias network doing ALL the work to restore voltage levels</li>
+</ul>
+<h4 id="comparison-counterfeit-vs-genuine-sn65hvd230"><a class="header" href="#comparison-counterfeit-vs-genuine-sn65hvd230">Comparison: Counterfeit vs. Genuine SN65HVD230</a></h4>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Chip Type</th><th>VDD</th><th>CANH (Dom)</th><th>CANL (Dom)</th><th>Differential</th><th>Meets Spec?</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Counterfeit</strong></td><td>3.3V</td><td>~2.14V</td><td>~1.18V</td><td>~0.96V</td><td>❌ No - below 1.2V minimum</td></tr>
+<tr><td><strong>Genuine SN65HVD230</strong></td><td>3.3V</td><td>2.45-3.3V</td><td>0.5-1.25V</td><td>≥1.2V (typ 1.5-2.0V)</td><td>✅ Yes</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>SN65HVD230 Specifications</strong> (per TI datasheet):</p>
+<ul>
+<li>CANH (dominant): 2.45V to 3.3V</li>
+<li>CANL (dominant): 0.5V to 1.25V</li>
+<li>Differential (minimum): 1.2V</li>
+</ul>
+<p>The counterfeit chip’s 0.96V differential <strong>fails to meet the minimum CAN specification</strong> of 1.2V. A genuine SN65HVD230 has both functional high-side and low-side drivers, producing at least 1.2V differential (typically 1.5-2.0V), which provides adequate signal margins for reliable LCC communication.</p>
+<h4 id="impact-on-your-lcc-network"><a class="header" href="#impact-on-your-lcc-network">Impact on Your LCC Network</a></h4>
+<p>A counterfeit transceiver with a defective high-side driver primarily affects <strong>transmission</strong>: When your node tries to transmit, the inadequate differential voltage may cause other nodes to misread or miss your messages entirely. This leads to communication failures, retransmissions, and unreliable node operation.</p>
+<p>The receive circuitry (the comparator that detects differential voltage from the bus) is separate from the transmit drivers, so the counterfeit chip should still receive messages from other nodes normally. However, a node that can’t reliably transmit is effectively useless on the network.</p>
+<h4 id="how-to-avoid-counterfeits"><a class="header" href="#how-to-avoid-counterfeits">How to Avoid Counterfeits</a></h4>
+<ol>
+<li>
+<p><strong>Buy from reputable electronics distributors</strong>: Digi-Key, Mouser, Newark, Arrow, etc. These companies have supply chain controls to prevent counterfeits.</p>
+</li>
+<li>
+<p><strong>Avoid marketplace sellers</strong>: Amazon, eBay, AliExpress, and similar marketplaces have widespread counterfeit problems. Even sellers with good ratings may unknowingly sell counterfeits.</p>
+</li>
+<li>
+<p><strong>Be skeptical of “too cheap” prices</strong>: If a breakout board costs $1-2, it’s almost certainly counterfeit. Genuine parts from authorized distributors cost more but are worth it.</p>
+</li>
+<li>
+<p><strong>Test before permanent installation</strong>: Use an oscilloscope to verify proper differential voltage. For 3.3V transceivers like SN65HVD230, expect at least 1.2V (typically 1.5-2.0V). For 5V transceivers like MCP2551, expect 2.0V or higher.</p>
+</li>
+<li>
+<p><strong>Consider pre-assembled modules from known manufacturers</strong>: Commercial LCC node breakout boards from established model railroad electronics vendors use genuine parts.</p>
+</li>
+</ol>
+<h4 id="common-counterfeit-models"><a class="header" href="#common-counterfeit-models">Common Counterfeit Models</a></h4>
+<p>While <strong>SN65HVD230</strong> is the most commonly counterfeited transceiver in the hobbyist market, any popular chip can be counterfeited. The defective high-side driver is a telltale sign—genuine chips from Texas Instruments, Microchip, NXP, and other major manufacturers have both functional drivers.</p>
+<h4 id="practical-guidance-choosing-a-transceiver-for-esp32"><a class="header" href="#practical-guidance-choosing-a-transceiver-for-esp32">Practical Guidance: Choosing a Transceiver for ESP32</a></h4>
+<p>Now that you understand the counterfeit problem, here’s how to select the right transceiver:</p>
+<p><strong>Logic Level Compatibility Matters</strong></p>
+<p>The ESP32’s GPIO pins operate at <strong>3.3V logic levels</strong>. Your transceiver’s TX and RX pins must match this voltage:</p>
+<ul>
+<li>
+<p><strong>3.3V logic transceivers</strong> (direct connection, no level shifting needed):</p>
+<ul>
+<li><strong>SN65HVD230</strong> - Excellent choice IF you buy genuine parts from reputable distributors (Digi-Key, Mouser, etc.). Avoid cheap breakout boards from Amazon/eBay/AliExpress.</li>
+<li><strong>TJA1051/3.3</strong> or <strong>TJA1042</strong> (NXP) - Good alternatives with 3.3V logic</li>
+<li><strong>MCP2562</strong> (Microchip) - 3.3V/5V tolerant option</li>
+</ul>
+</li>
+<li>
+<p><strong>5V logic transceivers</strong> (requires level shifters or optoisolators):</p>
+<ul>
+<li><strong>MCP2551</strong> (Microchip) - The oscilloscope example shown earlier. Excellent performance but requires level shifting between ESP32 GPIO and transceiver TX/RX pins</li>
+<li><strong>TJA1050</strong> (NXP) - 5V logic, same level shifting requirement</li>
+</ul>
+</li>
+</ul>
+<p><strong>Bus Power vs. Logic Levels</strong></p>
+<p>Note that the transceiver’s <strong>VDD supply voltage</strong> (which determines bus drive strength) is separate from its <strong>logic level compatibility</strong>:</p>
+<ul>
+<li>A 3.3V logic transceiver powered at 3.3V will drive the bus with less voltage swing than a 5V-powered transceiver</li>
+<li>But for LCC/CAN applications, even 3.3V-powered transceivers provide adequate signal margins when using genuine chips</li>
+<li>The MCP2551 in the scope capture is powered at 5V for strong bus drive, but that’s why it needs level shifting for ESP32</li>
+</ul>
+<p><strong>Bottom Line for ESP32</strong></p>
+<p>For simplest integration with ESP32:</p>
+<ol>
+<li>Buy a <strong>genuine SN65HVD230</strong> or <strong>TJA1051/3.3</strong> from an authorized distributor (not marketplace sellers)</li>
+<li>Power it from ESP32’s 3.3V output</li>
+<li>Connect TX/RX directly to ESP32 GPIO pins (no level shifting needed)</li>
+<li>Test with an oscilloscope if possible to verify you got a genuine chip (differential voltage should be at least 1.5V for 3.3V-powered parts)</li>
+</ol>
+<h2 id="next-steps"><a class="header" href="#next-steps">Next Steps</a></h2>
+<p>You now understand:</p>
+<ul>
+<li>How CAN transceivers convert between logic levels and differential bus signals</li>
+<li>What infrastructure (bias network, ground, termination) you need</li>
+<li>How to identify and avoid counterfeit transceivers</li>
+<li>Which transceivers work best with ESP32</li>
+</ul>
 <p><strong>Next</strong>: We’ll wire this up on a breadboard and connect to your LCC bus.</p>
 
                     </main>
